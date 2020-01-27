@@ -2,10 +2,12 @@ const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
 
-const app = express();
+const server = express();
 
-app.use(express.json());
-app.use(helmet());
-app.use(cors());
+server.use(express.json());
+server.use(helmet());
+server.use(cors());
 
-module.exports = app;
+server.get("/", (req, res) => res.json({ running: true }));
+
+module.exports = server;
