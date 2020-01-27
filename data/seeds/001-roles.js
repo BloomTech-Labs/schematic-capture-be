@@ -1,10 +1,10 @@
 exports.seed = function(knex) {
     return knex("roles").insert([
         {
-            name: "admin"
+            type: "admin"
         },
         {
-            name: "technician"
+            type: "technician"
         }
     ]);
 };

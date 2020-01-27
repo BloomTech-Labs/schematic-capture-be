@@ -125,11 +125,11 @@ create a .env file that includes the following:
 ### Postgres configs for knex
 
 -   DB_ENV=(environment the db is in [ie: development, staging, etc.])
--   PG_HOST=(address or hostname)
--   PG_PORT=(port number database is listening on)
--   PG_USER=(username for database)
--   PG_PASSWORD=(password for database)
--   PG_DATABASE=(name of database)
+-   DB_HOST=(address or hostname)
+-   DB_PORT=(port number database is listening on)
+-   DB_USER=(username for database)
+-   DB_PASSWORD=(password for database)
+-   DB_DATABASE=(name of database)
 
 ## Deploying a Postgres database with Docker for testing and/or development
 
