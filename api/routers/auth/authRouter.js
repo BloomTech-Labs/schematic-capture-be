@@ -17,31 +17,34 @@ router.post("/register", (req, res) => {
                         phone: req.body.phone
     };
 
-    const { valid, error } = validateSignupData(newUser);
-    if(!valid) return res.status(400).json({error: "There has been an error"});
+    const { valid, errors } = validateSignupData(newUser);
+    if(!valid) return res.status(400).json(errors);
 
     firebase
         .auth()
         .createUserWithEmailAndPassword(newUser.email, newUser.password)
         .then(data => {
             uid = data.user.uid;
-
+            console.log(uid);
             return data.user.getIdToken();
         })
         .then(token => {
             return userModel
                 .add({
-                    ...newUser,
+                    email: newUser.email,
+                    first_name: newUser.first_name,
+                    last_name: newUser.last_name,
                     id: uid,
                     organization_id: 1,
                     role_id: 2
                 })
                 .then(user => {
+                    console.log(user);
                     return res.status(201).json({ user, token });
                 })
                 .catch(error => {
                     // TODO add firebase cleanup on unsuccessful insert to the database.
-                    res.status(500).json({ error: error.message });
+                    res.status(501).json({ error: error.message});
                 });
         })
         .catch(error => res.status(500).json({ error: error.message }));
