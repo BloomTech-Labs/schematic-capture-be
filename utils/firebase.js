@@ -1,5 +1,12 @@
 require("dotenv").config();
 const firebase = require("firebase");
+const admin = require("firebase-admin");
+const serviceAccount = require('../admin-key');
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://schematic-capture.firebaseio.com"
+});
 
 const config = {
     apiKey: process.env.FB_KEY,
@@ -12,6 +19,6 @@ const config = {
     measurementId: process.env.FB_MEASUREMENT_ID
 };
 
-firebase.initializeApp(config);
+const db = admin.firestore();
 
-module.exports = firebase;
+module.exports = {firebase, db, admin, config};
