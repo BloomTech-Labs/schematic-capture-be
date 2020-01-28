@@ -1,9 +1,12 @@
 const { firebase } = require("../../../utils");
 const { Users } = require("../../../data/models");
+const jwt = require("jsonwebtoken");
 const router = require("express").Router();
 
 router.post("/register", (req, res) => {
     const { email, password, first_name, last_name, phone } = req.body;
+
+    // TODO accept a token and get it verified to parse organization and role
 
     let uid;
 
