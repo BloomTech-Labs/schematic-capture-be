@@ -1,6 +1,6 @@
 {
-    "name": "functions",
-    "description": "Cloud Functions for Firebase",
+    "name": "schematic-capture-be",
+    "description": "REST API for the schematic capture app using the Express framework",
     "scripts": {
         "test": "cross-env DB_ENV=test jest --watch",
         "start": "node index.js",
