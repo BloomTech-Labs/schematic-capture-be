@@ -17,7 +17,7 @@ const isEmpty = (string) => {
 };
 
 const isTen = (phone) => {
-  if(phone.length === 6){
+  if(phone.length === 10){
       return true;
   } else {
       return false;
