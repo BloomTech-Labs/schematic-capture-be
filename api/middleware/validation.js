@@ -16,6 +16,14 @@ const isEmpty = (string) => {
     }
 };
 
+const isTen = (phone) => {
+  if(phone.length === 6){
+      return true;
+  } else {
+      return false;
+  }
+};
+
 exports.validateSignupData = data => {
     let errors = {};
 
@@ -28,6 +36,8 @@ exports.validateSignupData = data => {
     if (isEmpty(data.password)) errors.password = 'Must not be empty';
     if (data.password !== data.confirmPassword)
         errors.confirmPassword = 'Passwords must match';
+
+    // if(!isTen(data.phone)) errors.phone = 'Please input valid telephone number';
 
     return {
         errors,

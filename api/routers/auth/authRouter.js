@@ -52,8 +52,10 @@ router.post("/register", (req, res) => {
 
 router.post("/login", (req, res) => {
     const { email, password } = req.body;
-
     let uid;
+
+    const { valid, errors } = validateLoginData(req.body);
+    if(!valid) return res.status(400).json(errors);
 
     firebase
         .auth()
@@ -70,7 +72,26 @@ router.post("/login", (req, res) => {
                 })
                 .catch(error => res.status(500).json({ error }));
         })
-        .catch(error => res.status(500).json({ error }));
+        .catch(error => {
+            if(error.code === 'auth/wrong-password'){
+                return res
+                    .status(403)
+                    .json({general: "Incorrect Username/Password combination. Please try again."})
+            } else if(error.code === 'auth/user-not-found'){
+                return res
+                    .status(403)
+                    .json({general: "User not found in system"})
+            } else if(error.code === 'auth/invalid-email'){
+                return res
+                    .status(403)
+                    .json({general: "Invalid Email input."})
+            } else {
+                console.log(error);
+                return res
+                    .status(500)
+                    .json({error: error.code})
+            }
+        })
 });
 
 router.post("/forgotPassword", FBauth, (req, res) => {
