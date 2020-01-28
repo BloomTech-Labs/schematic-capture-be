@@ -28,6 +28,7 @@ router.post("/register", (req, res) => {
                 organization_id: 1,
                 role_id: 2
             })
+                .first()
                 .then(user => {
                     return res.status(201).json({ user, token });
                 })
@@ -53,6 +54,7 @@ router.post("/login", (req, res) => {
         })
         .then(token => {
             return Users.findBy({ id: uid })
+                .first()
                 .then(user => {
                     return res.status(200).json({ user, token });
                 })
