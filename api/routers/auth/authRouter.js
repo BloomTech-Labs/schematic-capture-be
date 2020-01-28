@@ -1,13 +1,11 @@
 const { firebase, config } = require('../../../utils/firebase');
-const { userModel } = require("../../../data/models");
-const { firebase } = require("../../../utils");
 const { Users } = require("../../../data/models");
 const router = require("express").Router();
 const FBauth = require('../../middleware/FBauth');
 
 firebase.initializeApp(config);
 
-const { validateSignupData, validateLoginData, reduceUserDetails } = require('../../middleware/validation');
+const { validateSignupData, validateLoginData } = require('../../middleware/validation');
 
 router.post("/register", (req, res) => {
     const { email, password, first_name, last_name, phone } = req.body;
