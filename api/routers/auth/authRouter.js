@@ -1,5 +1,5 @@
 const { firebase } = require("../../../utils");
-const { userModel } = require("../../../data/models");
+const { Users } = require("../../../data/models");
 const router = require("express").Router();
 
 router.post("/register", (req, res) => {
@@ -16,16 +16,15 @@ router.post("/register", (req, res) => {
             return data.user.getIdToken();
         })
         .then(token => {
-            return userModel
-                .add({
-                    email,
-                    first_name,
-                    last_name,
-                    phone,
-                    id: uid,
-                    organization_id: 1,
-                    role_id: 2
-                })
+            return Users.add({
+                email,
+                first_name,
+                last_name,
+                phone,
+                id: uid,
+                organization_id: 1,
+                role_id: 2
+            })
                 .then(user => {
                     return res.status(201).json({ user, token });
                 })
@@ -50,8 +49,7 @@ router.post("/login", (req, res) => {
             return data.user.getIdToken();
         })
         .then(token => {
-            return userModel
-                .findBy({ id: uid })
+            return Users.findBy({ id: uid })
                 .then(user => {
                     return res.status(200).json({ user, token });
                 })
