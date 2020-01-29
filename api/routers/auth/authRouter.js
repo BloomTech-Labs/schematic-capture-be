@@ -4,13 +4,9 @@ const jwt = require("jsonwebtoken");
 const { firebase } = require("../../../utils");
 const { Users } = require("../../../data/models");
 const { FBauth, validateInvitation } = require("../../middleware");
+const { validateLoginData } = require("../../middleware/validation");
 
-const {
-    validateSignupData,
-    validateLoginData
-} = require("../../middleware/validation");
-
-router.post("/register/:invite_token", validateInvitation, async (req, res) => {
+router.post("/register", validateInvitation, async (req, res) => {
     const newUser = req.body;
     const { email, password } = newUser;
 
@@ -18,9 +14,6 @@ router.post("/register/:invite_token", validateInvitation, async (req, res) => {
     newUser.organization_id = req.invite.organization_id;
 
     let uid;
-
-    const { valid, errors } = validateSignupData(newUser);
-    if (!valid) return res.status(400).json(errors);
 
     firebase
         .auth()

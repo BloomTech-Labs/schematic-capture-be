@@ -40,6 +40,9 @@ exports.validateSignupData = data => {
     if (data.password !== data.confirmPassword)
         errors.confirmPassword = "Passwords must match";
 
+    if (!("invite_token" in data) || isEmpty(data.invite_token))
+        errors.invite_token = "Must have a value";
+
     // if(!isTen(data.phone)) errors.phone = 'Please input valid telephone number';
 
     return {
