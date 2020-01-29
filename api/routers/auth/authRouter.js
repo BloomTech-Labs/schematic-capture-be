@@ -1,52 +1,42 @@
-const { firebase, config } = require("../../../utils/firebase");
-const { Users } = require("../../../data/models");
-const jwt = require("jsonwebtoken");
 const router = require("express").Router();
-const FBauth = require("../../middleware/FBauth");
+const jwt = require("jsonwebtoken");
 
-firebase.initializeApp(config);
+const { firebase } = require("../../../utils");
+const { Users } = require("../../../data/models");
+const { FBauth, validateInvitation } = require("../../middleware");
 
 const {
     validateSignupData,
     validateLoginData
 } = require("../../middleware/validation");
 
-router.post("/register", (req, res) => {
-    const { email, password, first_name, last_name, phone } = req.body;
+router.post("/register/:invite_token", validateInvitation, async (req, res) => {
+    const newUser = req.body;
+    const { email, password } = newUser;
 
-    // TODO accept a token and get it verified to parse organization and role
+    newUser.role_id = req.invite.role_id;
+    newUser.organization_id = req.invite.organization_id;
 
     let uid;
-    const newUser = {
-        email: req.body.email,
-        password: req.body.password,
-        confirmPassword: req.body.confirmPassword,
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        phone: req.body.phone
-    };
 
     const { valid, errors } = validateSignupData(newUser);
     if (!valid) return res.status(400).json(errors);
 
     firebase
         .auth()
-        .createUserWithEmailAndPassword(newUser.email, newUser.password)
+        .createUserWithEmailAndPassword(email, password)
         .then(data => {
-            uid = data.user.uid;
+            newUser.id = data.user.uid;
 
             return data.user.getIdToken();
         })
         .then(token => {
-            return Users.add({
-                email: newUser.email,
-                first_name: newUser.first_name,
-                last_name: newUser.last_name,
-                phone: newUser.phone,
-                id: uid,
-                organization_id: 1,
-                role_id: 2
-            })
+            delete newUser.password;
+            delete newUser.confirmPassword;
+            delete newUser.invite_token;
+
+            return Users.add(newUser)
+                .first()
                 .then(user => {
                     return res.status(201).json({ user, token });
                 })
@@ -83,12 +73,10 @@ router.post("/login", (req, res) => {
         })
         .catch(error => {
             if (error.code === "auth/wrong-password") {
-                return res
-                    .status(403)
-                    .json({
-                        general:
-                            "Incorrect Username/Password combination. Please try again."
-                    });
+                return res.status(403).json({
+                    general:
+                        "Incorrect Username/Password combination. Please try again."
+                });
             } else if (error.code === "auth/user-not-found") {
                 return res
                     .status(403)
@@ -110,12 +98,10 @@ router.post("/forgotPassword", FBauth, (req, res) => {
 
     auth.sendPasswordResetEmail(email)
         .then(() => {
-            return res
-                .status(200)
-                .json({
-                    success:
-                        "Please check your inbox for the password reset e-mail."
-                });
+            return res.status(200).json({
+                success:
+                    "Please check your inbox for the password reset e-mail."
+            });
         })
         .catch(error => {
             console.log(error);
@@ -129,16 +115,33 @@ router.post("/changeEmail", FBauth, (req, res) => {
 
     user.updateEmail(newEmail)
         .then(() => {
-            return res
-                .status(200)
-                .json({
-                    success: `Your email address has been changed to ${newEmail}`
-                });
+            return res.status(200).json({
+                success: `Your email address has been changed to ${newEmail}`
+            });
         })
         .catch(error => {
             console.log(error);
             res.status(500).json({ error: "Unable to update email address." });
         });
 });
+
+router.post("/invite", FBauth, async (req, res) => {
+    console.log(req.uid);
+    const { organization_id } = await Users.findBy({ id: req.uid }).first();
+    const { role_id } = req.body;
+
+    const contents = { organization_id, role_id };
+
+    const token = signInvite(contents);
+
+    res.status(200).json({ token });
+});
+
+function signInvite(contents) {
+    const secret = process.env.INVITE_SECRET;
+    const options = { expiresIn: "1hr" };
+
+    return jwt.sign(contents, secret, options);
+}
 
 module.exports = router;
