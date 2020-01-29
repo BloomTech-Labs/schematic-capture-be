@@ -35,7 +35,7 @@ router.post("/register/:invite_token", validateInvitation, async (req, res) => {
             delete newUser.confirmPassword;
             delete newUser.invite_token;
 
-            return Users.add(newUser)
+            Users.add(newUser)
                 .first()
                 .then(user => {
                     return res.status(201).json({ user, token });
@@ -64,7 +64,7 @@ router.post("/login", (req, res) => {
             return data.user.getIdToken();
         })
         .then(token => {
-            return Users.findBy({ id: uid })
+            return Users.findBy({ "users.id": uid })
                 .first()
                 .then(user => {
                     return res.status(200).json({ user, token });
