@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
+const axios = require("axios");
 
 const { firebase } = require("../../../utils");
 const { Users } = require("../../../data/models");
@@ -121,13 +122,44 @@ router.post("/invite", FBauth, async (req, res) => {
     const { organization_id } = await Users.findBy({
         "users.id": req.uid
     }).first();
-    const { role_id } = req.body;
+
+    const { role_id, name, email } = req.body;
 
     const contents = { organization_id, role_id };
 
-    const token = signInvite(contents);
+    const sg_api_key = process.env.SG_API_KEY;
+    const template_id = process.env.SG_TEMPLATE_ID;
+    const registration_url = process.env.REGISTER_URL;
+    const invite_token = signInvite(contents);
 
-    res.status(200).json({ token });
+    const config = {
+        headers: {
+            Authorization: `Bearer ${sg_api_key}`
+        }
+    };
+
+    const data = {
+        personalizations: [
+            {
+                to: [{ email, name }],
+                dynamic_template_data: { registration_url, invite_token }
+            }
+        ],
+        from: {
+            email: "invitation@schematiccapture.com",
+            name: "Schematic Capture"
+        },
+        template_id
+    };
+
+    axios
+        .post("https://api.sendgrid.com/v3/mail/send", data, config)
+        .then(() =>
+            res
+                .status(202)
+                .json({ message: `successfully sent invitation to ${email}` })
+        )
+        .catch(error => res.status(500).json({ error: error.message }));
 });
 
 function signInvite(contents) {
