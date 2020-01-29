@@ -767,14 +767,14 @@
   integrity sha512-FwI9gX75FgVBJ7ywgnq/P7tw+/o1GUbtP0KzbtusLigAOgIgNISRK0ZPl4qertvXSIE8YbsVJueQ90cDt9YYyw==
 
 "@types/node@*":
-  version "13.5.0"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.5.0.tgz#4e498dbf355795a611a87ae5ef811a8660d42662"
-  integrity sha512-Onhn+z72D2O2Pb2ql2xukJ55rglumsVo1H6Fmyi8mlU9SvKdBk/pUSUAiBY/d9bAOF7VVWajX3sths/+g6ZiAQ==
+  version "13.5.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.5.2.tgz#3de53b55fd39efc428a901a0f6db31f761cfa131"
+  integrity sha512-Fr6a47c84PRLfd7M7u3/hEknyUdQrrBA6VoPmkze0tcflhU5UnpWEX2kn12ktA/lb+MNHSqFlSiPHIHsaErTPA==
 
 "@types/node@^10.1.0":
-  version "10.17.13"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.13.tgz#ccebcdb990bd6139cd16e84c39dc2fb1023ca90c"
-  integrity sha512-pMCcqU2zT4TjqYFrWtYHKal7Sl30Ims6ulZ4UFXxI4xbtQqK/qqKwkDoBFCfooRqqmRu9vY3xaJRwxSh673aYg==
+  version "10.17.14"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.14.tgz#b6c60ebf2fb5e4229fdd751ff9ddfae0f5f31541"
+  integrity sha512-G0UmX5uKEmW+ZAhmZ6PLTQ5eu/VPaT+d/tdLd5IFsKRPcbe6lPxocBtcYBFSaLaCW8O60AX90e91Nsp8lVHCNw==
 
 "@types/node@^8.10.59":
   version "8.10.59"
@@ -805,9 +805,9 @@
   integrity sha512-FA/BWv8t8ZWJ+gEOnLLd8ygxH/2UFbAvgEonyfN6yWGLKc7zVjbpl2Y4CTjid9h2RfgPP6SEt6uHwEOply00yw==
 
 "@types/yargs@^13.0.0":
-  version "13.0.6"
-  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-13.0.6.tgz#6aed913a92c262c13b94d4bca8043237de202124"
-  integrity sha512-IkltIncDQWv6fcAvnHtJ6KtkmY/vtR3bViOaCzpj/A3yNhlfZAgxNe6AEQD1cQrkYD+YsKVo08DSxvNKEsD7BA==
+  version "13.0.7"
+  resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-13.0.7.tgz#658d8578a444670a41cc9c338d5e0e0a9910fd9e"
+  integrity sha512-Sg9kNeJz+V+W+0fugcVhHC+mNHnydDR1RJrW5Qn2jVrDQARF8wfPVqIqwEzZp+bneuEBIm2ClsJ1/je42ZBzSg==
   dependencies:
     "@types/yargs-parser" "*"
 
@@ -1163,9 +1163,9 @@ body-parser@1.19.0:
     type-is "~1.6.17"
 
 bowser@^2.7.0:
-  version "2.8.1"
-  resolved "https://registry.yarnpkg.com/bowser/-/bowser-2.8.1.tgz#35b74165e17b80ba8af6aa4736c2861b001fc09e"
-  integrity sha512-FxxltGKqMHkVa3KtpA+kdnxH0caHPDewccyrK3vW1bsMw6Zco4vRPmMunowX0pXlDZqhxkKSpToADQI2Sk4OeQ==
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/bowser/-/bowser-2.9.0.tgz#3bed854233b419b9a7422d9ee3e85504373821c9"
+  integrity sha512-2ld76tuLBNFekRgmJfT2+3j5MIrP6bFict8WAIT3beq+srz1gcKNAdNKMqHqauQt63NmAa88HfP1/Ypa9Er3HA==
 
 boxen@^1.2.1:
   version "1.3.0"
@@ -2559,9 +2559,9 @@ globals@^11.1.0:
   integrity sha512-WOBp/EEGUiIsJSp7wcv/y6MO+lV9UoncWqxuFfm8eBwzWNgyfBd6Gz+IeKQ9jCmyhoH99g15M3T+QaVHFjizVA==
 
 google-auth-library@^5.0.0, google-auth-library@^5.5.0:
-  version "5.9.1"
-  resolved "https://registry.yarnpkg.com/google-auth-library/-/google-auth-library-5.9.1.tgz#aab2893b4aac10fce6c9215f918a83ae8e7b67bb"
-  integrity sha512-927NlfjqRLrkok2JRBap4iYqe5+bsdtaotwO1JSAAxoQmji+Xmf+pFLzB+52C8ovtfycwFXbvC9f/SB4gmQCXw==
+  version "5.9.2"
+  resolved "https://registry.yarnpkg.com/google-auth-library/-/google-auth-library-5.9.2.tgz#e528f4f1cd10657073d7ae2b9a9ce17ac97c3538"
+  integrity sha512-rBE1YTOZ3/Hu6Mojkr+UUmbdc/F28hyMGYEGxjyfVA9ZFmq12oqS3AeftX4h9XpdVIcxPooSo8hECYGT6B9XqQ==
   dependencies:
     arrify "^2.0.0"
     base64-js "^1.3.0"
@@ -2573,9 +2573,9 @@ google-auth-library@^5.0.0, google-auth-library@^5.5.0:
     lru-cache "^5.0.0"
 
 google-gax@^1.13.0:
-  version "1.14.0"
-  resolved "https://registry.yarnpkg.com/google-gax/-/google-gax-1.14.0.tgz#114ed808db40b2b79ba30ce01c3b02289f107703"
-  integrity sha512-a+zp4mMgAgIUVxVSEQ3ppT0knj3A5MtD8BycznCcxJ9CbigbkB/lxFAA//ndfsEM75sS7jlaG5TZk+bUavLSvg==
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/google-gax/-/google-gax-1.14.1.tgz#8271a5293b7b61377d548289964b7e8209984381"
+  integrity sha512-lAvILUMnXL+BVSSlbzwpGzs3ZP2r+b1l44zeDTRWceejDgyZORKdPEEhtUw49x9CVwxpPx02+v0yktqnRhUD1A==
   dependencies:
     "@grpc/grpc-js" "^0.6.12"
     "@grpc/proto-loader" "^0.5.1"
@@ -4371,7 +4371,7 @@ node-notifier@^5.4.2:
     shellwords "^0.1.1"
     which "^1.3.0"
 
-node-pre-gyp@^0.14.0:
+node-pre-gyp@*, node-pre-gyp@^0.14.0:
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/node-pre-gyp/-/node-pre-gyp-0.14.0.tgz#9a0596533b877289bcad4e143982ca3d904ddc83"
   integrity sha512-+CvDC7ZttU/sSt9rFjix/P05iS43qHCOOGzcr3Ry99bXG7VX953+vFyEuph/tfqoYu8dttBkE86JSKBO2OzcxA==
@@ -4809,10 +4809,10 @@ pg-packet-stream@^1.1.0:
   resolved "https://registry.yarnpkg.com/pg-packet-stream/-/pg-packet-stream-1.1.0.tgz#e45c3ae678b901a2873af1e17b92d787962ef914"
   integrity sha512-kRBH0tDIW/8lfnnOyTwKD23ygJ/kexQVXZs7gEyBljw4FYqimZFxnMMx50ndZ8In77QgfGuItS5LLclC2TtjYg==
 
-pg-pool@^2.0.9:
-  version "2.0.9"
-  resolved "https://registry.yarnpkg.com/pg-pool/-/pg-pool-2.0.9.tgz#7ed69a27e204f99e9804a851404db6aa908a6dea"
-  integrity sha512-gNiuIEKNCT3OnudQM2kvgSnXsLkSpd6mS/fRnqs6ANtrke6j8OY5l9mnAryf1kgwJMWLg0C1N1cYTZG1xmEYHQ==
+pg-pool@^2.0.10:
+  version "2.0.10"
+  resolved "https://registry.yarnpkg.com/pg-pool/-/pg-pool-2.0.10.tgz#842ee23b04e86824ce9d786430f8365082d81c4a"
+  integrity sha512-qdwzY92bHf3nwzIUcj+zJ0Qo5lpG/YxchahxIN8+ZVmXqkahKXsnl2aiJPHLYN9o5mB/leG+Xh6XKxtP7e0sjg==
 
 pg-types@^2.1.0:
   version "2.2.0"
@@ -4826,15 +4826,15 @@ pg-types@^2.1.0:
     postgres-interval "^1.1.0"
 
 pg@^7.17.1:
-  version "7.17.1"
-  resolved "https://registry.yarnpkg.com/pg/-/pg-7.17.1.tgz#1eb4d900e1f21f43978b306972b02a2329138755"
-  integrity sha512-SYWEip6eADsgDQIZk0bmB2JDOrC8Xu6z10KlhlXl03NSomwVmHB6ZTVyDCwOfT6bXHI8QndJdk5XxSSRXikaSA==
+  version "7.18.0"
+  resolved "https://registry.yarnpkg.com/pg/-/pg-7.18.0.tgz#c5f3263bea629c9e7796860533130626f7c3afb8"
+  integrity sha512-i70+Si6SNNV5JxbCE7Xu6c1jUrOJ2/EojpiITRO235fd1Yl4PwZxvqsj1BHlfVjPcd/f17Q5JasU2Y9AoUt+dg==
   dependencies:
     buffer-writer "2.0.0"
     packet-reader "1.0.0"
     pg-connection-string "0.1.3"
     pg-packet-stream "^1.1.0"
-    pg-pool "^2.0.9"
+    pg-pool "^2.0.10"
     pg-types "^2.1.0"
     pgpass "1.x"
     semver "4.3.2"
