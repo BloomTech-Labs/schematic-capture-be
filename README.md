@@ -44,12 +44,11 @@ To get the server running locally:
 
 | Method | Endpoint                | Access Control      | Description                                        |
 | ------ | ----------------------- | ------------------- | -------------------------------------------------- |
-| GET    | `/users/current`        | all users           | Returns info for the logged in user.               |
-| GET    | `/users/org/:userId`    | owners, supervisors | Returns all users for an organization.             |
-| GET    | `/users/:userId`        | owners, supervisors | Returns info for a single user.                    |
-| POST   | `/users/register/owner` | none                | Creates a new user as owner of a new organization. |
-| PUT    | `/users/:userId`        | owners, supervisors |                                                    |
-| DELETE | `/users/:userId`        | owners, supervisors |                                                    |
+| POST   | `/api/register`         | all users           | Registers user.             |
+| POST   | `/api/login`            | registered users    | Logs in a registered user.           |
+| POST   | `/api/forgotPassword`   | registered users    | Sends email to provided address for password reset.                    |
+| POST   | `/api/changeEmail`      | authorized users    | Sends email to provided address for email reset. |
+| DELETE | `/api/:userId`          | owners, supervisors |                                                    |
 
 # Data Model
 
