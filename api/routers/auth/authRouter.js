@@ -36,7 +36,6 @@ router.post("/register/:invite_token", validateInvitation, async (req, res) => {
             delete newUser.invite_token;
 
             Users.add(newUser)
-                .first()
                 .then(user => {
                     return res.status(201).json({ user, token });
                 })
@@ -92,7 +91,7 @@ router.post("/login", (req, res) => {
         });
 });
 
-router.post("/forgotPassword", FBauth, (req, res) => {
+router.post("/forgotPassword", (req, res) => {
     const { email } = req.body;
     const auth = firebase.auth();
 
@@ -126,8 +125,9 @@ router.post("/changeEmail", FBauth, (req, res) => {
 });
 
 router.post("/invite", FBauth, async (req, res) => {
-    console.log(req.uid);
-    const { organization_id } = await Users.findBy({ id: req.uid }).first();
+    const { organization_id } = await Users.findBy({
+        "users.id": req.uid
+    }).first();
     const { role_id } = req.body;
 
     const contents = { organization_id, role_id };
