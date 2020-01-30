@@ -18,7 +18,13 @@ const add = async user => {
     return findBy({ "users.id": id }).first();
 };
 
+const getAssignments = user_id => {
+    // TODO bring jobsheet model instead
+    return db("jobsheets").where({ user_id });
+};
+
 module.exports = {
     findBy,
-    add
+    add,
+    getAssignments
 };

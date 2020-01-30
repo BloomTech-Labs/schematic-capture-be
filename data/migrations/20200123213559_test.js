@@ -21,7 +21,10 @@ exports.up = function(knex) {
             table.string("zip");
         })
         .createTable("users", table => {
-            table.string("id").notNullable();
+            table
+                .string("id")
+                .unique()
+                .notNullable();
 
             table
                 .integer("organization_id")
@@ -65,7 +68,7 @@ exports.up = function(knex) {
 
             table.string("zip");
         })
-        .createTable("jobsheets", table => {
+        .createTable("projects", table => {
             table.increments();
 
             table
@@ -73,6 +76,25 @@ exports.up = function(knex) {
                 .unsigned()
                 .references("id")
                 .inTable("clients")
+                .notNullable();
+
+            table.string("name").notNullable();
+        })
+        .createTable("jobsheets", table => {
+            table.increments();
+
+            table
+                .integer("project_id")
+                .unsigned()
+                .references("id")
+                .inTable("projects")
+                .notNullable();
+
+            table
+                .string("user_id")
+                .unsigned()
+                .references("id")
+                .inTable("users")
                 .notNullable();
         })
         .createTable("custom_fields", table => {
@@ -122,6 +144,7 @@ exports.down = function(knex) {
         .dropTableIfExists("components")
         .dropTableIfExists("custom_fields")
         .dropTableIfExists("jobsheets")
+        .dropTableIfExists("projects")
         .dropTableIfExists("clients")
         .dropTableIfExists("users")
         .dropTableIfExists("organizations")
