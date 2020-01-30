@@ -31,7 +31,7 @@ router.post("/register", validateInvitation, async (req, res) => {
 
             Users.add(newUser)
                 .then(user => {
-                    return res.status(201).json({ user, token });
+                    return res.status(201).json({ ...user, token });
                 })
                 .catch(error => {
                     // TODO add firebase cleanup on unsuccessful insert to the database.
@@ -60,7 +60,7 @@ router.post("/login", (req, res) => {
             return Users.findBy({ "users.id": uid })
                 .first()
                 .then(user => {
-                    return res.status(200).json({ user, token });
+                    return res.status(200).json({ ...user, token });
                 })
                 .catch(error => res.status(500).json({ error }));
         })
