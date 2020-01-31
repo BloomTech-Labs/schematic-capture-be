@@ -15,7 +15,7 @@ router.post(
     "/register",
     validateGoogleSignIn,
     validateInvitation,
-    async (req, res) => {
+    (req, res) => {
         const newUser = req.body;
         const { email, password } = newUser;
 
@@ -23,12 +23,14 @@ router.post(
         delete newUser.password;
         delete newUser.confirmPassword;
         delete newUser.invite_token;
+        delete newUser.token;
 
         newUser.role_id = req.invite.role_id;
         newUser.organization_id = req.invite.organization_id;
 
         if (req.uid) {
             newUser.id = req.uid;
+            newUser.email = req.email;
             return Users.add(newUser)
                 .then(user => {
                     return res.status(201).json({ ...user, token: req.token });
@@ -74,7 +76,7 @@ router.post("/login", validateGoogleSignIn, async (req, res) => {
         const user = await Users.findBy({ "users.id": req.uid }).first();
         if (user) return res.status(200).json({ ...user, token: req.token });
 
-        return res.status(200).json({ needRegister: true });
+        return res.status(203).json({ needRegister: true });
     }
 
     let uid;
