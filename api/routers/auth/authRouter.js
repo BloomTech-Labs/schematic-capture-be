@@ -4,50 +4,80 @@ const axios = require("axios");
 
 const { firebase } = require("../../../utils");
 const { Users } = require("../../../data/models");
-const { FBauth, validateInvitation } = require("../../middleware");
+const {
+    FBauth,
+    validateInvitation,
+    validateGoogleSignIn
+} = require("../../middleware");
 const { validateLoginData } = require("../../middleware/validation");
 
-router.post("/register", validateInvitation, async (req, res) => {
-    const newUser = req.body;
-    const { email, password } = newUser;
+router.post(
+    "/register",
+    validateGoogleSignIn,
+    validateInvitation,
+    async (req, res) => {
+        const newUser = req.body;
+        const { email, password } = newUser;
 
-    newUser.role_id = req.invite.role_id;
-    newUser.organization_id = req.invite.organization_id;
+        // TODO write middleware to strip out unecessary content before passing to this route.
+        delete newUser.password;
+        delete newUser.confirmPassword;
+        delete newUser.invite_token;
 
-    let uid;
+        newUser.role_id = req.invite.role_id;
+        newUser.organization_id = req.invite.organization_id;
 
-    firebase
-        .auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then(data => {
-            newUser.id = data.user.uid;
-
-            return data.user.getIdToken();
-        })
-        .then(token => {
-            delete newUser.password;
-            delete newUser.confirmPassword;
-            delete newUser.invite_token;
-
-            Users.add(newUser)
+        if (req.uid) {
+            newUser.id = req.uid;
+            return Users.add(newUser)
                 .then(user => {
-                    return res.status(201).json({ ...user, token });
+                    return res.status(201).json({ ...user, token: req.token });
                 })
                 .catch(error => {
                     // TODO add firebase cleanup on unsuccessful insert to the database.
-                    res.status(500).json({ error: error.message });
+                    return res.status(500).json({ error: error.message });
                 });
-        })
-        .catch(error => res.status(500).json({ error: error.message }));
-});
+        }
 
-router.post("/login", (req, res) => {
+        let uid;
+
+        firebase
+            .auth()
+            .createUserWithEmailAndPassword(email, password)
+            .then(data => {
+                newUser.id = data.user.uid;
+
+                return data.user.getIdToken();
+            })
+            .then(token => {
+                Users.add(newUser)
+                    .then(user => {
+                        return res.status(201).json({ ...user, token });
+                    })
+                    .catch(error => {
+                        // TODO add firebase cleanup on unsuccessful insert to the database.
+                        return res.status(500).json({ error: error.message });
+                    });
+            })
+            .catch(error => res.status(500).json({ error: error.message }));
+    }
+);
+
+router.post("/login", validateGoogleSignIn, async (req, res) => {
     const { email, password } = req.body;
+    // TODO write middleware to validate requests to /register and /login
+
+    // const { valid, errors } = validateLoginData(req.body);
+    // if (!valid) return res.status(400).json(errors);
+
+    if (req.uid) {
+        const user = await Users.findBy({ "users.id": req.uid }).first();
+        if (user) return res.status(200).json({ ...user, token: req.token });
+
+        return res.status(200).json({ needRegister: true });
+    }
 
     let uid;
-
-    const { valid, errors } = validateLoginData(req.body);
-    if (!valid) return res.status(400).json(errors);
 
     firebase
         .auth()
