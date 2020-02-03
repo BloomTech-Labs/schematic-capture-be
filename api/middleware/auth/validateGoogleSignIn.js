@@ -1,5 +1,5 @@
 const url = require("url");
-const { admin } = require("../../utils/firebase");
+const { admin } = require("../../../utils/firebase");
 
 module.exports = (req, res, next) => {
   const { idToken } = req.body;

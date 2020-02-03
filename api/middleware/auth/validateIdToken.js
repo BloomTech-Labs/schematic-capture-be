@@ -1,4 +1,4 @@
-const { admin } = require("../../utils/firebase");
+const { admin } = require("../../../utils/firebase");
 
 module.exports = (req, res, next) => {
   if (!req.headers.authorization)
