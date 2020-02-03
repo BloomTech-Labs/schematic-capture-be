@@ -5,11 +5,13 @@ const axios = require("axios");
 const { firebase } = require("../../../utils");
 const { Users } = require("../../../data/models");
 const {
-  FBauth,
-  validateInvitation,
+  checkAccountExists,
   validateGoogleSignIn,
-  checkAccountExists
-} = require("../../middleware");
+  validateIdToken,
+  validateInviteToken,
+  validateLogin,
+  validateRegistration
+} = require("../../middleware/auth");
 
 router.get("/google/signin", checkAccountExists, (req, res) => {
   Users.findBy({ "users.id": req.query.uid })
@@ -41,12 +43,12 @@ router.get("/google/create", (req, res) => {
 
 router.post(
   "/register",
-  validateInvitation,
+  validateInviteToken,
   validateGoogleSignIn,
+  validateRegistration,
   (req, res) => {
     const { email, password, first_name, last_name, phone } = req.body;
 
-    // TODO write middleware to strip out unecessary content before passing to this route.
     let uid;
 
     firebase
@@ -78,14 +80,9 @@ router.post(
   }
 );
 
-router.post("/gauth", (req, res) => {});
-
-router.post("/login", validateGoogleSignIn, async (req, res) => {
+router.post("/login", validateGoogleSignIn, validateLogin, async (req, res) => {
   const { email, password } = req.body;
   // TODO write middleware to validate requests to /register and /login
-
-  // const { valid, errors } = validateLoginData(req.body);
-  // if (!valid) return res.status(400).json(errors);
 
   let uid;
 
@@ -137,7 +134,7 @@ router.post("/forgotPassword", (req, res) => {
     });
 });
 
-router.post("/changeEmail", FBauth, (req, res) => {
+router.post("/changeEmail", validateIdToken, (req, res) => {
   const { newEmail } = req.body;
   const user = firebase.auth().currentUser;
 
@@ -154,7 +151,7 @@ router.post("/changeEmail", FBauth, (req, res) => {
     });
 });
 
-router.post("/invite", FBauth, async (req, res) => {
+router.post("/invite", validateIdToken, async (req, res) => {
   const { organization_id } = await Users.findBy({
     "users.id": req.uid
   }).first();

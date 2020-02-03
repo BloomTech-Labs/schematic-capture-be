@@ -2,11 +2,11 @@ const url = require("url");
 const { admin } = require("../../utils/firebase");
 
 module.exports = (req, res, next) => {
-  const { token } = req.body;
-  if (token) {
+  const { idToken } = req.body;
+  if (idToken) {
     admin
       .auth()
-      .verifyIdToken(token)
+      .verifyIdToken(idToken)
       .then(decodedToken => {
         const query = {
           email: decodedToken.email,
@@ -14,14 +14,14 @@ module.exports = (req, res, next) => {
           idToken: token
         };
 
-        if (req.invite_token) {
+        if (req.inviteToken) {
           res.redirect(
             url.format({
               pathname: "/api/auth/google/create",
               query: {
                 ...query,
                 ...req.body,
-                inviteToken: req.invite_token
+                inviteToken: req.inviteToken
               }
             })
           );
