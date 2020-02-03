@@ -1,3 +1,5 @@
+[![Maintainability](https://api.codeclimate.com/v1/badges/b5735c25bf5c795c770c/maintainability)](https://codeclimate.com/github/Lambda-School-Labs/schematic-capture-be/maintainability)
+
 🚫 Note: All lines that start with 🚫 are instructions and should be deleted before this is posted to your portfolio. This is intended to be a guideline. Feel free to add your own flare to it.
 
 🚫 The numbers 1️⃣ through 3️⃣ next to each item represent the week that part of the docs needs to be comepleted by. Make sure to delete the numbers by the end of Labs.
@@ -42,13 +44,13 @@ To get the server running locally:
 
 #### User Routes
 
-| Method | Endpoint                | Access Control      | Description                                        |
-| ------ | ----------------------- | ------------------- | -------------------------------------------------- |
-| POST   | `/api/register`         | all users           | Registers user.             |
-| POST   | `/api/login`            | registered users    | Logs in a registered user.           |
-| POST   | `/api/forgotPassword`   | registered users    | Sends email to provided address for password reset.                    |
-| POST   | `/api/changeEmail`      | authorized users    | Sends email to provided address for email reset. |
-| DELETE | `/api/:userId`          | owners, supervisors |                                                    |
+| Method | Endpoint              | Access Control      | Description                                         |
+| ------ | --------------------- | ------------------- | --------------------------------------------------- |
+| POST   | `/api/register`       | all users           | Registers user.                                     |
+| POST   | `/api/login`          | registered users    | Logs in a registered user.                          |
+| POST   | `/api/forgotPassword` | registered users    | Sends email to provided address for password reset. |
+| POST   | `/api/changeEmail`    | authorized users    | Sends email to provided address for email reset.    |
+| DELETE | `/api/:userId`        | owners, supervisors |                                                     |
 
 # Data Model
 
