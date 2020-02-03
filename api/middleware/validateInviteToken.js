@@ -5,11 +5,15 @@ module.exports = (req, res, next) => {
 
   const { invite_token } = req.body;
 
+  if (!invite_token)
+    return res.status(400).json({
+      error: "no invite token included in request body",
+      step: "validateInviteToken"
+    });
+
   jwt.verify(invite_token, secret, (error, decoded) => {
     if (error) {
-      return res
-        .status(403)
-        .json({ message: "please include a valid invite token" });
+      return res.status(403).json({ error, step: "validateInviteToken" });
     } else {
       req.invite = decoded;
       next();
