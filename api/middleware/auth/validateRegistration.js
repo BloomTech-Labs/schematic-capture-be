@@ -1,19 +1,24 @@
 module.exports = (req, res, next) => {
-  const { email, password, first_name, last_name, phone } = req.body;
+  const { email, password, firstName, lastName, phone } = req.body;
   const errors = {};
-  const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/;
 
-  if (email === undefined || email.trim() === "" || !email.match(regEx))
+  if (email === undefined || email.trim() === "" || !email.match(emailPattern))
     errors.email = "must be a valid email format";
 
-  if (password === undefined || password.trim() === "" || password.length < 6)
+  if (
+    password === undefined ||
+    password.trim() === "" ||
+    !password.match(passwordPattern)
+  )
     errors.password = "must be at least 6 characters";
 
-  if (first_name === undefined || first_name.trim() === "")
-    errors.first_name = "must not be empty";
+  if (firstName === undefined || firstName.trim() === "")
+    errors.firstName = "must not be empty";
 
-  if (last_name === undefined || last_name.trim() === "")
-    errors.last_name = "must not be empty";
+  if (lastName === undefined || lastName.trim() === "")
+    errors.lastName = "must not be empty";
 
   if (phone === undefined || phone.trim() === "")
     errors.phone = "must not be empty";

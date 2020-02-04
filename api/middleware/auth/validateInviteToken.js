@@ -3,19 +3,19 @@ const jwt = require("jsonwebtoken");
 module.exports = (req, res, next) => {
   const secret = process.env.INVITE_SECRET;
 
-  const { invite_token } = req.body;
+  const { inviteToken } = req.body;
 
-  if (!invite_token)
+  if (!inviteToken)
     return res.status(400).json({
       error: "no invite token included in request body",
       step: "validateInviteToken"
     });
 
-  jwt.verify(invite_token, secret, (error, decoded) => {
+  jwt.verify(inviteToken, secret, (error, decoded) => {
     if (error) {
       return res.status(403).json({ error, step: "validateInviteToken" });
     } else {
-      req.invite = decoded;
+      req.inviteToken = decoded;
       next();
     }
   });

@@ -3,6 +3,7 @@ const { admin } = require("../../../utils/firebase");
 
 module.exports = (req, res, next) => {
   const { idToken } = req.body;
+
   if (idToken) {
     admin
       .auth()
@@ -11,7 +12,7 @@ module.exports = (req, res, next) => {
         const query = {
           email: decodedToken.email,
           uid: decodedToken.uid,
-          idToken: token
+          idToken
         };
 
         if (req.inviteToken) {
@@ -21,7 +22,7 @@ module.exports = (req, res, next) => {
               query: {
                 ...query,
                 ...req.body,
-                inviteToken: req.inviteToken
+                ...req.inviteToken
               }
             })
           );

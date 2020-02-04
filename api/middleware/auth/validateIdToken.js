@@ -13,18 +13,16 @@ module.exports = (req, res, next) => {
       step: "validateIdToken"
     });
 
-  const [, idToken] = req.header.authorization.split("Bearer ");
+  const [, idToken] = req.headers.authorization.split("Bearer ");
 
   admin
-    .auth(idToken)
+    .auth()
     .verifyIdToken(idToken)
     .then(decodedToken => {
       req.uid = decodedToken.uid;
       next();
     })
     .catch(error => {
-      res
-        .status(403)
-        .json({ error: "not a valid id token", step: "validateIdToken" });
+      res.status(403).json({ error: error.code, step: "validateIdToken" });
     });
 };
