@@ -2,7 +2,7 @@ const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 
-const { firebase } = require("../../../utils");
+const { firebase, dbToRes } = require("../../../utils");
 const { Users } = require("../../../data/models");
 const {
   checkAccountExists,
@@ -17,7 +17,7 @@ router.get("/google/signin", checkAccountExists, (req, res) => {
   Users.findBy({ "users.id": req.query.uid })
     .first()
     .then(user => {
-      res.status(200).json({ ...user, token: req.query.token });
+      res.status(200).json({ ...dbToRes(user), idToken: req.query.idToken });
     })
     .catch(error => res.status(500).json({ error: error.message }));
 });
@@ -33,11 +33,11 @@ router.get("/google/create", (req, res) => {
     role_id: req.query.roleId
   };
 
-  console.log(req.query);
-
   return Users.add(newUser)
     .then(user => {
-      return res.status(201).json({ ...user, idToken: req.query.idToken });
+      return res
+        .status(201)
+        .json({ ...dbToRes(user), idToken: req.query.idToken });
     })
     .catch(error => {
       // TODO add firebase cleanup on unsuccessful insert to the database.
@@ -53,6 +53,15 @@ router.post(
   (req, res) => {
     const { email, password, firstName, lastName, phone } = req.body;
 
+    const newUser = {
+      email,
+      phone,
+      first_name: firstName,
+      last_name: lastName,
+      organization_id: req.inviteToken.organizationId,
+      role_id: req.inviteToken.roleId
+    };
+
     let uid;
 
     firebase
@@ -63,17 +72,10 @@ router.post(
 
         return data.user.getIdToken();
       })
-      .then(token => {
-        const newUser = {
-          email,
-          password,
-          phone,
-          first_name: firstName,
-          last_name: lastName
-        };
+      .then(idToken => {
         Users.add(newUser)
           .then(user => {
-            return res.status(201).json({ ...user, token });
+            return res.status(201).json({ ...dbToRes(user), idToken });
           })
           .catch(error => {
             // TODO add firebase cleanup on unsuccessful insert to the database.
@@ -97,11 +99,11 @@ router.post("/login", validateGoogleSignIn, validateLogin, async (req, res) => {
       uid = data.user.uid;
       return data.user.getIdToken();
     })
-    .then(token => {
+    .then(idToken => {
       return Users.findBy({ "users.id": uid })
         .first()
         .then(user => {
-          return res.status(200).json({ ...user, token });
+          return res.status(200).json({ ...dbToRes(user), idToken });
         })
         .catch(error => res.status(500).json({ error }));
     })
