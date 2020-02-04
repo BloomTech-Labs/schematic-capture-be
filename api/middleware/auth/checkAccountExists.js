@@ -1,4 +1,4 @@
-const { Users } = require("../../data/models");
+const { Users } = require("../../../data/models");
 
 module.exports = (req, res, next) => {
   Users.findBy({ "users.id": req.query.uid }).then(users => {
