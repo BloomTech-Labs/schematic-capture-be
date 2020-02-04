@@ -33,8 +33,6 @@ router.get("/google/create", (req, res) => {
     role_id: req.query.roleId
   };
 
-  console.log(req.query);
-
   return Users.add(newUser)
     .then(user => {
       return res.status(201).json({ ...user, idToken: req.query.idToken });

@@ -2,16 +2,19 @@ const url = require("url");
 const { admin } = require("../../../utils/firebase");
 
 module.exports = (req, res, next) => {
-  const { idToken } = req.body;
+  const { idToken, firstName, lastName } = req.body;
 
   if (idToken) {
     admin
       .auth()
       .verifyIdToken(idToken)
       .then(decodedToken => {
+        const name = decodedToken.name.split(" ");
         const query = {
           email: decodedToken.email,
           uid: decodedToken.uid,
+          firstName: firstName || name[0],
+          lastName: lastName || name[name.length - 1],
           idToken
         };
 
