@@ -53,6 +53,15 @@ router.post(
   (req, res) => {
     const { email, password, firstName, lastName, phone } = req.body;
 
+    const newUser = {
+      email,
+      phone,
+      first_name: firstName,
+      last_name: lastName,
+      organization_id: req.inviteToken.organizationId,
+      role_id: req.inviteToken.roleId
+    };
+
     let uid;
 
     firebase
@@ -64,13 +73,6 @@ router.post(
         return data.user.getIdToken();
       })
       .then(idToken => {
-        const newUser = {
-          email,
-          password,
-          phone,
-          first_name: firstName,
-          last_name: lastName
-        };
         Users.add(newUser)
           .then(user => {
             return res.status(201).json({ ...dbToRes(user), idToken });
