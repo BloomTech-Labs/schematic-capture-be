@@ -1,0 +1,35 @@
+{
+    "name": "schematic-capture-be",
+    "description": "REST API for the schematic capture app using the Express framework",
+    "scripts": {
+        "test": "cross-env DB_ENV=test jest --watch",
+        "start": "node index.js",
+        "server": "nodemon index.js"
+    },
+    "engines": {
+        "node": "8"
+    },
+    "dependencies": {
+        "axios": "^0.19.2",
+        "busboy": "^0.3.1",
+        "cors": "^2.8.5",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "firebase": "^7.7.0",
+        "firebase-admin": "^8.9.2",
+        "firebase-functions": "^3.3.0",
+        "helmet": "^3.21.2",
+        "jsonwebtoken": "^8.5.1",
+        "knex": "^0.20.8",
+        "knex-cleaner": "^1.3.0",
+        "pg": "^7.17.1"
+    },
+    "devDependencies": {
+        "cross-env": "^6.0.3",
+        "jest": "24.9.0",
+        "nodemon": "^2.0.2",
+        "prettier": "1.19.1",
+        "supertest": "^4.0.2"
+    },
+    "private": true
+}
