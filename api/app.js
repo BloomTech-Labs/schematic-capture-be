@@ -3,8 +3,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 
 // Routers
-const { authRouter } = require("./routers");
-
+const { authRouter, rolesRouter } = require("./routers");
 
 const server = express();
 
@@ -13,7 +12,7 @@ server.use(helmet());
 server.use(cors());
 
 server.use("/api/auth", authRouter);
-
+server.use("/api/roles", rolesRouter);
 
 server.get("/", (req, res) => res.json({ running: true }));
 
