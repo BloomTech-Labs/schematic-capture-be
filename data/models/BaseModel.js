@@ -18,13 +18,21 @@ class BaseModel {
       .insert(data, 'id')
       .then(ids => {
         const [id] = ids;
-        return this.table.baseFindBy({ id: id });
+        return this.findBy({ id: id });
       });
   }
 
+  _update(filter, changes) {
+    return this.findBy(filter)
+      .update(changes, 'id')
+      .then(ids => {
+        const [id] = ids;
+        return this.findBy(filter);
+      })
+  }
+
   _remove(filter) {
-    return this.table
-      .findBy(filter)
+    return this.findBy(filter)
       .delete('id')
   }
 
@@ -38,6 +46,10 @@ class BaseModel {
 
   add(data) {
     return this._add(data);
+  }
+
+  update(filter, changes) {
+    return this._update(filter, changes);
   }
 
   remove(filter) {
