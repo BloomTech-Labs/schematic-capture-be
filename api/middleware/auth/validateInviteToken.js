@@ -15,7 +15,7 @@ module.exports = (req, res, next) => {
     if (error) {
       return res.status(403).json({ error, step: "validateInviteToken" });
     } else {
-      req.inviteToken = decoded;
+      req.decodedInviteToken = decoded;
       next();
     }
   });

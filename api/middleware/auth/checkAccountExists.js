@@ -1,11 +1,14 @@
 const { Users } = require("../../../data/models");
 
-module.exports = (req, res, next) => {
-  Users.findBy({ "users.id": req.query.uid }).then(users => {
-    if (users.length) {
+module.exports = shouldExist => (req, res, next) => {
+  const { uid } = req.decodedIdToken;
+
+  Users.findBy(uid).then(users => {
+    const accountExists = !!users.length;
+    if (accountExists === shouldExist) {
       next();
     } else {
-      res.status(203).json({ needRegister: true });
+      res.status(203).json({ accountExists });
     }
   });
 };
