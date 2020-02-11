@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const axios = require("axios");
 
 const { firebase, dbToRes } = require("../../../utils");
-const { Users } = require("../../../data/models");
+const { Users, Organizations, Roles } = require("../../../data/models");
 const {
   checkAccountExists,
   validateGoogleSignIn,
@@ -12,38 +12,6 @@ const {
   validateLogin,
   validateRegistration
 } = require("../../middleware/auth");
-
-router.get("/google/signin", checkAccountExists, (req, res) => {
-  Users.findBy({ "users.id": req.query.uid })
-    .first()
-    .then(user => {
-      res.status(200).json({ ...dbToRes(user), idToken: req.query.idToken });
-    })
-    .catch(error => res.status(500).json({ error: error.message }));
-});
-
-router.get("/google/create", (req, res) => {
-  const newUser = {
-    id: req.query.uid,
-    email: req.query.email,
-    first_name: req.query.firstName,
-    last_name: req.query.lastName,
-    phone: req.query.phone,
-    organization_id: req.query.organizationId,
-    role_id: req.query.roleId
-  };
-
-  return Users.add(newUser)
-    .then(user => {
-      return res
-        .status(201)
-        .json({ ...dbToRes(user), idToken: req.query.idToken });
-    })
-    .catch(error => {
-      // TODO add firebase cleanup on unsuccessful insert to the database.
-      return res.status(500).json({ error: error.message });
-    });
-});
 
 router.post(
   "/register",
@@ -87,40 +55,11 @@ router.post(
 );
 
 router.post("/login", validateGoogleSignIn, validateLogin, async (req, res) => {
-  const { email, password } = req.body;
-  // TODO write middleware to validate requests to /register and /login
-
-  let uid;
-
-  firebase
-    .auth()
-    .signInWithEmailAndPassword(email, password)
-    .then(data => {
-      uid = data.user.uid;
-      return data.user.getIdToken();
-    })
-    .then(idToken => {
-      return Users.findBy({ "users.id": uid })
-        .first()
-        .then(user => {
-          return res.status(200).json({ ...dbToRes(user), idToken });
-        })
-        .catch(error => res.status(500).json({ error }));
-    })
-    .catch(error => {
-      if (error.code === "auth/wrong-password") {
-        return res.status(403).json({
-          general: "Incorrect Username/Password combination. Please try again."
-        });
-      } else if (error.code === "auth/user-not-found") {
-        return res.status(403).json({ general: "User not found in system" });
-      } else if (error.code === "auth/invalid-email") {
-        return res.status(403).json({ general: "Invalid Email input." });
-      } else {
-        console.log(error);
-        return res.status(500).json({ error: error.code });
-      }
-    });
+  const { uid } = req.decodedIdToken;
+  Users
+    .findBy(uid) 
+    .then(user => res.status(200).json(user))
+    .catch(error => res.status(500).json({ error: error.message }));
 });
 
 router.post("/forgotPassword", (req, res) => {

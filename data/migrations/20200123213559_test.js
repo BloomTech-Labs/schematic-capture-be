@@ -4,8 +4,7 @@ exports.up = function(knex) {
     return knex.schema
         .createTable("roles", table => {
             table.increments();
-
-            table.string("type").notNullable();
+            table.string("name").notNullable();
         })
         .createTable("organizations", table => {
             table.increments();
@@ -26,12 +25,6 @@ exports.up = function(knex) {
                 .unique()
                 .notNullable();
 
-            table
-                .integer("organization_id")
-                .unsigned()
-                .references("id")
-                .inTable("organizations")
-                .notNullable();
 
             table
                 .integer("role_id")
@@ -40,13 +33,30 @@ exports.up = function(knex) {
                 .inTable("roles")
                 .notNullable();
 
-            table.string("email").notNullable();
+            table.string("email").notNullable().unique();
 
             table.string("first_name").notNullable();
 
             table.string("last_name").notNullable();
 
             table.string("phone");
+        })
+        .createTable('users_organizations', table => {
+            table.primary(['organization_id', 'user_id']);
+
+            table
+                .string("user_id")
+                .references("id")
+                .inTable("users")
+                .notNullable();
+
+            table
+                .integer("organization_id")
+                .unsigned()
+                .references("id")
+                .inTable("organizations")
+                .notNullable();
+
         })
         .createTable("clients", table => {
             table.increments();
