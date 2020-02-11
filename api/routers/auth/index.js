@@ -8,12 +8,12 @@ const { Users, Organizations, Roles } = require("../../../data/models");
 
 const {
   checkAccountExists,
-  validateGoogleSignIn,
   validateIdToken,
   validateInviteToken,
-  validateLogin,
   validateRegistration
 } = require("../../middleware/auth");
+
+const { checkRoleExists } = require('../../middleware/roles');
 
 router.post('/register', validateIdToken, checkAccountExists(false), validateInviteToken, validateRegistration, (req, res) => {
   const { userData }  = req;
@@ -71,7 +71,7 @@ router.post("/changeEmail", validateIdToken, (req, res) => {
     });
 });
 
-router.post("/invite", validateIdToken, async (req, res) => {
+router.post("/invite", validateIdToken, checkRoleExists, async (req, res) => {
   const { id, organization_id } = await Users.findBy({
     "users.id": req.uid
   }).first();

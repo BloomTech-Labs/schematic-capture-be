@@ -1,3 +1,4 @@
+const { admin } = require('../../../utils/firebase');
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
@@ -11,10 +12,17 @@ module.exports = (req, res, next) => {
       step: "validateInviteToken"
     });
 
-  jwt.verify(inviteToken, secret, (error, decoded) => {
+  jwt.verify(inviteToken, secret, async (error, decoded) => {
     if (error) {
+      if (req.url === '/register') {
+        const { auth } = admin;
+        const { uid } = req.decodedIdToken;
+        await auth().deleteUser(uid)
+      }
+
       return res.status(403).json({ error, step: "validateInviteToken" });
     } else {
+      req.inviteToken = inviteToken;
       req.decodedInviteToken = decoded;
       next();
     }
