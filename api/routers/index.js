@@ -1,2 +1,2 @@
-exports.authRouter = require("./auth/authRouter");
-exports.rolesRouter = require("./roles/rolesRouter");
+exports.auth = require('./auth');
+exports.roles = require('./roles');

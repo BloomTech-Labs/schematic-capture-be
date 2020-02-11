@@ -2,8 +2,10 @@ const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 
-const { firebase, dbToRes } = require("../../../utils");
+const { firebase, admin } = require('../../../utils/firebase');
+const { dbToRes } = require("../../../utils");
 const { Users, Organizations, Roles } = require("../../../data/models");
+
 const {
   checkAccountExists,
   validateGoogleSignIn,
@@ -13,48 +15,21 @@ const {
   validateRegistration
 } = require("../../middleware/auth");
 
-router.post(
-  "/register",
-  validateInviteToken,
-  validateGoogleSignIn,
-  validateRegistration,
-  (req, res) => {
-    const { email, password, firstName, lastName, phone } = req.body;
+router.post('/register', validateIdToken, checkAccountExists(false), validateInviteToken, validateRegistration, (req, res) => {
+  const { userData }  = req;
 
-    const newUser = {
-      email,
-      phone,
-      first_name: firstName,
-      last_name: lastName,
-      organization_id: req.inviteToken.organizationId,
-      role_id: req.inviteToken.roleId
-    };
+  Users
+    .add(userData)
+    .then(user => res.status(201).json(user))
+    .catch(async error => {
+      const { auth } = admin;
+      const { uid } = req.decodedIdToken;
+      await auth().deleteUser(uid)
+      res.status(500).json({ error: error.message });
+    });
+});
 
-    let uid;
-
-    firebase
-      .auth()
-      .createUserWithEmailAndPassword(email, password)
-      .then(data => {
-        newUser.id = data.user.uid;
-
-        return data.user.getIdToken();
-      })
-      .then(idToken => {
-        Users.add(newUser)
-          .then(user => {
-            return res.status(201).json({ ...dbToRes(user), idToken });
-          })
-          .catch(error => {
-            // TODO add firebase cleanup on unsuccessful insert to the database.
-            return res.status(500).json({ error: error.message });
-          });
-      })
-      .catch(error => res.status(500).json({ error: error.message }));
-  }
-);
-
-router.post("/login", validateGoogleSignIn, validateLogin, async (req, res) => {
+router.post("/login", validateIdToken, checkAccountExists(true), async (req, res) => {
   const { uid } = req.decodedIdToken;
   Users
     .findBy(uid) 
@@ -97,13 +72,13 @@ router.post("/changeEmail", validateIdToken, (req, res) => {
 });
 
 router.post("/invite", validateIdToken, async (req, res) => {
-  const { organization_id } = await Users.findBy({
+  const { id, organization_id } = await Users.findBy({
     "users.id": req.uid
   }).first();
 
   const { roleId, name, email } = req.body;
 
-  const contents = { organizationId: organization_id, roleId };
+  const contents = { organizationId: organization_id, roleId, inviter: id, time: new Date().getTime() };
 
   const sgApiKey = process.env.SG_API_KEY;
   const templateId = process.env.SG_TEMPLATE_ID;
