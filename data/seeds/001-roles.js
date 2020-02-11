@@ -4,6 +4,9 @@ exports.seed = function(knex) {
             name: "admin"
         },
         {
+            name: 'employee'
+        },
+        {
             name: "technician"
         }
     ]);
