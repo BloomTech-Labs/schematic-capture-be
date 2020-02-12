@@ -2,32 +2,33 @@ const db = require('../dbConfig');
 
 class BaseModel {
   constructor(table) {
-    this.table = db(table);
+    this.table = table;
   }
 
   _find() {
-    return this.table;
+    return db(this.table);
   }
 
   _findBy(filter) {
-    return this.table.where(filter);
+    console.log(filter);
+    return db(this.table).where(filter);
   }
 
-  _add(data) {
+  _add(data, filter=null) {
     return this.table
       .insert(data, 'id')
       .then(ids => {
         const [id] = ids;
-        return this.findBy({ id: id });
+        return db(this.table).findBy(filter || { id });
       });
   }
 
   _update(filter, changes) {
-    return this.findBy(filter)
+    return db(table).findBy(filter)
       .update(changes, 'id')
       .then(ids => {
         const [id] = ids;
-        return this.findBy(filter);
+        return db(this.table).findBy(filter);
       })
   }
 
@@ -44,8 +45,8 @@ class BaseModel {
     return this._findBy(filter);
   }
 
-  add(data) {
-    return this._add(data);
+  add(data, filter=null) {
+    return this._add(data, filter);
   }
 
   update(filter, changes) {

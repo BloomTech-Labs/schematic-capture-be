@@ -6,33 +6,55 @@ class UserModel extends BaseModel {
     super(table)
   }
 
-  async add(data) {
-    const { organization_id, user_id, ...user } = data;
-    user.id = user_id;
+  async findBy(user_id) {
+    console.log({ user_id });
 
-    await db('users_organizations').insert({ organization_id, user_id })
-    return this._add(user)
+    return db('users_organizations')
+      .where({ user_id }) 
+      .select('organizations.*')
+      .join('organizations', 'organizations.id', 'users_organizations.organization_id')
+      .then(organizations => {
+        return super._findBy({ id: user_id })
+          .first()
+          .then(user => {
+            return db('roles')
+              .where({ id: user.role_id })
+              .first()
+              .then(role => {
+                delete user.role_id;
+                user.organizations = organizations;
+                user.role = role
+                return user;
+              })
+          })
+      })
   }
 
-  async findBy(userId) {
-    const organizations = await db('users_organizations as uo')
-      .where({ 'uo.user_id': userId })
-      .select('orgs.*')
-      .join('organizations as orgs', 'orgs.id', 'uo.organization_id')
-    
-    const user = await this._findBy({ 'users.id': userId }).first();
-    const role = await db('roles').where({ id: user.role_id }).first();
+  add(data) {
+    const { organization_id, invite_token, ...userData } = data;
+    const user_org = { user_id: userData.id, organization_id };
 
-    return {
-      ...user,
-      role,
-      organizations
-    }
+    return db('users')
+      .insert(userData, 'id')
+      .then(user_ids => {
+        const [user_id] = user_ids;
+        return db('invite_tokens')
+          .insert({ id: invite_token }, 'id')
+          .then(() => {
+            return db('users_organizations', 'id')
+              .insert(user_org)
+              .then(() => {
+                return this.findBy(user_id);
+              })
+          })
+      })
   }
+
 }
 
 module.exports = {
   Users: new UserModel('users'),
   Organizations: new BaseModel('organizations'),
-  Roles: new BaseModel('roles')
+  Roles: new BaseModel('roles'),
+  InviteTokens: new BaseModel('invite_tokens')
 }

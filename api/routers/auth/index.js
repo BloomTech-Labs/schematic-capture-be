@@ -3,8 +3,8 @@ const jwt = require("jsonwebtoken");
 const axios = require("axios");
 
 const { firebase, admin } = require('../../../utils/firebase');
-const { dbToRes } = require("../../../utils");
-const { Users, Organizations, Roles } = require("../../../data/models");
+const { dbToRes, reqToDb } = require("../../../utils");
+const { Users } = require("../../../data/models");
 
 const {
   checkAccountExists,
@@ -15,17 +15,28 @@ const {
 
 const { checkRoleExists } = require('../../middleware/roles');
 
+router.post('/g', (req, res) => { // use to get a test idToken;
+  const { email, password } = req.body;
+  firebase
+    .auth()
+    .signInWithEmailAndPassword(email, password)
+    .then(async data => {
+      const token = await data.user.getIdToken();
+      res.status(200).json(token);
+    })
+    .catch(error => res.status(500).json({ error: error.code, step: '/g' }));
+})
+
 router.post('/register', validateIdToken, checkAccountExists(false), validateInviteToken, validateRegistration, (req, res) => {
-  const { userData }  = req;
 
   Users
-    .add(userData)
-    .then(user => res.status(201).json(user))
+    .add(reqToDb(req.userData))
+    .then(user => res.status(201).json(dbToRes(user)))
     .catch(async error => {
       const { auth } = admin;
       const { uid } = req.decodedIdToken;
       await auth().deleteUser(uid)
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message, step: 'register' });
     });
 });
 
@@ -33,7 +44,7 @@ router.post("/login", validateIdToken, checkAccountExists(true), async (req, res
   const { uid } = req.decodedIdToken;
   Users
     .findBy(uid) 
-    .then(user => res.status(200).json(user))
+    .then(user => res.status(200).json(dbToRes(user)))
     .catch(error => res.status(500).json({ error: error.message }));
 });
 
@@ -72,13 +83,11 @@ router.post("/changeEmail", validateIdToken, (req, res) => {
 });
 
 router.post("/invite", validateIdToken, checkRoleExists, async (req, res) => {
-  const { id, organization_id } = await Users.findBy({
-    "users.id": req.uid
-  }).first();
+  const inviter = await Users.findBy(req.decodedIdToken.uid);
 
   const { roleId, name, email } = req.body;
 
-  const contents = { organizationId: organization_id, roleId, inviter: id, time: new Date().getTime() };
+  const contents = { organizationId: inviter.organizations[0].id, roleId, inviter: inviter.id, time: new Date().getTime() };
 
   const sgApiKey = process.env.SG_API_KEY;
   const templateId = process.env.SG_TEMPLATE_ID;
@@ -116,6 +125,7 @@ router.post("/invite", validateIdToken, checkRoleExists, async (req, res) => {
       res.status(500).json({ error: error.message, step: "sendgridInvite" })
     );
 });
+
 
 function signInvite(contents) {
   const secret = process.env.INVITE_SECRET;
