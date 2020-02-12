@@ -1,13 +1,8 @@
 const { admin } = require('../../../utils/firebase');
 
 module.exports = async (req, res, next) => {
-  const { email, firstName, lastName, phone } = req.body;
+  const { firstName, lastName, phone } = req.body;
   const errors = {};
-  const emailPattern = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-  if (email === undefined || email.trim() === "" || !email.match(emailPattern)) {
-    errors.email = "must be a valid email";
-  }
 
   if (firstName === undefined || firstName.trim() === "") {
     errors.firstName = "must not be empty";
@@ -30,13 +25,15 @@ module.exports = async (req, res, next) => {
 
   req.userData = {
     id: req.decodedIdToken.uid,
-    email,
+    email: req.decodedIdToken.email,
     firstName,
     lastName,
     phone,
-    decodedInviteToken: req.decodedInviteToken,
+    organizationId: req.decodedInviteToken.organizationId,
+    roleId: req.decodedInviteToken.roleId,
     inviteToken: req.inviteToken
   }
+
 
   next();
 };

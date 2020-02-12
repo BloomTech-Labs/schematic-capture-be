@@ -2,11 +2,12 @@ const { Roles } = require('../../../data/models');
 
 module.exports = (req, res, next) => {
   const { roleId } = req.body;
+  console.log(roleId)
   Roles
-    .findBy({ id: roleId })
-    .first()
+    .findBy({ 'roles.id': roleId })
     .then(role => {
-      if (!!Object.entries(role).length) {
+      console.log(role)
+      if (role.length) {
         next();
       } else {
         res.status(404).json({ message: 'role id does not exist' });
