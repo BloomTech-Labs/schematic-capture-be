@@ -4,18 +4,22 @@ const { InviteTokens } = require('../../../data/models');
 
 module.exports = async (req, res, next) => {
   const secret = process.env.INVITE_SECRET;
-
+  const { auth } = admin;
+  const { uid } = req.decodedIdToken;
   const { inviteToken } = req.body;
 
-  if (!inviteToken)
+  if (!inviteToken && req.url === '/register') {
+    await auth().deleteUser(uid)
     return res.status(400).json({
       error: "no invite token included in request body",
       step: "validateInviteToken"
     });
+  }
 
   const tokenIsUsed = await InviteTokens.findBy({ id: inviteToken }).first();
-    
-  if (tokenIsUsed) {
+
+  if (tokenIsUsed && req.url === '/register') {
+    await auth().deleteUser(uid)
     return res.status(400).json({ 
       error: 'invite token has already been used',
       step: 'validateInviteToken'
@@ -25,8 +29,6 @@ module.exports = async (req, res, next) => {
   jwt.verify(inviteToken, secret, async (error, decoded) => {
     if (error) {
       if (req.url === '/register') {
-        const { auth } = admin;
-        const { uid } = req.decodedIdToken;
         await auth().deleteUser(uid)
       }
 

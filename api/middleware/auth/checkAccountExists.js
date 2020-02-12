@@ -13,5 +13,5 @@ module.exports = shouldExist => (req, res, next) => {
         res.status(400).json({ accountExists });
       }
     })
-    .catch(error => res.status(500).json({ error: error.message, step: 'checAccountExists' }))
+    .catch(error => res.status(500).json({ error: error.message, step: 'checkAccountExists' }))
 };
