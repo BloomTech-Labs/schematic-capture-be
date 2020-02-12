@@ -4,8 +4,7 @@ exports.up = function(knex) {
     return knex.schema
         .createTable("roles", table => {
             table.increments();
-
-            table.string("type").notNullable();
+            table.string("name").notNullable();
         })
         .createTable("organizations", table => {
             table.increments();
@@ -24,6 +23,30 @@ exports.up = function(knex) {
             table
                 .string("id")
                 .unique()
+                .primary();
+
+            table
+                .integer("role_id")
+                .unsigned()
+                .references("id")
+                .inTable("roles")
+                .notNullable();
+
+            table.string("email").notNullable().unique();
+
+            table.string("first_name").notNullable();
+
+            table.string("last_name").notNullable();
+
+            table.string("phone");
+        })
+        .createTable('users_organizations', table => {
+            table.primary(['organization_id', 'user_id']);
+
+            table
+                .string("user_id")
+                .references("id")
+                .inTable("users")
                 .notNullable();
 
             table
@@ -33,20 +56,12 @@ exports.up = function(knex) {
                 .inTable("organizations")
                 .notNullable();
 
+        })
+        .createTable('invite_tokens', table => {
             table
-                .integer("role_id")
-                .unsigned()
-                .references("id")
-                .inTable("roles")
-                .notNullable();
-
-            table.string("email").notNullable();
-
-            table.string("first_name").notNullable();
-
-            table.string("last_name").notNullable();
-
-            table.string("phone");
+                .string('id')
+                .unique()
+                .primary();
         })
         .createTable("clients", table => {
             table.increments();
@@ -146,6 +161,8 @@ exports.down = function(knex) {
         .dropTableIfExists("jobsheets")
         .dropTableIfExists("projects")
         .dropTableIfExists("clients")
+        .dropTableIfExists('invite_tokens')
+        .dropTableIfExists('users_organizations')
         .dropTableIfExists("users")
         .dropTableIfExists("organizations")
         .dropTableIfExists("roles");

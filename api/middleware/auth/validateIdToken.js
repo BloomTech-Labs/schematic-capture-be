@@ -18,8 +18,8 @@ module.exports = (req, res, next) => {
   admin
     .auth()
     .verifyIdToken(idToken)
-    .then(decodedToken => {
-      req.uid = decodedToken.uid;
+    .then(decodedIdToken => {
+      req.decodedIdToken = decodedIdToken;
       next();
     })
     .catch(error => {
