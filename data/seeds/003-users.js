@@ -6,7 +6,7 @@ exports.seed = function(knex) {
             first_name: "Bob",
             last_name: "Johnson",
             email: "bob_johnson@lambdaschool.com",
-            phone: "800-800-8000"
+            phone: "8008008000"
         }
     ]);
 };

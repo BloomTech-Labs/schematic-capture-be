@@ -62,26 +62,6 @@ exports.up = function(knex) {
                 .string('id')
                 .unique()
                 .primary();
-            
-            table
-                .string('invitee_id')
-                .references('id')
-                .inTable('users')
-                .notNullable();
-
-            table
-                .string('inviter_id')
-                .references('id')
-                .inTable('users')
-                .notNullable()
-            
-            table
-                .integer('organization_id')
-                .unsigned()
-                .references('id')
-                .inTable('organizations')
-                .notNullable()
-
         })
         .createTable("clients", table => {
             table.increments();
