@@ -58,7 +58,7 @@ class ClientModel extends BaseModel {
     super(table);
   }
 
-  findBy(filter) {
+  findByOrganization(filter) {
     return db('users_organizations')
       .where(filter)
       .select('clients.*')

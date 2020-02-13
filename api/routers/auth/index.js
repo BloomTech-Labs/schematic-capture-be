@@ -83,7 +83,7 @@ router.post("/changeEmail", validateIdToken, (req, res) => {
 });
 
 router.post("/invite", validateIdToken, checkRoleExists, async (req, res) => {
-  const inviter = await Users.findBy(req.decodedIdToken.uid);
+  const inviter = await Users.findBy(req.decodedIdToken.email);
 
   const { roleId, name, email } = req.body;
 
