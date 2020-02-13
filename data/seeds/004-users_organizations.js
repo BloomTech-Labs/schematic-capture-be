@@ -1,7 +1,11 @@
 exports.seed = function(knex) {
     return knex("users_organizations").insert([
         {
-          user_id: "tiDTfeNF1KcEkW97gPLIpG85iub2",
+          user_email: "bob_johnson@lambdaschool.com",
+          organization_id: 1
+        },
+        {
+          user_email: "testadmin@test.com",
           organization_id: 1
         }
     ]);

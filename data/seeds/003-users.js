@@ -7,6 +7,14 @@ exports.seed = function(knex) {
             last_name: "Johnson",
             email: "bob_johnson@lambdaschool.com",
             phone: "8008008000"
+        },
+        {
+            id: 'nMAqmtW3qAWIpBzPUE1DXxxw5aB2',
+            role_id: 1,
+            first_name: 'test',
+            last_name: 'administrator',
+            email: 'testadmin@test.com',
+            phone: '4004004000'
         }
     ]);
 };
