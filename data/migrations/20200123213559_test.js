@@ -41,11 +41,11 @@ exports.up = function(knex) {
             table.string("phone");
         })
         .createTable('users_organizations', table => {
-            table.primary(['organization_id', 'user_id']);
+            table.primary(['organization_id', 'user_email']);
 
             table
-                .string("user_id")
-                .references("id")
+                .string("user_email")
+                .references("email")
                 .inTable("users")
                 .notNullable();
 

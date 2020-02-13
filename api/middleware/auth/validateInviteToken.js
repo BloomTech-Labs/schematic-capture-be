@@ -8,7 +8,8 @@ module.exports = async (req, res, next) => {
   const { uid } = req.decodedIdToken;
   const { inviteToken } = req.body;
 
-  if (!inviteToken && req.url === '/register') {
+
+  if (!inviteToken && req.canDeleteFirebaseAccount) {
     await auth().deleteUser(uid)
     return res.status(400).json({
       error: "no invite token included in request body",
@@ -18,7 +19,7 @@ module.exports = async (req, res, next) => {
 
   const tokenIsUsed = await InviteTokens.findBy({ id: inviteToken }).first();
 
-  if (tokenIsUsed && req.url === '/register') {
+  if (tokenIsUsed && req.canDeleteFirebaseAccount) {
     await auth().deleteUser(uid)
     return res.status(400).json({ 
       error: 'invite token has already been used',
@@ -28,7 +29,7 @@ module.exports = async (req, res, next) => {
 
   jwt.verify(inviteToken, secret, async (error, decoded) => {
     if (error) {
-      if (req.url === '/register') {
+      if (req.canDeleteFirebaseAccount) {
         await auth().deleteUser(uid)
       }
 

@@ -19,6 +19,9 @@ module.exports = (req, res, next) => {
     .auth()
     .verifyIdToken(idToken)
     .then(decodedIdToken => {
+      const isRegister = req.url === '/register';
+      const isPassword = decodedIdToken.sign_in_provider === 'password';
+      req.canDeleteFirebaseAccount = isRegister && isPassword;
       req.decodedIdToken = decodedIdToken;
       next();
     })

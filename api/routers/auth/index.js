@@ -28,22 +28,23 @@ router.post('/g', (req, res) => { // use to get a test idToken;
 })
 
 router.post('/register', validateIdToken, checkAccountExists(false), validateInviteToken, validateRegistration, (req, res) => {
-
   Users
     .add(reqToDb(req.userData))
     .then(user => res.status(201).json(dbToRes(user)))
     .catch(async error => {
-      const { auth } = admin;
-      const { uid } = req.decodedIdToken;
-      await auth().deleteUser(uid)
+      if (req.canDeleteFirebaseAccount) {
+        const { auth } = admin;
+        const { uid } = req.decodedIdToken;
+        await auth().deleteUser(uid)
+      }
       res.status(500).json({ error: error.message, step: 'register' });
     });
 });
 
 router.post("/login", validateIdToken, checkAccountExists(true), async (req, res) => {
-  const { uid } = req.decodedIdToken;
+  const { email } = req.decodedIdToken;
   Users
-    .findBy(uid) 
+    .findBy(email) 
     .then(user => res.status(200).json(dbToRes(user)))
     .catch(error => res.status(500).json({ error: error.message }));
 });
@@ -60,7 +61,6 @@ router.post("/forgotPassword", (req, res) => {
       });
     })
     .catch(error => {
-      console.log(error);
       return res.status(500).json({ error });
     });
 });
@@ -83,7 +83,7 @@ router.post("/changeEmail", validateIdToken, (req, res) => {
 });
 
 router.post("/invite", validateIdToken, checkRoleExists, async (req, res) => {
-  const inviter = await Users.findBy(req.decodedIdToken.uid);
+  const inviter = await Users.findBy(req.decodedIdToken.email);
 
   const { roleId, name, email } = req.body;
 
