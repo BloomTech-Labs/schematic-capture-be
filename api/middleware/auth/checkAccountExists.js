@@ -1,12 +1,13 @@
 const { Users } = require("../../../data/models");
 
 module.exports = shouldExist => (req, res, next) => {
-  const { uid } = req.decodedIdToken;
+  const { email } = req.decodedIdToken;
 
-  Users._findBy({ 'users.id': uid })
+  Users._findBy({ email })
     .first()
     .then(user => {
       const accountExists = !!user;
+      console.log({ accountExists })
       if (accountExists === shouldExist) {
         next();
       } else {
