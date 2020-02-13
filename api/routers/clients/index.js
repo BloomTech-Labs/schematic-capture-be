@@ -1,10 +1,14 @@
 const router = require('express').Router();
+
+// middleware
+const { getUserInfo } = require('../../middleware/users');
+
 const { Clients, Projects } = require('../../../data/models');
 const { reqToDb } = require('../../../utils');
 
 router.get('/', (req, res) => {
   Clients
-    .findBy({ 'users_organizations.user_id': req.decodedIdToken.uid })
+    .findByOrganization({ user_email: req.decodedIdToken.email })
     .then(clients => res.status(200).json(clients))
     .catch(error => res.status(500).json({ error: error.message, step: '/' }));
 });
@@ -26,10 +30,13 @@ router.post('/:id/projects', (req, res) => {
     .catch(error => res.status(500).json({ error: error.message, step: '/create' }));
 });
 
-router.post('/create', (req, res) => {
+router.post('/create', getUserInfo, (req, res) => {
   const clientData = req.body;
+  const [organization] = req.userInfo.organizations;
+  clientData.organizationId = organization.id;
+
   Clients
-    .add(clientData)
+    .add(reqToDb(clientData))
     .then(client => res.status(201).json(client))
     .catch(error => res.status(500).json({ error: error.message, step: '/create' }));
 });
