@@ -16,7 +16,7 @@ module.exports = async (req, res, next) => {
     errors.phone = "must not be empty";
   }
 
-  if (Object.entries(errors).length) {
+  if (Object.entries(errors).length && req.canDeleteFirebaseAccount) {
     const { auth } = admin;
     const { uid } = req.decodedIdToken;
     await auth().deleteUser(uid)
