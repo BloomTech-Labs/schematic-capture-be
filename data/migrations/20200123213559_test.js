@@ -74,13 +74,9 @@ exports.up = function(knex) {
                 .notNullable();
 
             table.string("name").notNullable();
-
             table.string("phone");
-
             table.string("street");
-
             table.string("city");
-
             table.string("zip");
         })
         .createTable("projects", table => {
@@ -99,18 +95,31 @@ exports.up = function(knex) {
             table.increments();
 
             table
+                .timestamp('updated_at')
+                .defaultTo(new Date().toISOString())
+                .notNullable();
+            
+            table
+                .string('status')
+                .defaultTo('Unassigned')
+                .notNullable();
+            
+            table
+                .string('user_email')
+                .references('email')
+                .inTable('users')
+
+            table
+                .string('name')
+                .notNullable();
+
+            table
                 .integer("project_id")
                 .unsigned()
                 .references("id")
                 .inTable("projects")
                 .notNullable();
 
-            table
-                .string("user_id")
-                .unsigned()
-                .references("id")
-                .inTable("users")
-                .notNullable();
         })
         .createTable("custom_fields", table => {
             table.increments();
@@ -137,7 +146,7 @@ exports.up = function(knex) {
             table.string("component_id").notNullable();
             table.string("rl_category");
             table.string("rl_number");
-            table.string("description");
+            table.string("descriptions");
             table.string("manufacturer");
             table.string("part_number");
             table.string("stock_code");

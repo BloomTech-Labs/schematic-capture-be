@@ -9,8 +9,10 @@ module.exports = async (req, res, next) => {
   const { inviteToken } = req.body;
 
 
-  if (!inviteToken && req.canDeleteFirebaseAccount) {
-    await auth().deleteUser(uid)
+  if (!inviteToken) {
+    if (req.canDeleteFirebaseAccount) {
+      await auth().deleteUser(uid)
+    }
     return res.status(400).json({
       error: "no invite token included in request body",
       step: "validateInviteToken"
@@ -19,8 +21,10 @@ module.exports = async (req, res, next) => {
 
   const tokenIsUsed = await InviteTokens.findBy({ id: inviteToken }).first();
 
-  if (tokenIsUsed && req.canDeleteFirebaseAccount) {
-    await auth().deleteUser(uid)
+  if (tokenIsUsed) {
+    if (req.canDeleteFirebaseAccount) {
+      await auth().deleteUser(uid)
+    }
     return res.status(400).json({ 
       error: 'invite token has already been used',
       step: 'validateInviteToken'
