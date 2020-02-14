@@ -3,7 +3,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 
 // Routers
-const { auth, roles, clients } = require("./routers");
+const { auth, roles, clients, jobsheets } = require("./routers");
 
 // Middleware
 const { validateIdToken, checkAccountExists } = require('./middleware/auth');
@@ -17,6 +17,7 @@ server.use(helmet());
 server.use("/api/auth", auth);
 server.use("/api/roles", roles);
 server.use("/api/clients", validateIdToken, checkAccountExists(true), clients);
+server.use("/api/jobsheets", validateIdToken, jobsheets);
 
 server.get("/", (req, res) => res.json({ running: true }));
 
