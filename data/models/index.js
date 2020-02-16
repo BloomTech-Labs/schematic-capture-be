@@ -10,6 +10,7 @@ module.exports = {
   Jobsheets: new JobsheetModel('jobsheets'),
   Components: new BaseModel('components'),
   Organizations: new BaseModel('organizations'),
+  UsersOrganizations: new BaseModel('users_organizations'),
   Roles: new BaseModel('roles'),
   InviteTokens: new BaseModel('invite_tokens')
 }
