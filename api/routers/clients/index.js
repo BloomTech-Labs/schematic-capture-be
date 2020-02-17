@@ -1,16 +1,26 @@
 const router = require('express').Router();
 
 // middleware
-const { getUserInfo } = require('../../middleware/users');
+const { getUserInfo, getUserOrganizations } = require('../../middleware/users');
 
 const { Clients, Projects } = require('../../../data/models');
-const { reqToDb } = require('../../../utils');
+const { reqToDb, dbToRes } = require('../../../utils');
 
-router.get('/', (req, res) => {
-  Clients
-    .findByOrganization({ user_email: req.decodedIdToken.email })
-    .then(clients => res.status(200).json(clients))
-    .catch(error => res.status(500).json({ error: error.message, step: '/' }));
+router.get('/', async (req, res) => {
+  const { email } = req.decodedIdToken;
+
+
+  try {
+
+    let clients = await Clients.findByOrganization({ user_email: email });
+    clients = clients.map(client => dbToRes(client));
+    res.status(200).json(clients);
+
+  } catch (error) {
+
+    res.status(500).json({ error: error.message, step: '/' })
+
+  }
 });
 
 router.get('/:id/projects', (req, res) => {
@@ -22,12 +32,27 @@ router.get('/:id/projects', (req, res) => {
     .catch(error => res.status(500).json({ error: error.message, step: '/' }));
 });
 
-router.post('/:id/projects', (req, res) => {
-  const projectData = req.body;
-  Projects
-    .add(projectData)
-    .then(project => res.status(201).json(project))
-    .catch(error => res.status(500).json({ error: error.message, step: '/create' }));
+router.post('/:id/projects', getUserOrganizations, async (req, res) => {
+  const clientId = Number(req.params.id)
+
+  try {
+    const clients = await Clients.findByMultiple('organization_id', req.userOrganizations);
+    console.log(clients);
+
+    if (!clients.map(client => client.id).includes(clientId)) {
+      return res.status(400).json({ message: 'client not associated with this user' })
+    }
+
+    const projectData = req.body;
+    projectData.clientId = clientId;
+    
+    const project = await Projects.add(reqToDb(projectData));
+
+    res.status(201).json(project);
+
+  } catch (error) {
+      return res.status(500).json({ error: error.message, step: '/:id/projects' })
+  }
 });
 
 router.post('/create', getUserInfo, (req, res) => {

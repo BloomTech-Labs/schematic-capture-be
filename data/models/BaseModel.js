@@ -11,8 +11,11 @@ class BaseModel {
   }
 
   _findBy(filter) {
-    console.log(filter);
     return db(this.table).where(filter);
+  }
+
+  _findByMultiple(filter, by) {
+    return db(this.table).whereIn(filter, by);
   }
 
   _add(data, filter=null) {
@@ -44,6 +47,10 @@ class BaseModel {
 
   findBy(filter) {
     return this._findBy(filter);
+  }
+
+  findByMultiple(filter, by) {
+    return this._findByMultiple(filter, by);
   }
 
   add(data, filter=null) {

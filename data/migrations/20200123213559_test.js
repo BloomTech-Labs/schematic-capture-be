@@ -10,13 +10,10 @@ exports.up = function(knex) {
             table.increments();
 
             table.string("name").notNullable();
-
-            table.string("phone").notNullable();
-
+            table.string("phone");
             table.string("street");
-
             table.string("city");
-
+            table.string("state");
             table.string("zip");
         })
         .createTable("users", table => {
@@ -66,24 +63,23 @@ exports.up = function(knex) {
         .createTable("clients", table => {
             table.increments();
 
-            table
-                .integer("organization_id")
+            table.integer("organization_id")
                 .unsigned()
                 .references("id")
                 .inTable("organizations")
                 .notNullable();
 
-            table.string("name").notNullable();
+            table.string("company_name").notNullable();
             table.string("phone");
             table.string("street");
             table.string("city");
+            table.string('state');
             table.string("zip");
         })
         .createTable("projects", table => {
             table.increments();
 
-            table
-                .integer("client_id")
+            table.integer("client_id")
                 .unsigned()
                 .references("id")
                 .inTable("clients")
@@ -160,7 +156,21 @@ exports.up = function(knex) {
             table.string("maintenance_video");
             table.string("store_part_number");
             table.string("custom");
-        });
+        })
+        .createTable('contacts', table => {
+            table.increments();
+
+            table.integer('client_id')
+                .unsigned()
+                .references('id')
+                .inTable('clients')
+                .notNullable();
+
+            table.string('first_name').notNullable();
+            table.string('last_name').notNullable();
+            table.string('phone')
+            table.string('email')
+        })
 };
 
 exports.down = function(knex) {
