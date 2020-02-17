@@ -39,7 +39,11 @@ router.get('/assigned', async (req, res) => {
   let projects;
 
   try {
-    projects = await Projects.findByMultiple('id', projectIds)
+    projects = await Projects
+                      .findByMultiple('projects.id', projectIds)
+                      .select('projects.*', 'clients.company_name')
+                      .join('clients', 'clients.id', 'projects.client_id');
+
   } catch (error) {
     return res.status(500).json({ error: error.message, step: '/assigned-getcomponents' });
   }
