@@ -154,7 +154,6 @@ exports.up = function(knex) {
             table.string("resources");
             table.string("cutsheet");
             table.string("maintenance_video");
-            table.string("store_part_number");
             table.string("custom");
         })
         .createTable('contacts', table => {
@@ -175,6 +174,7 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
     return knex.schema
+        .dropTableIfExists('contacts')
         .dropTableIfExists("components")
         .dropTableIfExists("custom_fields")
         .dropTableIfExists("jobsheets")
