@@ -22,6 +22,9 @@ class JobsheetModel extends BaseModel {
         })
         return db('components')
           .insert(updatedComponents)
+          .then(() => {
+            return this.findBy({ id }).first();
+          });
       })
   }
 }

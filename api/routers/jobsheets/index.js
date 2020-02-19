@@ -2,12 +2,23 @@ const router = require('express').Router();
 const { dbToRes, reqToDb } = require('../../../utils');
 const { Projects, Jobsheets, Components } = require('../../../data/models');
 
-router.post('/create', (req, res) => {
-  Jobsheets
-    .add(reqToDb(req.body)) 
-    .then(() => res.status(201).json('uploaded successfully'))
-    .catch(error => res.status(500).json({ error: error.message, step: '/create' }))
+router.post('/create', async (req, res) => {
+  try {
+    const jobsheet = await Jobsheets.add(reqToDb(req.body));
+    res.status(201).json(jobsheet);
+  } catch (error) {
+    return res.status(500).json({ error: error.message, step: '/:id' })
+  }
 
+});
+
+router.get('/:id', async (req, res) => {
+  const id = Number(req.params.id);
+
+  Components
+    .findBy({ jobsheet_id: id })
+    .then(components => res.status(200).json(components.map(component => dbToRes(component))))
+    .catch(error => res.status(500).json({ error: error.message, step: '/:id' }));
 });
 
 router.get('/assigned', async (req, res) => {
