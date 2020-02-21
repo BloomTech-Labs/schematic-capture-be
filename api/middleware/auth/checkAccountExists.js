@@ -1,11 +1,18 @@
 const { Users } = require("../../../data/models");
 
-module.exports = (req, res, next) => {
-  Users.findBy({ "users.id": req.query.uid }).then(users => {
-    if (users.length) {
-      next();
-    } else {
-      res.status(203).json({ needRegister: true });
-    }
-  });
+module.exports = shouldExist => (req, res, next) => {
+  const { email } = req.decodedIdToken;
+
+  Users._findBy({ email })
+    .first()
+    .then(user => {
+      const accountExists = !!user;
+      console.log({ accountExists })
+      if (accountExists === shouldExist) {
+        next();
+      } else {
+        res.status(400).json({ accountExists });
+      }
+    })
+    .catch(error => res.status(500).json({ error: error.message, step: 'checkAccountExists' }))
 };

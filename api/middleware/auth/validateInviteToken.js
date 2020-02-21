@@ -1,21 +1,46 @@
 const jwt = require("jsonwebtoken");
+const { admin } = require('../../../utils/firebase');
+const { InviteTokens } = require('../../../data/models');
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
   const secret = process.env.INVITE_SECRET;
-
+  const { auth } = admin;
+  const { uid } = req.decodedIdToken;
   const { inviteToken } = req.body;
 
-  if (!inviteToken)
+
+  if (!inviteToken) {
+    if (req.canDeleteFirebaseAccount) {
+      await auth().deleteUser(uid)
+    }
     return res.status(400).json({
       error: "no invite token included in request body",
       step: "validateInviteToken"
     });
+  }
 
-  jwt.verify(inviteToken, secret, (error, decoded) => {
+  const tokenIsUsed = await InviteTokens.findBy({ id: inviteToken }).first();
+
+  if (tokenIsUsed) {
+    if (req.canDeleteFirebaseAccount) {
+      await auth().deleteUser(uid)
+    }
+    return res.status(400).json({ 
+      error: 'invite token has already been used',
+      step: 'validateInviteToken'
+    });
+  }
+
+  jwt.verify(inviteToken, secret, async (error, decoded) => {
     if (error) {
+      if (req.canDeleteFirebaseAccount) {
+        await auth().deleteUser(uid)
+      }
+
       return res.status(403).json({ error, step: "validateInviteToken" });
     } else {
-      req.inviteToken = decoded;
+      req.inviteToken = inviteToken;
+      req.decodedInviteToken = decoded;
       next();
     }
   });
