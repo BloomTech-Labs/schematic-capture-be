@@ -23,7 +23,7 @@ class BaseModel {
       .insert(data, 'id')
       .then(ids => {
         const [id] = ids;
-        return this.findBy(filter || { id });
+        return this.findBy(filter || { id }).first();
       });
   }
 
