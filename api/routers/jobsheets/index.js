@@ -68,4 +68,13 @@ router.get('/assigned', async (req, res) => {
 
 });
 
+router.put('/:id/update', (req, res) => {
+  /*
+    req.body === [Component]
+  */
+  let jobsheetId = Number(req.params.id);
+
+
+});
+
 module.exports = router;

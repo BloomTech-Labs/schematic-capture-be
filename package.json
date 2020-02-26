@@ -3,6 +3,7 @@
     "description": "REST API for the schematic capture app using the Express framework",
     "scripts": {
         "test": "cross-env DB_ENV=test DB_PORT=5435 DB_PASSWORD=testing123! jest --watch",
+        "coverage": "cross-env DB_ENV=test DB_PORT=5435 DB_PASSWORD=testing123! jest --coverage --detectOpenHandles --forceExit || true",
         "test-migrate-latest": "cross-env DB_ENV=test DB_PORT=5435 DB_PASSWORD=testing123! knex --env test migrate:latest",
         "test-migrate-rollback": "cross-env DB_ENV=test DB_PORT=5435 DB_PASSWORD=testing123! knex --env test migrate:rollback",
         "test-seed": "cross-env DB_ENV=test DB_PORT=5435 DB_PASSWORD=testing123! knex --env test seed:run",
@@ -30,6 +31,7 @@
     "devDependencies": {
         "cross-env": "^6.0.3",
         "jest": "24.9.0",
+        "mock-knex": "^0.4.7",
         "nodemon": "^2.0.2",
         "prettier": "1.19.1",
         "supertest": "^4.0.2"

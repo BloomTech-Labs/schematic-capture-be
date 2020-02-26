@@ -74,7 +74,7 @@ describe('Clients Router', () => {
   });
 
   describe('POST /create', () => {
-    it('returns a client with a new id (4)', async () => {
+    it('returns a client with a new id (4)', async done => {
       const clientObj = {
         companyName: 'New Test Company',
         phone: '5005005000',
@@ -89,13 +89,14 @@ describe('Clients Router', () => {
       try {
         client = await request(app)
                         .post('/api/clients/create')
+                        .send(clientObj)
                         .set(headers)
-                        .send(clientObj);
 
       } catch (error) {
         console.error('POST /create', error)
       }
       expect(client.body.id).toBe(4);
+      done();
     })
   })
 })
