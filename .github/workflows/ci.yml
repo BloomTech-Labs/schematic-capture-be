@@ -21,9 +21,12 @@ jobs:
       - uses: actions/checkout@master
 
       # A GitHub action to install Yarn
-      - uses: borales/actions-yarn@v2.0.0
+      - uses: actions/setup-node@master
         with:
-          cmd: install && yarn rebuild # will run `yarn install` command
+          node-version: "8"
+
+			# Run the NPM install command before proceeding
+      - run: npm install
       # A GitHub action for running tests and publishing coverage
       - uses: paambaati/codeclimate-action@v2.4.0
         env:
