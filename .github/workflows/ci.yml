@@ -1,16 +1,17 @@
+# The name of the workflow
 name: build
-​
+
 # What conditions trigger the workflow
 #  In this case, all pushes and pull requests
 on: [push, pull_request]
-​
+
 # The jobs that will be run, usually in parallel
 jobs:
   # A job to generate and publish code coverage
   coverage:
     # A more descriptive name of the job
     name: Test and publish test coverage
-​
+
     # The OS on which the job will run
     runs-on:
       ubuntu-latest
@@ -18,7 +19,7 @@ jobs:
     steps:
       # A GitHub action for checking out the current branch
       - uses: actions/checkout@master
-​
+
       # A GitHub action to install Yarn
       - uses: borales/actions-yarn@v2.0.0
         with:
