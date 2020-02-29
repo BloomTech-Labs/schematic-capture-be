@@ -23,7 +23,7 @@ jobs:
       # A GitHub action to install Yarn
       - uses: borales/actions-yarn@v2.0.0
         with:
-          cmd: install && rebuild # will run `yarn install` command
+          cmd: install && yarn rebuild # will run `yarn install` command
       # A GitHub action for running tests and publishing coverage
       - uses: paambaati/codeclimate-action@v2.4.0
         env:
