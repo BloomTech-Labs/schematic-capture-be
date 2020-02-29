@@ -10,9 +10,6 @@
         "start": "node index.js",
         "server": "nodemon index.js"
     },
-    "engines": {
-        "node": "8"
-    },
     "dependencies": {
         "axios": "^0.19.2",
         "busboy": "^0.3.1",
