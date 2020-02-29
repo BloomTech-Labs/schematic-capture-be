@@ -36,7 +36,7 @@ describe('Clients Router', () => {
   })
 
   describe('GET /', () => {
-    it('returns an array of all the clients associated with the organizations of the token bearer', async () => {
+    it('returns an array of all the clients associated with the organizations of the token bearer', async done => {
       let clients;
       try {
         clients = await request(app).get('/api/clients').set(headers);
@@ -45,11 +45,12 @@ describe('Clients Router', () => {
       }
 
       expect(Array.isArray(clients.body)).toBe(true);
+      done();
     })
   });
 
   describe('GET /:id/projects', () => {
-    it('returns an array of projects for the specific client id', async () => {
+    it('returns an array of projects for the specific client id', async done => {
       let projects;
       try {
         projects = await request(app).get('/api/clients/1/projects').set(headers);
@@ -58,10 +59,10 @@ describe('Clients Router', () => {
       }
 
       expect(Array.isArray(projects.body)).toBe(true);
-
+      done();
     })
 
-    it('each project has a client id', async () => {
+    it('each project has a client id', async done => {
       let projects;
       try {
         projects = await request(app).get('/api/clients/1/projects').set(headers);
@@ -70,6 +71,7 @@ describe('Clients Router', () => {
       }
 
       expect(projects.body.every(project => 'clientId' in project)).toBe(true);
+      done();
     })
   });
 
