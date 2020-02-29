@@ -17,14 +17,16 @@ class BaseModel {
         return db(this.table).whereIn(filter, by);
     }
 
-    _add(data, filter = null) {
-        return db(this.table)
-            .insert(data, "id")
-            .then(ids => {
-                const [id] = ids;
-                return this.findBy(filter || { id });
-            });
+
+    _add(data, filter=null) {
+      return db(this.table)
+        .insert(data, 'id')
+        .then(ids => {
+          const [id] = ids;
+          return this.findBy(filter || { id }).first();
+        });
     }
+
 
     _update(filter, changes) {
         return this.findBy(filter)
