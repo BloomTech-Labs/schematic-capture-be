@@ -219,7 +219,7 @@ To get the server running locally:
 
 ## 2️⃣ Actions
 
-There is a Data Access Object class called `BaseModel` that can be extended. It contains typical database interactions that are commonly seen.
+There is a Data Access Object class called `BaseModel` that can be easily extended. It contains typical database interactions that are commonly used.
 
 `_find` -> Returns all rows in the table
 
@@ -248,7 +248,8 @@ create a .env file that includes the following:
 -   DB_PASSWORD=(password for database)
 -   DB_DATABASE=(name of database)
 
-### configs for firebase sdk 
+### Configs for firebase sdk 
+
 The values for these variables can be found in the firebase console under the apps section. They are extracted from the provided JSON.
 ```javascript
 const firebaseConfig = {
@@ -352,5 +353,6 @@ These contribution guidelines have been adapted from [this good-Contributing.md-
 
 ## Documentation
 
-See [Frontend Documentation](🚫link to your frontend readme here) for details on the fronend of our project.
-🚫 Add DS iOS and/or Andriod links here if applicable.
+See [Web Frontend Documentation](https://github.com/Lambda-School-Labs/schematic-capture-fe) for details on the fronend of our project.
+
+See [iOS App Documentation](https://github.com/Lambda-School-Labs/schematic-capture-ios) for details on the iOS app.
