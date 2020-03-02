@@ -132,15 +132,61 @@ create a .env file that includes the following:
 -   DB_PASSWORD=(password for database)
 -   DB_DATABASE=(name of database)
 
+### configs for firebase sdk 
+The values for these variables can be found in the firebase console under the apps section. They are extracted from the provided JSON.
+```javascript
+const firebaseConfig = {
+  apiKey: "-",
+  authDomain: "-",
+  databaseURL: "-",
+  projectId: "-",
+  storageBucket: "-",
+  messagingSenderId: "-",
+  appId: "-",
+  measurementId: "-"
+};
+```
+
+-   FB_KEY
+-   FB_AUTH_DOMAIN
+-   FB_DB_URL
+-   FB_PROJECT_ID
+-   FB_STORAGE_BUCKET
+-   FB_MESSAGING_SENDER_ID
+-   FB_APP_ID
+-   FB_MEASUREMENT_ID
+
+### configs for firebase-admin
+Values can be retrieved from the JSON file created when making a new Service Account.
+
+-   SERVICE_ACCOUNT_TYPE
+-   SERVICE_ACCOUNT_PROJECT_ID
+-   SERVICE_ACCOUNT_PRIVATE_KEY_ID
+-   SERVICE_ACCOUNT_PRIVATE_KEY
+-   SERVICE_ACCOUNT_CLIENT_EMAIL
+-   SERVICE_ACCOUNT_CLIENT_ID
+-   SERVICE_ACCOUNT_AUTH_URI
+-   SERVICE_ACCOUNT_TOKEN_URI
+-   SERVICE_ACCOUNT_AUTH_PROVIDER_X509_CERT_URL
+-   SERVICE_ACCOUNT_CLIENT_X509_CERT_URL
+
+### configs for sendgrid api
+
+-   REGISTER_URL=(url for register route on frontend)
+-   SG_API_KEY=(api key forthe sendgrid account)
+-   SG_TEMPLATE_ID=(sendgrid template id)
+-   INVITE_SECRET=(custom secret to sign invite token)
+
+
 ## Deploying a Postgres database with Docker for testing and/or development
 
 An easy way to get a Postgres database running locally is to run it in a docker container. Follow the steps below in a terminal to get started.
 
 1. `docker pull postgres`
 
-2. `docker run --name container_name -e POSTGRES_USER=username -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres`
+2. `docker run --name container_name -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres`
 
-3. Plug in the username and password chosen into the `.env` file (see above) for knex to pick up the correct configs. (The database name will be the same as the username)
+3. Plug in the username (default user: postgres) and password chosen into the `.env` file (see above) for knex to pick up the correct configs. 
 
 ### Useful commands:
 
