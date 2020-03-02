@@ -1,29 +1,20 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/b5735c25bf5c795c770c/maintainability)](https://codeclimate.com/github/Lambda-School-Labs/schematic-capture-be/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/b5735c25bf5c795c770c/test_coverage)](https://codeclimate.com/github/Lambda-School-Labs/schematic-capture-be/test_coverage)
 
-🚫 Note: All lines that start with 🚫 are instructions and should be deleted before this is posted to your portfolio. This is intended to be a guideline. Feel free to add your own flare to it.
-
-🚫 The numbers 1️⃣ through 3️⃣ next to each item represent the week that part of the docs needs to be comepleted by. Make sure to delete the numbers by the end of Labs.
-
-🚫 Each student has a required minimum number of meaningful PRs each week per the rubric. Contributing to docs does NOT count as a PR to meet your weekly requirements.
 
 # API Documentation
 
-#### 1️⃣ Backend delpoyed at [🚫name service here](🚫add URL here) <br>
+#### 1️⃣ Backend delpoyed at [Heroku](https://sc-be-production.herokuapp.com/) <br>
 
 ## 1️⃣ Getting started
 
 To get the server running locally:
 
-🚫 adjust these scripts to match your project
-
 -   Clone this repo
--   **yarn install** to install all required dependencies
+-   **yarn** to install all required dependencies
 -   **yarn server** to start the local server
 -   **yarn test** to start server using testing environment
 
-### Backend framework goes here
-
-🚫 Why did you choose this framework?
+### Express
 
 -   Point One
 -   Point Two
@@ -32,29 +23,48 @@ To get the server running locally:
 
 ## 2️⃣ Endpoints
 
-🚫This is a placeholder, replace the endpoints, access controll, and descriptioin to match your project
+#### Roles Routes
 
-#### Organization Routes
+| Method | Endpoint     | Access Control | Description                         |
+| ------ | ------------ | -------------- | ----------------------------------- |
+| GET    | `/api/roles` | all users      | returns an array of possible roles. |
 
-| Method | Endpoint                | Access Control | Description                                  |
-| ------ | ----------------------- | -------------- | -------------------------------------------- |
-| GET    | `/organizations/:orgId` | all users      | Returns the information for an organization. |
-| PUT    | `/organizatoins/:orgId` | owners         | Modify an existing organization.             |
-| DELETE | `/organizations/:orgId` | owners         | Delete an organization.                      |
 
-#### User Routes
+#### Authentication Routes
 
-| Method | Endpoint              | Access Control      | Description                                         |
-| ------ | --------------------- | ------------------- | --------------------------------------------------- |
-| POST   | `/api/register`       | all users           | Registers user.                                     |
-| POST   | `/api/login`          | registered users    | Logs in a registered user.                          |
-| POST   | `/api/forgotPassword` | registered users    | Sends email to provided address for password reset. |
-| POST   | `/api/changeEmail`    | authorized users    | Sends email to provided address for email reset.    |
-| DELETE | `/api/:userId`        | owners, supervisors |                                                     |
+| Method | Endpoint                  | Access Control |                                                                |
+| ------ | ------------------------- | -------------- | -------------------------------------------------------------- |
+| POST   | `api/auth/register`       | all users      | creates an account                                             |
+| POST   | `api/auth/login`          | all users      | returns the user's info                                        |
+| POST   | `api/auth/forgotpassword` | all users      | changes the user's password                                    |
+| POST   | `api/auth/invite`         | admin          | sends an email to the invited person containing a unique token |
+
+#### Clients Routes
+
+| Method | Endpoint                    | Access Control   | Description                                             |
+| ------ | --------------------------- | ---------------- | ------------------------------------------------------- |
+| GET    | `/api/clients`              | employee / admin | returns clients associated with the user's organization |
+| GET    | `/api/clients/:id/projects` | employee / admin | returns projects created for a specific client.         |
+| POST   | `/api/clients/:id/projects` | employee / admin | creates a new project for a specific client.            |
+| POST   | `/api/clients/create`       | employee / admin | creates a new client                                    |
+
+
+#### Projects Routes
+
+| Method | Endpoint                      | Access Control   | Description                                         |
+| ------ | ----------------------------- | ---------------- | --------------------------------------------------- |
+| GET    | `/api/projects/:id/jobsheets` | employee / admin | returns jobsheets created under a specific project. |
+
+
+#### Jobsheets Routes
+
+| Method | Endpoint                  | Access Control   | Description                                                 |
+| ------ | ------------------------- | ---------------- | ----------------------------------------------------------- |
+| POST   | `/api/jobsheets/create`   | employee / admin | creates a jobsheet                                          |
+| GET    | `/api/jobsheets/:id`      | employee / admin | returns all components for a specific jobsheet              |
+| POST   | `/api/jobsheets/assigned` | technician       | returns jobsheets assigned to the authenticated technician. |
 
 # Data Model
-
-🚫This is just an example. Replace this with your data model
 
 #### 2️⃣ ORGANIZATIONS
 
