@@ -23,11 +23,6 @@ To get the server running locally:
 
 ## 2️⃣ Endpoints
 
-#### Roles Routes
-
-| Method | Endpoint     | Access Control | Description                         |
-| ------ | ------------ | -------------- | ----------------------------------- |
-| GET    | `/api/roles` | all users      | returns an array of possible roles. |
 
 
 #### Authentication Routes
@@ -64,6 +59,12 @@ To get the server running locally:
 | GET    | `/api/jobsheets/:id`      | employee / admin | returns all components for a specific jobsheet              |
 | POST   | `/api/jobsheets/assigned` | technician       | returns jobsheets assigned to the authenticated technician. |
 
+#### Roles Routes
+
+| Method | Endpoint     | Access Control | Description                         |
+| ------ | ------------ | -------------- | ----------------------------------- |
+| GET    | `/api/roles` | all users      | returns an array of possible roles. |
+
 # Data Model
 
 #### 2️⃣ ORGANIZATIONS
@@ -74,10 +75,11 @@ To get the server running locally:
 {
   id: UUID
   name: STRING
-  industry: STRING
-  paid: BOOLEAN
-  customer_id: STRING
-  subscription_id: STRING
+  phone: STRING
+  street: BOOLEAN
+  city: STRING
+  state: STRING
+  zip: STRING
 }
 ```
 
@@ -87,45 +89,149 @@ To get the server running locally:
 
 ```
 {
-  id: UUID
-  organization_id: UUID foreign key in ORGANIZATIONS table
+  id: UID from firebase
+  role_id: INT foreign key in ROLES table
   first_name: STRING
   last_name: STRING
-  role: STRING [ 'owner', 'supervisor', 'employee' ]
   email: STRING
   phone: STRING
-  cal_visit: BOOLEAN
-  emp_visit: BOOLEAN
-  emailpref: BOOLEAN
-  phonepref: BOOLEAN
+}
+```
+
+#### USERS_ORGANIZATIONS
+
+---
+
+```
+{
+  user_email: STRING foreign key in USERS table
+  organization_id: INT foreign key in ROLES table
+}
+```
+
+#### INVITE_TOKENS
+
+---
+
+```
+{
+  id: Unique jwt
+}
+```
+
+#### CLIENTS
+
+---
+
+```
+{
+  id: UUID
+  organization_id: INT foreign key in ROLES table
+  company_name: STRING
+  phone: STRING
+  street: STRING
+  city: STRING
+  state: STRING
+  zip: STRING
+}
+```
+
+#### PROJECTS
+
+---
+
+```
+{
+  id: UUID
+  client_id: INT foreign key in CLIENTS table
+  name: STRING
+}
+```
+
+#### JOBSHEETS
+
+---
+
+```
+{
+  id: UUID
+  updated_at: DATETIME
+  staus: STRING
+  user_email: STRING foreign key in USERS table
+  name: STRING
+  project_id: foreign key in PROJECTS table
+}
+```
+
+#### CUSTOM_FIELDS
+
+---
+
+```
+{
+  id: UUID
+  jobsheet_id: INT foreign key in JOBSHEETS table
+  col_name: STRING
+}
+```
+
+#### COMPONENTS
+
+---
+
+```
+{
+  id: UUID
+  jobsheet_id: INT foreign key in JOBSHEETS table
+  component_id: STRING
+  rl_category: STRING
+  rl_number: STRING
+  descriptions: STRING
+  manufacturer: STRING
+  part_number: STRING
+  stock_code: STRING
+  component_application: STRING
+  electrical_address: STRING
+  reference_tag: STRING
+  settings: STRING
+  image: STRING
+  resources: STRING
+  cutsheet: STRING
+  maintenance_video: STRING
+  custom: STRING
+}
+```
+
+#### CONTACTS
+
+---
+
+```
+{
+  id: UUID
+  client_id: INT foreign key in CLIENTS table
+  first_name: STRING
+  last_name: STRING
+  phone: STRING
+  email: STRING
 }
 ```
 
 ## 2️⃣ Actions
 
-🚫 This is an example, replace this with the actions that pertain to your backend
+There is a Data Access Object class called `BaseModel` that can be extended. It contains typical database interactions that are commonly seen.
 
-`getOrgs()` -> Returns all organizations
+`_find` -> Returns all rows in the table
 
-`getOrg(orgId)` -> Returns a single organization by ID
+`_findBy` -> Returns all rows matching the criteria provided (use the *.first()* method to only get one result)
 
-`addOrg(org)` -> Returns the created org
+`_findByMultiple` -> Returns all rows matching an array of one criteria
 
-`updateOrg(orgId)` -> Update an organization by ID
+`_add` -> Adds row(s) to the table
 
-`deleteOrg(orgId)` -> Delete an organization by ID
-<br>
-<br>
-<br>
-`getUsers(orgId)` -> if no param all users
+`_update` -> Updates existing row(s) in the table matching the criteria provided
 
-`getUser(userId)` -> Returns a single user by user ID
-
-`addUser(user object)` --> Creates a new user and returns that user. Also creates 7 availabilities defaulted to hours of operation for their organization.
-
-`updateUser(userId, changes object)` -> Updates a single user by ID.
-
-`deleteUser(userId)` -> deletes everything dependent on the user
+`_remove` -> Delete row(s) in the table matching the criteria provided
 
 ## 3️⃣ Environment Variables
 
