@@ -13,17 +13,10 @@ To get the server running locally:
 -   **yarn** to install all required dependencies
 -   **yarn server** to start the local server
 -   **yarn test** to start server using testing environment
+-   **yarn coverage** to get a coverage report
 
-### Express
-
--   Point One
--   Point Two
--   Point Three
--   Point Four
 
 ## 2️⃣ Endpoints
-
-
 
 #### Authentication Routes
 
