@@ -12,14 +12,6 @@ router.post('/create', async (req, res) => {
 
 });
 
-router.get('/:id', async (req, res) => {
-  const id = Number(req.params.id);
-
-  Components
-    .findBy({ jobsheet_id: id })
-    .then(components => res.status(200).json(components.map(component => dbToRes(component))))
-    .catch(error => res.status(500).json({ error: error.message, step: '/:id' }));
-});
 
 router.get('/assigned', async (req, res) => {
   const { email } = req.decodedIdToken;
@@ -68,6 +60,15 @@ router.get('/assigned', async (req, res) => {
 
 });
 
+router.get('/:id', async (req, res) => {
+  const id = Number(req.params.id);
+
+  Components
+    .findBy({ jobsheet_id: id })
+    .then(components => res.status(200).json(components.map(component => dbToRes(component))))
+    .catch(error => res.status(500).json({ error: error.message, step: '/:id' }));
+});
+
 router.put('/:id/update', (req, res) => {
   /*
     req.body === [Component]
@@ -76,5 +77,6 @@ router.put('/:id/update', (req, res) => {
 
 
 });
+
 
 module.exports = router;
