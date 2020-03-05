@@ -1,60 +1,64 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/b5735c25bf5c795c770c/maintainability)](https://codeclimate.com/github/Lambda-School-Labs/schematic-capture-be/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/b5735c25bf5c795c770c/test_coverage)](https://codeclimate.com/github/Lambda-School-Labs/schematic-capture-be/test_coverage)
 
-🚫 Note: All lines that start with 🚫 are instructions and should be deleted before this is posted to your portfolio. This is intended to be a guideline. Feel free to add your own flare to it.
-
-🚫 The numbers 1️⃣ through 3️⃣ next to each item represent the week that part of the docs needs to be comepleted by. Make sure to delete the numbers by the end of Labs.
-
-🚫 Each student has a required minimum number of meaningful PRs each week per the rubric. Contributing to docs does NOT count as a PR to meet your weekly requirements.
 
 # API Documentation
 
-#### 1️⃣ Backend delpoyed at [🚫name service here](🚫add URL here) <br>
+#### 1️⃣ Backend delpoyed at [Heroku](https://sc-be-production.herokuapp.com/) <br>
 
 ## 1️⃣ Getting started
 
 To get the server running locally:
 
-🚫 adjust these scripts to match your project
-
 -   Clone this repo
--   **yarn install** to install all required dependencies
+-   **yarn** to install all required dependencies
 -   **yarn server** to start the local server
 -   **yarn test** to start server using testing environment
+-   **yarn coverage** to get a coverage report
 
-### Backend framework goes here
-
-🚫 Why did you choose this framework?
-
--   Point One
--   Point Two
--   Point Three
--   Point Four
 
 ## 2️⃣ Endpoints
 
-🚫This is a placeholder, replace the endpoints, access controll, and descriptioin to match your project
+#### Authentication Routes
 
-#### Organization Routes
+| Method | Endpoint                  | Access Control |                                                                |
+| ------ | ------------------------- | -------------- | -------------------------------------------------------------- |
+| POST   | `api/auth/register`       | all users      | creates an account                                             |
+| POST   | `api/auth/login`          | all users      | returns the user's info                                        |
+| POST   | `api/auth/forgotpassword` | all users      | changes the user's password                                    |
+| POST   | `api/auth/invite`         | admin          | sends an email to the invited person containing a unique token |
 
-| Method | Endpoint                | Access Control | Description                                  |
-| ------ | ----------------------- | -------------- | -------------------------------------------- |
-| GET    | `/organizations/:orgId` | all users      | Returns the information for an organization. |
-| PUT    | `/organizatoins/:orgId` | owners         | Modify an existing organization.             |
-| DELETE | `/organizations/:orgId` | owners         | Delete an organization.                      |
+#### Clients Routes
 
-#### User Routes
+| Method | Endpoint                    | Access Control   | Description                                             |
+| ------ | --------------------------- | ---------------- | ------------------------------------------------------- |
+| GET    | `/api/clients`              | employee / admin | returns clients associated with the user's organization |
+| GET    | `/api/clients/:id/projects` | employee / admin | returns projects created for a specific client.         |
+| POST   | `/api/clients/:id/projects` | employee / admin | creates a new project for a specific client.            |
+| POST   | `/api/clients/create`       | employee / admin | creates a new client                                    |
 
-| Method | Endpoint              | Access Control      | Description                                         |
-| ------ | --------------------- | ------------------- | --------------------------------------------------- |
-| POST   | `/api/register`       | all users           | Registers user.                                     |
-| POST   | `/api/login`          | registered users    | Logs in a registered user.                          |
-| POST   | `/api/forgotPassword` | registered users    | Sends email to provided address for password reset. |
-| POST   | `/api/changeEmail`    | authorized users    | Sends email to provided address for email reset.    |
-| DELETE | `/api/:userId`        | owners, supervisors |                                                     |
+
+#### Projects Routes
+
+| Method | Endpoint                      | Access Control   | Description                                         |
+| ------ | ----------------------------- | ---------------- | --------------------------------------------------- |
+| GET    | `/api/projects/:id/jobsheets` | employee / admin | returns jobsheets created under a specific project. |
+
+
+#### Jobsheets Routes
+
+| Method | Endpoint                  | Access Control   | Description                                                 |
+| ------ | ------------------------- | ---------------- | ----------------------------------------------------------- |
+| POST   | `/api/jobsheets/create`   | employee / admin | creates a jobsheet                                          |
+| GET    | `/api/jobsheets/:id`      | employee / admin | returns all components for a specific jobsheet              |
+| POST   | `/api/jobsheets/assigned` | technician       | returns jobsheets assigned to the authenticated technician. |
+
+#### Roles Routes
+
+| Method | Endpoint     | Access Control | Description                         |
+| ------ | ------------ | -------------- | ----------------------------------- |
+| GET    | `/api/roles` | all users      | returns an array of possible roles. |
 
 # Data Model
-
-🚫This is just an example. Replace this with your data model
 
 #### 2️⃣ ORGANIZATIONS
 
@@ -64,10 +68,11 @@ To get the server running locally:
 {
   id: UUID
   name: STRING
-  industry: STRING
-  paid: BOOLEAN
-  customer_id: STRING
-  subscription_id: STRING
+  phone: STRING
+  street: BOOLEAN
+  city: STRING
+  state: STRING
+  zip: STRING
 }
 ```
 
@@ -77,45 +82,149 @@ To get the server running locally:
 
 ```
 {
-  id: UUID
-  organization_id: UUID foreign key in ORGANIZATIONS table
+  id: UID from firebase
+  role_id: INT foreign key in ROLES table
   first_name: STRING
   last_name: STRING
-  role: STRING [ 'owner', 'supervisor', 'employee' ]
   email: STRING
   phone: STRING
-  cal_visit: BOOLEAN
-  emp_visit: BOOLEAN
-  emailpref: BOOLEAN
-  phonepref: BOOLEAN
+}
+```
+
+#### USERS_ORGANIZATIONS
+
+---
+
+```
+{
+  user_email: STRING foreign key in USERS table
+  organization_id: INT foreign key in ROLES table
+}
+```
+
+#### INVITE_TOKENS
+
+---
+
+```
+{
+  id: Unique jwt
+}
+```
+
+#### CLIENTS
+
+---
+
+```
+{
+  id: UUID
+  organization_id: INT foreign key in ROLES table
+  company_name: STRING
+  phone: STRING
+  street: STRING
+  city: STRING
+  state: STRING
+  zip: STRING
+}
+```
+
+#### PROJECTS
+
+---
+
+```
+{
+  id: UUID
+  client_id: INT foreign key in CLIENTS table
+  name: STRING
+}
+```
+
+#### JOBSHEETS
+
+---
+
+```
+{
+  id: UUID
+  updated_at: DATETIME
+  staus: STRING
+  user_email: STRING foreign key in USERS table
+  name: STRING
+  project_id: foreign key in PROJECTS table
+}
+```
+
+#### CUSTOM_FIELDS
+
+---
+
+```
+{
+  id: UUID
+  jobsheet_id: INT foreign key in JOBSHEETS table
+  col_name: STRING
+}
+```
+
+#### COMPONENTS
+
+---
+
+```
+{
+  id: UUID
+  jobsheet_id: INT foreign key in JOBSHEETS table
+  component_id: STRING
+  rl_category: STRING
+  rl_number: STRING
+  descriptions: STRING
+  manufacturer: STRING
+  part_number: STRING
+  stock_code: STRING
+  component_application: STRING
+  electrical_address: STRING
+  reference_tag: STRING
+  settings: STRING
+  image: STRING
+  resources: STRING
+  cutsheet: STRING
+  maintenance_video: STRING
+  custom: STRING
+}
+```
+
+#### CONTACTS
+
+---
+
+```
+{
+  id: UUID
+  client_id: INT foreign key in CLIENTS table
+  first_name: STRING
+  last_name: STRING
+  phone: STRING
+  email: STRING
 }
 ```
 
 ## 2️⃣ Actions
 
-🚫 This is an example, replace this with the actions that pertain to your backend
+There is a Data Access Object class called `BaseModel` that can be easily extended. It contains typical database interactions that are commonly used.
 
-`getOrgs()` -> Returns all organizations
+`_find` -> Returns all rows in the table
 
-`getOrg(orgId)` -> Returns a single organization by ID
+`_findBy` -> Returns all rows matching the criteria provided (use the *.first()* method to only get one result)
 
-`addOrg(org)` -> Returns the created org
+`_findByMultiple` -> Returns all rows matching an array of one criteria
 
-`updateOrg(orgId)` -> Update an organization by ID
+`_add` -> Adds row(s) to the table
 
-`deleteOrg(orgId)` -> Delete an organization by ID
-<br>
-<br>
-<br>
-`getUsers(orgId)` -> if no param all users
+`_update` -> Updates existing row(s) in the table matching the criteria provided
 
-`getUser(userId)` -> Returns a single user by user ID
-
-`addUser(user object)` --> Creates a new user and returns that user. Also creates 7 availabilities defaulted to hours of operation for their organization.
-
-`updateUser(userId, changes object)` -> Updates a single user by ID.
-
-`deleteUser(userId)` -> deletes everything dependent on the user
+`_remove` -> Delete row(s) in the table matching the criteria provided
 
 ## 3️⃣ Environment Variables
 
@@ -132,15 +241,62 @@ create a .env file that includes the following:
 -   DB_PASSWORD=(password for database)
 -   DB_DATABASE=(name of database)
 
+### Configs for firebase sdk 
+
+The values for these variables can be found in the firebase console under the apps section. They are extracted from the provided JSON.
+```javascript
+const firebaseConfig = {
+  apiKey: "-",
+  authDomain: "-",
+  databaseURL: "-",
+  projectId: "-",
+  storageBucket: "-",
+  messagingSenderId: "-",
+  appId: "-",
+  measurementId: "-"
+};
+```
+
+-   FB_KEY
+-   FB_AUTH_DOMAIN
+-   FB_DB_URL
+-   FB_PROJECT_ID
+-   FB_STORAGE_BUCKET
+-   FB_MESSAGING_SENDER_ID
+-   FB_APP_ID
+-   FB_MEASUREMENT_ID
+
+### configs for firebase-admin
+Values can be retrieved from the JSON file created when making a new Service Account.
+
+-   SERVICE_ACCOUNT_TYPE
+-   SERVICE_ACCOUNT_PROJECT_ID
+-   SERVICE_ACCOUNT_PRIVATE_KEY_ID
+-   SERVICE_ACCOUNT_PRIVATE_KEY
+-   SERVICE_ACCOUNT_CLIENT_EMAIL
+-   SERVICE_ACCOUNT_CLIENT_ID
+-   SERVICE_ACCOUNT_AUTH_URI
+-   SERVICE_ACCOUNT_TOKEN_URI
+-   SERVICE_ACCOUNT_AUTH_PROVIDER_X509_CERT_URL
+-   SERVICE_ACCOUNT_CLIENT_X509_CERT_URL
+
+### configs for sendgrid api
+
+-   REGISTER_URL=(url for register route on frontend)
+-   SG_API_KEY=(api key forthe sendgrid account)
+-   SG_TEMPLATE_ID=(sendgrid template id)
+-   INVITE_SECRET=(custom secret to sign invite token)
+
+
 ## Deploying a Postgres database with Docker for testing and/or development
 
 An easy way to get a Postgres database running locally is to run it in a docker container. Follow the steps below in a terminal to get started.
 
 1. `docker pull postgres`
 
-2. `docker run --name container_name -e POSTGRES_USER=username -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres`
+2. `docker run --name container_name -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres`
 
-3. Plug in the username and password chosen into the `.env` file (see above) for knex to pick up the correct configs. (The database name will be the same as the username)
+3. Plug in the username (default user: postgres) and password chosen into the `.env` file (see above) for knex to pick up the correct configs. 
 
 ### Useful commands:
 
@@ -190,5 +346,6 @@ These contribution guidelines have been adapted from [this good-Contributing.md-
 
 ## Documentation
 
-See [Frontend Documentation](🚫link to your frontend readme here) for details on the fronend of our project.
-🚫 Add DS iOS and/or Andriod links here if applicable.
+See [Web Frontend Documentation](https://github.com/Lambda-School-Labs/schematic-capture-fe) for details on the fronend of our project.
+
+See [iOS App Documentation](https://github.com/Lambda-School-Labs/schematic-capture-ios) for details on the iOS app.
