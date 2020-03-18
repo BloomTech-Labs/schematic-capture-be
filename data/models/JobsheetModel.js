@@ -1,5 +1,5 @@
 const BaseModel = require('./BaseModel');
-const { reqToDb } = require('../../utils');
+const reqToDb = require('../../utils/reqToDb');
 const db = require('../dbConfig');
 
 class JobsheetModel extends BaseModel {

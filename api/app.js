@@ -3,10 +3,15 @@ const helmet = require("helmet");
 const cors = require("cors");
 
 // Routers
-const { auth, roles, clients, jobsheets, projects } = require("./routers");
+const auth = require('./routers/auth');
+const roles = require('./routers/roles');
+const clients = require('./routers/clients');
+const jobsheets = require('./routers/jobsheets');
+const projects = require('./routers/projects');
 
 // Middleware
-const { validateIdToken, checkAccountExists } = require('./middleware/auth');
+const checkAccountExists = require('./middleware/auth/checkAccountExists');
+const validateIdToken = require('./middleware/auth/validateIdToken');
 
 const server = express();
 

@@ -1,5 +1,6 @@
 const db = require("../dbConfig");
 
+//These functions are inherited by all database models
 class BaseModel {
     constructor(table) {
         this.table = table;
