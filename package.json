@@ -19,7 +19,7 @@
         ]
     },
     "engines": {
-        "node": "8"
+        "node": ">=8"
     },
     "dependencies": {
         "axios": "^0.19.2",
@@ -42,6 +42,7 @@
         "mock-knex": "^0.4.7",
         "nodemon": "^2.0.2",
         "prettier": "1.19.1",
+        "sqlite3": "^4.1.1",
         "supertest": "^4.0.2"
     },
     "private": true
