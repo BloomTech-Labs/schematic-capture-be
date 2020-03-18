@@ -1,15 +1,15 @@
 const router = require('express').Router();
-const { dbToRes, reqToDb } = require('../../../utils');
-const { Projects, Jobsheets, Components } = require('../../../data/models');
+const dbToRes = require('../../utils/dbToRes');
+const reqToDb = require('../../utils/reqToDb');
+const { Projects, Jobsheets, Components } = require('../../data/models');
 
 router.post('/create', async (req, res) => {
   try {
     const jobsheet = await Jobsheets.add(reqToDb(req.body));
     res.status(201).json(jobsheet);
   } catch (error) {
-    return res.status(500).json({ error: error.message, step: '/:id' })
+    return res.status(500).json({ error: error.message, step: '/:id' });
   }
-
 });
 
 
@@ -19,7 +19,7 @@ router.get('/assigned', async (req, res) => {
   let jobsheets;
 
   try {
-    jobsheets = await Jobsheets.findBy({ user_email: email })
+    jobsheets = await Jobsheets.findBy({ user_email: email });
   } catch (error) {
     return res.status(500).json({ error: error.message, step: '/assigned-getcomponents' });
   }
@@ -43,10 +43,9 @@ router.get('/assigned', async (req, res) => {
 
   try {
     projects = await Projects
-                      .findByMultiple('projects.id', projectIds)
-                      .select('projects.*', 'clients.company_name')
-                      .join('clients', 'clients.id', 'projects.client_id');
-
+      .findByMultiple('projects.id', projectIds)
+      .select('projects.*', 'clients.company_name')
+      .join('clients', 'clients.id', 'projects.client_id');
   } catch (error) {
     return res.status(500).json({ error: error.message, step: '/assigned-getcomponents' });
   }

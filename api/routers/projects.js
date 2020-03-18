@@ -1,7 +1,9 @@
 const router = require("express").Router();
-const { dbToRes, reqToDb } = require("../../../utils");
-const { Projects, Jobsheets, Components } = require("../../../data/models");
-const { getUserInfo, getUserOrganizations } = require("../../middleware/users");
+const dbToRes = require("../../utils/dbToRes");
+const reqToDb = require("../../utils/reqToDb");
+const { Projects, Jobsheets, Components } = require("../../data/models");
+const getUserInfo = require('../middleware/users/getUserInfo');
+const getUserOrganizations = require("../middleware/users/getUserOrganizations");
 
 router.get("/:id/jobsheets", getUserOrganizations, async (req, res) => {
     const { id } = req.params;

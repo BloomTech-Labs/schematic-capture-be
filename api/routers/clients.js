@@ -1,10 +1,12 @@
 const router = require('express').Router();
 
 // middleware
-const { getUserInfo, getUserOrganizations } = require('../../middleware/users');
+const getUserInfo = require('../middleware/users/getUserInfo');
+const getUserOrganizations = require('../middleware/users/getUserOrganizations');
 
-const { Clients, Projects } = require('../../../data/models');
-const { reqToDb, dbToRes } = require('../../../utils');
+const { Clients, Projects } = require('../../data/models');
+const reqToDb = require('../../utils/reqToDb');
+const dbToRes = require('../../utils/dbToRes');
 
 router.get('/', async (req, res) => {
   const { email } = req.decodedIdToken;
