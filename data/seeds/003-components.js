@@ -15,8 +15,7 @@ exports.seed = function(knex) {
       "image": "1.jpg",
       "resources": "E099.mp4",
       "cutsheet": "Baldor ElectricMotor284TC.pdf",
-      "maintenance_video": "",
-    "custom": "Not Provided"
+      "maintenance_video": ""
   },
   {"jobsheet_id": 1,
       "component_id": "2",
@@ -33,8 +32,7 @@ exports.seed = function(knex) {
       "image": "2.jpg",
       "resources": "H034.mp4",
       "cutsheet": "Vickers PVM AxialPistonPump.pdf",
-      "maintenance_video": "",
-        "custom": "Not Provided"
+      "maintenance_video": ""
   },
   {"jobsheet_id": 1,
       "component_id": "3",
@@ -51,7 +49,6 @@ exports.seed = function(knex) {
       "image": "3.jpg",
       "resources": "H098.mp4",
       "cutsheet": "Hydac BallValve.pdf",
-      "maintenance_video": "",
-        "custom": "Not Provided"
+      "maintenance_video": ""
   }])
 };
