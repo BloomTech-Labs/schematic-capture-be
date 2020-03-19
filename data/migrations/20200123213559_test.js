@@ -4,7 +4,6 @@ exports.up = function(knex) {
   return knex.schema
     .createTable("organizations", table => {
       table.increments();
-
       table.string("name").notNullable();
       table.string("phone");
       table.string("street");
@@ -51,15 +50,8 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
   return knex.schema
-    .dropTableIfExists("contacts")
-    .dropTableIfExists("components")
     .dropTableIfExists("custom_fields")
-    .dropTableIfExists("jobsheets")
-    .dropTableIfExists("projects")
-    .dropTableIfExists("clients")
     .dropTableIfExists("invite_tokens")
     .dropTableIfExists("users_organizations")
-    .dropTableIfExists("users")
-    .dropTableIfExists("organizations")
-    .dropTableIfExists("roles");
+    .dropTableIfExists("organizations");
 };
