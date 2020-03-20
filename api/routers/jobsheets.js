@@ -3,6 +3,7 @@ const dbToRes = require('../../utils/dbToRes');
 const reqToDb = require('../../utils/reqToDb');
 const { Projects, Jobsheets, Components } = require('../../data/models');
 
+//Works as long as the custom column is included in the database.
 router.post('/create', async (req, res) => {
   try {
     const jobsheet = await Jobsheets.add(reqToDb(req.body));
@@ -12,7 +13,7 @@ router.post('/create', async (req, res) => {
   }
 });
 
-
+//works
 router.get('/assigned', async (req, res) => {
   const { email } = req.decodedIdToken;
 
@@ -59,6 +60,7 @@ router.get('/assigned', async (req, res) => {
 
 });
 
+//works
 router.get('/:id', async (req, res) => {
   const id = Number(req.params.id);
 
