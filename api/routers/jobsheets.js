@@ -8,7 +8,7 @@ router.post('/create', async (req, res) => {
     const jobsheet = await Jobsheets.add(reqToDb(req.body));
     res.status(201).json(jobsheet);
   } catch (error) {
-    return res.status(500).json({ error: error.message, step: '/:id' });
+    return res.status(500).json({ error: error.message, step: '/create' });
   }
 });
 

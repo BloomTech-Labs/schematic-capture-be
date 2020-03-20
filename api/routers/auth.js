@@ -44,7 +44,7 @@ router.post("/login", emailLogin, validateIdToken, checkAccountExists(true), asy
   const { email } = req.decodedIdToken;
   Users
     .findBy(email) 
-    .then(user => res.status(200).json(dbToRes(user)))
+    .then(user => res.status(200).json({ ...dbToRes(user), token: req.token }))
     .catch(error => res.status(500).json({ error: error.message, message: 'There was a problem logging the user in.' }));
 });
 
