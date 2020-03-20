@@ -6,7 +6,7 @@ module.exports = async (req, res, next) => {
 /************************** pure backend login ***************************/
   //creates the idToken the back-end is expecting from the front-end for
   //development and testing
-  //Allows login and console logs idToken
+  // Allows login and console logs idToken
   // if (process.env.DB_ENV === 'development') {
   //   const { email, password } = req.body;
   //   await firebase

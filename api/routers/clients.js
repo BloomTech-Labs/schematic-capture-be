@@ -11,7 +11,6 @@ const dbToRes = require('../../utils/dbToRes');
 router.get('/', async (req, res) => {
   const { email } = req.decodedIdToken;
 
-
   try {
 
     let clients = await Clients.findByOrganization({ user_email: email });
@@ -20,7 +19,7 @@ router.get('/', async (req, res) => {
 
   } catch (error) {
 
-    res.status(500).json({ error: error.message, step: '/' })
+    res.status(500).json({ error: error.message, step: '/' });
 
   }
 });
