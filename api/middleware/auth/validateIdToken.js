@@ -56,6 +56,7 @@ module.exports = async (req, res, next) => {
     });
 
   const [, idToken] = req.headers.authorization.split("Bearer ");
+  req.token = idToken;
 
   admin
     .auth()
