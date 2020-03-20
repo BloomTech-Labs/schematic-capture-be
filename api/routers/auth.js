@@ -12,6 +12,7 @@ const validateIdToken = require('../middleware/auth/validateIdToken');
 const validateInviteToken = require('../middleware/auth/validateInviteToken');
 const validateRegistration = require('../middleware/auth/validateRegistration');
 const checkRoleExists = require('../middleware/roles/checkRoleExists');
+const emailLogin = require('../middleware/auth/emailLogin');
 
 router.post('/g', (req, res) => { // use to get a test idToken;
   const { email, password } = req.body;
@@ -39,12 +40,12 @@ router.post('/register', validateIdToken, checkAccountExists(false), validateInv
     });
 });
 
-router.post("/login", validateIdToken, checkAccountExists(true), async (req, res) => {
+router.post("/login", emailLogin, validateIdToken, checkAccountExists(true), async (req, res) => {
   const { email } = req.decodedIdToken;
   Users
     .findBy(email) 
     .then(user => res.status(200).json(dbToRes(user)))
-    .catch(error => res.status(500).json({ error: error.message }));
+    .catch(error => res.status(500).json({ error: error.message, message: 'There was a problem logging the user in.' }));
 });
 
 router.post("/forgotPassword", (req, res) => {

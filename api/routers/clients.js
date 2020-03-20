@@ -9,18 +9,17 @@ const reqToDb = require('../../utils/reqToDb');
 const dbToRes = require('../../utils/dbToRes');
 
 router.get('/', async (req, res) => {
-  const { email } = req.decodedIdToken;
-
-
+  const { user_id } = req.decodedIdToken;
+  console.log('in get / in clients router')
   try {
 
-    let clients = await Clients.findByOrganization({ user_email: email });
+    let clients = await Clients.find();
     clients = clients.map(client => dbToRes(client));
     res.status(200).json(clients);
 
   } catch (error) {
 
-    res.status(500).json({ error: error.message, step: '/' })
+    res.status(500).json({ error: error.message, step: '/' });
 
   }
 });
