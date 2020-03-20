@@ -5,7 +5,7 @@ const { Projects, Jobsheets, Components } = require("../../data/models");
 const getUserInfo = require('../middleware/users/getUserInfo');
 const getUserOrganizations = require("../middleware/users/getUserOrganizations");
 
-router.get("/:id/jobsheets", getUserOrganizations, async (req, res) => {
+router.get("/:id/jobsheets", async (req, res) => {
     const { id } = req.params;
 
     let project;
@@ -18,13 +18,13 @@ router.get("/:id/jobsheets", getUserOrganizations, async (req, res) => {
                 .status(404)
                 .json({ error: "project with this id does not exists" });
         }
-
-        if (!req.userOrganizations.includes(project.client_id)) {
-            return res.status(403).json({
-                error:
-                    "project is not associated with a client that belongs to the user"
-            });
-        }
+        //Can't implement with changed database schema
+        // if (!req.userOrganizations.includes(project.client_id)) {
+        //     return res.status(403).json({
+        //         error:
+        //             "project is not associated with a client that belongs to the user"
+        //     });
+        // }
     } catch (error) {
         return res
             .status(500)

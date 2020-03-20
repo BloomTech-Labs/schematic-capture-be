@@ -42,7 +42,6 @@ router.post('/register', validateIdToken, checkAccountExists(false), validateInv
 
 router.post("/login", emailLogin, validateIdToken, checkAccountExists(true), async (req, res) => {
   const { email } = req.decodedIdToken;
-  console.log('email in login endpoint in auth.js', email);
   Users
     .findBy(email) 
     .then(user => res.status(200).json(dbToRes(user)))
