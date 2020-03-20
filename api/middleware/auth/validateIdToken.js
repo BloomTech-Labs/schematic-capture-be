@@ -42,6 +42,7 @@ module.exports = async (req, res, next) => {
 // }
 
 /************************** pure backend Registration ***************************/
+
   if (!req.headers.authorization)
     return res.status(403).json({
       error: "must include an id token in the authorization header",

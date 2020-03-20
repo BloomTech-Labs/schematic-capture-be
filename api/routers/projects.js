@@ -18,6 +18,7 @@ router.get("/:id/jobsheets", async (req, res) => {
                 .status(404)
                 .json({ error: "project with this id does not exists" });
         }
+      
         //Can't implement with changed database schema
         // if (!req.userOrganizations.includes(project.client_id)) {
         //     return res.status(403).json({
@@ -25,6 +26,7 @@ router.get("/:id/jobsheets", async (req, res) => {
         //             "project is not associated with a client that belongs to the user"
         //     });
         // }
+
     } catch (error) {
         return res
             .status(500)
