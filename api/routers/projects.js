@@ -1,11 +1,11 @@
 const router = require("express").Router();
-const dbToRes = require("../../utils/dbToRes");
-const reqToDb = require("../../utils/reqToDb");
 const { Projects, Jobsheets, Components } = require("../../data/models");
-const getUserInfo = require('../middleware/users/getUserInfo');
-const getUserOrganizations = require("../middleware/users/getUserOrganizations");
+const getUserInfo = require("../middleware/users/getUserInfo");
+const checkIfProjectExists = require("../middleware/projects/checkIfProjectExists")
+const checkBodyForAssigned = require("../middleware/projects/checkBodyForAssigned")
 
-router.get("/:id/jobsheets", async (req, res) => {
+
+router.get("/:id/jobsheets", checkIfProjectExists, async (req, res) => {
     const { id } = req.params;
 
     let project;
@@ -18,15 +18,7 @@ router.get("/:id/jobsheets", async (req, res) => {
                 .status(404)
                 .json({ error: "project with this id does not exists" });
         }
-      
-        //Can't implement with changed database schema
-        // if (!req.userOrganizations.includes(project.client_id)) {
-        //     return res.status(403).json({
-        //         error:
-        //             "project is not associated with a client that belongs to the user"
-        //     });
-        // }
-
+        
     } catch (error) {
         return res
             .status(500)
@@ -45,7 +37,7 @@ router.get("/:id/jobsheets", async (req, res) => {
     }
 });
 
-router.put("/:id", async (req, res) => {
+    router.put("/:id", checkIfProjectExists, async (req, res) => {
     const { id } = req.params;
 
     let project;
@@ -67,5 +59,18 @@ router.put("/:id", async (req, res) => {
             .json({ error: error.message, step: "/:id/jobsheets" });
     }
 });
+
+router.put('/:id/jobsheets', checkIfProjectExists, checkBodyForAssigned, async (req, res) => {
+    const { id } = req.params
+
+    Jobsheets.update({ project_id: id }, req.body)
+    .then(updatedJob => {
+        res.status(201).json(updatedJob)
+    })
+    .catch(err => {
+        err.status(404)
+        .json({ error: error.message, step: "/:id/jobsheets" })
+    })
+})
 
 module.exports = router;
