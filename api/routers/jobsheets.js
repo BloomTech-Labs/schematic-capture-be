@@ -61,7 +61,7 @@ router.get('/assigned', async (req, res) => {
 });
 
 //works
-router.get('/:id', async (req, res) => {
+router.get('/:id/components', async (req, res) => {
   const id = Number(req.params.id);
 
   Components
@@ -70,13 +70,23 @@ router.get('/:id', async (req, res) => {
     .catch(error => res.status(500).json({ error: error.message, step: '/:id' }));
 });
 
+router.get('/:id', async (req, res) => {
+  const id = Number(req.params.id);
+
+  Jobsheets.findBy({ id })
+    .then(jobsheet => res.status(200).json(jobsheet))
+    .catch(error => res.status(500).json({ error: error.message, step: '/:id' }));
+});
+
 router.put('/:id/update', (req, res) => {
-  /*
-    req.body === [Component]
-  */
-  let jobsheetId = Number(req.params.id);
+  const id = Number(req.params.id);
 
-
+  Jobsheets.update({ id }, req.body)
+    .then(jobsheet => {
+      res.status(201).json(jobsheet);
+    }).catch(error => {
+      res.status(500).json({ error: error.message, step: '/:id/update' });
+    });
 });
 
 
