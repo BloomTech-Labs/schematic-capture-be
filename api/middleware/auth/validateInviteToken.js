@@ -36,7 +36,6 @@ module.exports = async (req, res, next) => {
       if (req.canDeleteFirebaseAccount) {
         await auth().deleteUser(uid)
       }
-
       return res.status(403).json({ error, step: "validateInviteToken" });
     } else {
       req.inviteToken = inviteToken;

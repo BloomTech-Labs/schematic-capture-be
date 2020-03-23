@@ -7,27 +7,16 @@ class UserModel extends BaseModel {
   }
 
   findBy(email) {
-    return db('users_organizations')
-      .where({ user_email: email }) 
-      .select('organizations.*')
-      .join('organizations', 'organizations.id', 'users_organizations.organization_id')
-      .then(organizations => {
-        if (!organizations.length) {
-          return null;
-        }
-
-        return super._findBy({ email })
+    return super._findBy({ email })
+      .first()
+      .then(user => {
+        return db('roles')
+          .where({ id: user.role_id })
           .first()
-          .then(user => {
-            return db('roles')
-              .where({ id: user.role_id })
-              .first()
-              .then(role => {
-                delete user.role_id;
-                user.organizations = organizations;
-                user.role = role
-                return user;
-              })
+          .then(role => {
+            delete user.role_id;
+            user.role = role
+            return user;
           })
       })
   }

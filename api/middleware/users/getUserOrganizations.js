@@ -1,15 +1,4 @@
-const { Users, UsersOrganizations } = require('../../../data/models');
-const getUserInfo = (req, res, next) => {
-  const { email } = req.decodedIdToken;
-
-  Users
-    .findBy(email)
-    .then(user => {
-      req.userInfo = user;
-      next();
-    })
-    .catch(error => res.status(500).json({ error: error.message, step: '/getUserInfo' }))
-}
+const UsersOrganizations = require('../../../data/models');
 
 const getUserOrganizations = async (req, res, next) => {
   const { email } = req.decodedIdToken;
@@ -28,7 +17,4 @@ const getUserOrganizations = async (req, res, next) => {
   }
 }
 
-module.exports = {
-  getUserInfo,
-  getUserOrganizations
-}
+module.exports = getUserOrganizations;

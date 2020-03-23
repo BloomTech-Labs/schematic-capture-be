@@ -2,18 +2,17 @@ const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 
-const { firebase, admin } = require('../../../utils/firebase');
-const { dbToRes, reqToDb } = require("../../../utils");
-const { Users } = require("../../../data/models");
+const { firebase, admin } = require('../../utils/firebase');
+const reqToDb = require("../../utils/reqToDb");
+const dbToRes = require("../../utils/dbToRes");
+const { Users } = require("../../data/models");
 
-const {
-  checkAccountExists,
-  validateIdToken,
-  validateInviteToken,
-  validateRegistration
-} = require("../../middleware/auth");
-
-const { checkRoleExists } = require('../../middleware/roles');
+const checkAccountExists = require('../middleware/auth/checkAccountExists');
+const validateIdToken = require('../middleware/auth/validateIdToken');
+const validateInviteToken = require('../middleware/auth/validateInviteToken');
+const validateRegistration = require('../middleware/auth/validateRegistration');
+const checkRoleExists = require('../middleware/roles/checkRoleExists');
+const emailLogin = require('../middleware/auth/emailLogin');
 
 router.post('/g', (req, res) => { // use to get a test idToken;
   const { email, password } = req.body;
@@ -41,12 +40,12 @@ router.post('/register', validateIdToken, checkAccountExists(false), validateInv
     });
 });
 
-router.post("/login", validateIdToken, checkAccountExists(true), async (req, res) => {
+router.post("/login", emailLogin, validateIdToken, checkAccountExists(true), async (req, res) => {
   const { email } = req.decodedIdToken;
   Users
     .findBy(email) 
-    .then(user => res.status(200).json(dbToRes(user)))
-    .catch(error => res.status(500).json({ error: error.message }));
+    .then(user => res.status(200).json({ ...dbToRes(user), token: req.token }))
+    .catch(error => res.status(500).json({ error: error.message, message: 'There was a problem logging the user in.' }));
 });
 
 router.post("/forgotPassword", (req, res) => {
@@ -121,16 +120,16 @@ router.post("/invite", validateIdToken, checkRoleExists, async (req, res) => {
         .status(202)
         .json({ message: `successfully sent invitation to ${email}` })
     )
-    .catch(error =>
-      res.status(500).json({ error: error.message, step: "sendgridInvite" })
-    );
+    .catch(error => {
+      res.status(500).json({ error: error.message, step: "sendgridInvite" });
+    });
 });
 
 
 function signInvite(contents) {
   const secret = process.env.INVITE_SECRET;
   const options = { expiresIn: "1hr" };
-
+  
   return jwt.sign(contents, secret, options);
 }
 
