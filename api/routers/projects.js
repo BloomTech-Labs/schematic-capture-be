@@ -63,7 +63,7 @@ router.get("/:id/jobsheets", checkIfProjectExists, async (req, res) => {
 router.put('/:id/jobsheets', checkIfProjectExists, checkBodyForAssigned, async (req, res) => {
     const { id } = req.params
 
-    Jobsheets.update({ project_id: id}, req.body)
+    Jobsheets.update({ project_id: id }, req.body)
     .then(updatedJob => {
         res.status(201).json(updatedJob)
     })
