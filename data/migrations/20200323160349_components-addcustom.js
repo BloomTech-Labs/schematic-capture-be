@@ -7,6 +7,13 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
   return knex.schema.table('components', tbl => {
-      tbl.dropColumn('custom')
-  })
+    knex.schema.hasColumn('components', 'custom')
+    .then(exists => {
+      if (exists) {
+        tbl.dropColumn('custom');
+      }
+    }).catch(err => {
+      console.log(err);
+    });
+  });
 };
