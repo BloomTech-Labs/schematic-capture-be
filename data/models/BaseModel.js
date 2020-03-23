@@ -33,7 +33,7 @@ class BaseModel {
         return this.findBy(filter)
             .update(changes, "id")
             .then(ids => {
-                const [id] = ids;
+                // const [id] = ids;
                 return this.findBy(filter);
             });
     }

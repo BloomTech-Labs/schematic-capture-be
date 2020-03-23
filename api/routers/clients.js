@@ -67,6 +67,29 @@ router.post('/create', getUserInfo, (req, res) => {
     .catch(error => res.status(500).json({ error: error.message, step: '/create' }));
 });
 
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  let client;
+
+  try { client = await Clients.findBy({ id }).first();
+
+  if(!client) {
+    return res 
+    .status(404)
+    .json({ errror: 'the specified client with this id does not exist'});
+  }
+  await Clients.update({ id }, req.body);
+
+  return res.status(200).json({
+    messsage: 'client has been updated'
+  });
+} catch (error) {
+  return res.status(500).json({
+    error: error.message, step: '/:id/clients'
+  });
+}
+})
+
 
 
 module.exports = router;
