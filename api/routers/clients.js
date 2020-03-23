@@ -67,6 +67,4 @@ router.post('/create', getUserInfo, (req, res) => {
     .catch(error => res.status(500).json({ error: error.message, step: '/create' }));
 });
 
-
-
 module.exports = router;

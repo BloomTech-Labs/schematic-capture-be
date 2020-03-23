@@ -3,6 +3,7 @@ const dbToRes = require('../../utils/dbToRes');
 const reqToDb = require('../../utils/reqToDb');
 const { Projects, Jobsheets, Components } = require('../../data/models');
 
+//Works as long as the custom column is included in the database.
 router.post('/create', async (req, res) => {
   try {
     const jobsheet = await Jobsheets.add(reqToDb(req.body));
@@ -12,7 +13,7 @@ router.post('/create', async (req, res) => {
   }
 });
 
-
+//works
 router.get('/assigned', async (req, res) => {
   const { email } = req.decodedIdToken;
 
@@ -59,7 +60,8 @@ router.get('/assigned', async (req, res) => {
 
 });
 
-router.get('/:id', async (req, res) => {
+//works
+router.get('/:id/components', async (req, res) => {
   const id = Number(req.params.id);
 
   Components
@@ -68,13 +70,23 @@ router.get('/:id', async (req, res) => {
     .catch(error => res.status(500).json({ error: error.message, step: '/:id' }));
 });
 
+router.get('/:id', async (req, res) => {
+  const id = Number(req.params.id);
+
+  Jobsheets.findBy({ id })
+    .then(jobsheet => res.status(200).json(jobsheet))
+    .catch(error => res.status(500).json({ error: error.message, step: '/:id' }));
+});
+
 router.put('/:id/update', (req, res) => {
-  /*
-    req.body === [Component]
-  */
-  let jobsheetId = Number(req.params.id);
+  const id = Number(req.params.id);
 
-
+  Jobsheets.update({ id }, req.body)
+    .then(jobsheet => {
+      res.status(201).json(jobsheet);
+    }).catch(error => {
+      res.status(500).json({ error: error.message, step: '/:id/update' });
+    });
 });
 
 
