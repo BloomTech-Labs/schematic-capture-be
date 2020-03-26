@@ -1,6 +1,20 @@
-require("dotenv").config();
 
 exports.up = function(knex) {
+    return knex.schema
+        .dropTableIfExists('contacts')
+        .dropTableIfExists("components")
+        .dropTableIfExists("custom_fields")
+        .dropTableIfExists("jobsheets")
+        .dropTableIfExists("projects")
+        .dropTableIfExists("clients")
+        .dropTableIfExists('invite_tokens')
+        .dropTableIfExists('users_organizations')
+        .dropTableIfExists("users")
+        .dropTableIfExists("organizations")
+        .dropTableIfExists("roles");
+};
+
+exports.down = function(knex) {
     return knex.schema
         .createTable("roles", table => {
             table.increments();
