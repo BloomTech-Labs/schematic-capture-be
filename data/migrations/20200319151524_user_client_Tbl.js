@@ -8,7 +8,7 @@ exports.up = function(knex) {
       .references("id")
       .inTable("clients");
     tbl
-      .integer("user_id")
+      .string("user_id")
       .notNullable()
       .unsigned()
       .references("id")
