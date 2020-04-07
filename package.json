@@ -7,7 +7,7 @@
         "test-migrate-latest": "cross-env DB_ENV=test DB_PORT=5435 DB_PASSWORD=testing123! knex --env test migrate:latest",
         "test-migrate-rollback": "cross-env DB_ENV=test DB_PORT=5435 DB_PASSWORD=testing123! knex --env test migrate:rollback",
         "test-seed": "cross-env DB_ENV=test DB_PORT=5435 DB_PASSWORD=testing123! knex --env test seed:run",
-        "start": "node index.js",
+        "start": "npx knex migrate:latest && npx knex seed:run && node index.js",
         "server": "nodemon index.js"
     },
     "jest": {
