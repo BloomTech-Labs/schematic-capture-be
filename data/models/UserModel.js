@@ -40,6 +40,10 @@ class UserModel extends BaseModel {
           })
       })
   }
+
+  getQuestion(id) {
+    return db.select('question').from('users').where({ id }).first();
+  }
 }
 
 module.exports = UserModel;

@@ -14,18 +14,6 @@ const validateRegistration = require('../middleware/auth/validateRegistration');
 const checkRoleExists = require('../middleware/roles/checkRoleExists');
 const emailLogin = require('../middleware/auth/emailLogin');
 
-router.post('/g', (req, res) => { // use to get a test idToken;
-  const { email, password } = req.body;
-  firebase
-    .auth()
-    .signInWithEmailAndPassword(email, password)
-    .then(async data => {
-      const token = await data.user.getIdToken();
-      res.status(200).json(token);
-    })
-    .catch(error => res.status(500).json({ error: error.code, step: '/g' }));
-})
-
 router.post('/register', validateIdToken, checkAccountExists(false), validateInviteToken, validateRegistration, (req, res) => {
   Users
     .add(reqToDb(req.userData))
