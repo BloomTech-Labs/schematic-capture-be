@@ -6,6 +6,7 @@ module.exports = shouldExist => (req, res, next) => {
   Users._findBy({ email })
     .first()
     .then(user => {
+      //!! - force truthy value instead of actual value
       const accountExists = !!user;
       console.log({ accountExists })
       if (accountExists === shouldExist) {

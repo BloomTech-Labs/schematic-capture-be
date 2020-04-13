@@ -1,3 +1,4 @@
+//Convets snake_case to camelCase
 const toCamel = string => {
   const result = string.split("_").map((part, i) => {
     if (i === 0 || part.length === 1) return part;
@@ -8,6 +9,7 @@ const toCamel = string => {
   return result.join("");
 };
 
+//Converts key in key-object pairs to camelCase
 const dbToRes = obj => {
   const cameled = {};
   Object.entries(obj).forEach(item => {

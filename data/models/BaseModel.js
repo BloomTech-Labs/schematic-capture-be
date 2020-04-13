@@ -1,5 +1,6 @@
 const db = require("../dbConfig");
 
+//These functions are inherited by all database models
 class BaseModel {
     constructor(table) {
         this.table = table;
@@ -32,7 +33,7 @@ class BaseModel {
         return this.findBy(filter)
             .update(changes, "id")
             .then(ids => {
-                const [id] = ids;
+                // const [id] = ids;
                 return this.findBy(filter);
             });
     }

@@ -3,10 +3,15 @@ const helmet = require("helmet");
 const cors = require("cors");
 
 // Routers
-const { auth, roles, clients, jobsheets, projects } = require("./routers");
+const auth = require('./routers/auth');
+const roles = require('./routers/roles');
+const clients = require('./routers/clients');
+const jobsheets = require('./routers/jobsheets');
+const projects = require('./routers/projects');
 
 // Middleware
-const { validateIdToken, checkAccountExists } = require('./middleware/auth');
+const checkAccountExists = require('./middleware/auth/checkAccountExists');
+const validateIdToken = require('./middleware/auth/validateIdToken');
 
 const server = express();
 
@@ -20,6 +25,6 @@ server.use("/api/clients", validateIdToken, checkAccountExists(true), clients);
 server.use("/api/projects", validateIdToken, projects);
 server.use("/api/jobsheets", validateIdToken, jobsheets);
 
-server.get("/", (req, res) => res.json({ running: true }));
+server.get("/", (req, res) => res.status(200).json({ running: true }));
 
 module.exports = server;
