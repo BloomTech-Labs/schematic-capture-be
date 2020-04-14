@@ -1,7 +1,7 @@
 const { Users } = require("../../../data/models");
 
 module.exports = shouldExist => (req, res, next) => {
-  const { email } = req.decodedIdToken;
+  const { email } = req.decodedToken;
 
   Users._findBy({ email })
     .first()
@@ -15,5 +15,5 @@ module.exports = shouldExist => (req, res, next) => {
         res.status(400).json({ accountExists });
       }
     })
-    .catch(error => res.status(500).json({ error: error.message, step: 'checkAccountExists' }))
+    .catch(error => res.status(500).json({ error: error.message, step: 'checkAccountExists' }));
 };
