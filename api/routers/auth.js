@@ -9,6 +9,7 @@ const { generatePassword } = require('../../utils/generatePassword');
 const { generateToken } = require('../../utils/generateToken');
 const { jwtSecret } = require('../../utils/secrets');
 const roleToRoleId = require('../middleware/users/roleToRoleId');
+const registerUserWithOkta = require('../middleware/auth/registerUserWithOkta');
 
 router.post('/login', (req, res) => {
     const loginInfo = {
@@ -35,109 +36,63 @@ router.post('/login', (req, res) => {
 });
 
 //register user with email invite
-router.post('/invite', roleToRoleId, (req, res) => {
+router.post('/invite', roleToRoleId, registerUserWithOkta, (req, res) => {
   //front-end sends technician email, role, full name as name
-  //separate full name into first name and last name
-  const [first, ...last] = req.body.name.split(' ');
-  //generate a password
-  const password = generatePassword(8);
-  //generate security question and answer
-  const answer = generatePassword(10);
-  //send registration to Okta
-  const header = {
+  //send an email that contains a link to sign-in with the token in the url
+  const sgApiKey = process.env.SG_API_KEY;
+  const templateId = process.env.SG_TEMPLATE_ID;
+  //CANNOT register at any other endpoint. This is how we make sure people were invited
+  const registrationUrl = `somethinglike.schematiccapture.com/firstregistration/${req.token}`;
+  const config = {
       headers: {
-          Authorization: `SSWS ${process.env.OKTA_REGISTER_TOKEN}` //this will be different
+          Authorization: `Bearer ${sgApiKey}`
       }
-  }
-  const registerInfo = {
-      profile: {
-          firstName: first,
-          lastName: last,
-          email: req.body.email,
-          login: req.body.email
-      },
-      groupIds: [
-          //group id is in url in dashboard when you click on a group.
-          req.groupId
+  };
+  const data = {
+      personalizations: [
+          {
+              to: [{ email: req.body.email, name: req.body.name }],
+              dynamic_template_data: { registrationUrl, token: req.token }
+          }
       ],
-      credentials: {
-          password : { value: password },
-          recovery_question: {
-              question: "Who's a major player in the cowboy scene?",
-              answer: answer
-          }
-      }
-  }
-  //This url will be different
+      from: {
+          email: "invitation@schematiccapture.com",
+          name: "Schematic Capture"
+      },
+      template_id: templateId
+  };
+  //send email
   axios
-  .post(`https://dev-833124.okta.com/api/v1/users?activate=true`, registerInfo, header)
-  .then(response => {
-      //generate a token that contains the password and security answer
-      const token = generateToken(response.data.id, req.body.roleId, req.body.email, password, answer);
-      //send an email that contains a link to sign-in with the token in the url
-      const sgApiKey = process.env.SG_API_KEY;
-      const templateId = process.env.SG_TEMPLATE_ID;
-      //CANNOT register at any other endpoint. This is how we make sure people were invited
-      const registrationUrl = `somethinglike.schematiccapture.com/firstregistration/${token}`;
-      const config = {
-          headers: {
-              Authorization: `Bearer ${sgApiKey}`
-          }
-      };
-      const data = {
-          personalizations: [
-              {
-                  to: [{ email: req.body.email, name: req.body.name }],
-                  dynamic_template_data: { registrationUrl, token }
-              }
-          ],
-          from: {
-              email: "invitation@schematiccapture.com",
-              name: "Schematic Capture"
-          },
-          template_id: templateId
-      };
-      //send email
-      axios
-      .post("https://api.sendgrid.com/v3/mail/send", data, config)
-      .then(() => {
-        console.log(`successfully sent invitation to ${email}`)
-        const data = {
-          id: response.data.id,
-          role_id: req.body.roleId,
-          email: req.body.email,
-          first_name: first,
-          last_name: last,
-          question: "Who's a major player in the cowboy scene?"
-        }
-        //add user to database
-        users.add(data).then(addedUser => {
-          res.status(201).json({ user: addedUser });
-        }).catch(err => {
-          res.status(500).json({ 
-            error: err, 
-            message: 'Failed to add user to Schematic Capture database.', 
-            step: 'api/auth/invite'
-          });
-        })
-      })
-      .catch(error => console.log(error));
-      console.log(response);
-      res.status(200).json(response.data);
-  })
-  .catch(err => {
-      console.log(err);
+  .post("https://api.sendgrid.com/v3/mail/send", data, config)
+  .then(() => {
+    console.log(`successfully sent invitation to ${req.body.email}`)
+    const data = {
+      id: req.id,
+      role_id: req.body.roleId,
+      email: req.body.email,
+      first_name: first,
+      last_name: last,
+      question: "Who's a major player in the cowboy scene?"
+    }
+    //add user to database
+    users.add(data).then(addedUser => {
+      res.status(201).json({ user: addedUser });
+    }).catch(err => {
       res.status(500).json({ 
-          error: err, 
-          message: 'Failed to register to new user with Okta.', 
-          step: 'api/auth/invite'
+        error: err, 
+        message: 'Failed to add user to Schematic Capture database.', 
+        step: 'api/auth/invite'
       });
-  });
-      //upon first sign in, user must change password and security question
-      //front-end will send
-          //1 new password
-          //2 new security question and answer
-          //3 token from url
+    })
+  })
+  .catch(error => console.log(error));
+  console.log(response);
+  res.status(200).json(response.data);
+  //upon first sign in, user must change password and security question
+  //front-end will send
+      //1 new password
+      //2 new security question and answer
+      //3 token from url
   //make an api call to change password and security question
 });
 
