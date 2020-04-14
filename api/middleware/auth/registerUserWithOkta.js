@@ -1,12 +1,14 @@
+const axios = require('axios');
 const generatePassword = require('../../../utils/generatePassword');
 const generateToken = require('../../../utils/generateToken');
 
 module.exports = (req, res, next) => {
     //front-end sends technician email, role, full name as name
     //separate full name into first name and last name
-    const [first, ...last] = req.body.name.split(' ');
+    let [first, ...last] = req.body.name.split(' ');
+    last = last.join(' ');
     //generate a password
-    const password = generatePassword(8);
+    const password = generatePassword(10);
     //generate security question and answer
     const answer = generatePassword(10);
     //send registration to Okta
@@ -48,7 +50,7 @@ module.exports = (req, res, next) => {
         console.log(err);
         res.status(500).json({ 
             error: err, 
-            message: 'Failed to register to new user with Okta.', 
+            message: 'Failed to register new user with Okta.', 
             step: 'registerUserWithOkta middleware'
         });
     });

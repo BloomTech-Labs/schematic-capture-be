@@ -1,3 +1,4 @@
+const axios = require('axios');
 module.exports = (req, res, next) => {
     //send an email that contains a link to sign-in with the token in the url
     const sgApiKey = process.env.SG_API_KEY;

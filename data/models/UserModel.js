@@ -7,9 +7,10 @@ class UserModel extends BaseModel {
   }
 
   findBy(email) {
-    return super._findBy({ email })
+    return super._findBy(email)
       .first()
       .then(user => {
+        console.log(user);
         return db('roles')
           .where({ id: user.role_id })
           .first()

@@ -1,3 +1,5 @@
+const axios = require('axios');
+
 module.exports = (req, res, next) => {
     const { newPassword, newQuestion, newAnswer } = req.body;
     const header = {

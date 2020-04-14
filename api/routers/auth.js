@@ -7,7 +7,9 @@ const registerUserWithOkta = require('../middleware/auth/registerUserWithOkta');
 const sendEmailInvite = require('../middleware/auth/sendEmailInvite');
 const changeOktaPassword = require('../middleware/auth/changeOktaPassword');
 const changeOktaQuestion = require('../middleware/auth/changeOktaQuestion');
+const getIdByEmail = require('../middleware/users/getIdByEmail');
 
+//TESTED
 router.post('/login', (req, res) => {
     if (!req.body) {
         res.status(400).json({ message: "Missing post data. Ensure you sent the user's login information." });
@@ -26,11 +28,12 @@ router.post('/login', (req, res) => {
     axios
     .post(`https://dev-833124.okta.com/api/v1/authn`, loginInfo)
     .then(response => {
-        //get user from database via email
-        return user.findBy(response._embedded.user.profile.login);
-    })
-    .then(user => {
+      //get user from database via email
+      console.log(response.data._embedded.user.profile.login);
+      user.findBy(response.data._embedded.user.profile.login)
+      .then(user => {
         res.status(200).json(user.data);
+      });
     })
     .catch(err => {
         res.status(500).json({error: err, message: 'Login with Okta failed.', step: 'api/auth/login'});
@@ -38,13 +41,15 @@ router.post('/login', (req, res) => {
 });
 
 //register user with email invite
+//TESTED - except adding to database
 router.post('/invite', validateRegistration, roleToRoleId, registerUserWithOkta, sendEmailInvite, (req, res) => {
   //front-end sends technician email, role, full name as name
   //separate full name into first name and last name
-  const [first, ...last] = req.body.name.split(' ');
+  let [first, ...last] = req.body.name.split(' ');
+  last = last.join(' ');
   const data = {
     id: req.id,
-    role_id: req.body.roleId,
+    role_id: parseInt(req.body.roleId),
     email: req.body.email,
     first_name: first,
     last_name: last,
@@ -68,6 +73,7 @@ router.post('/invite', validateRegistration, roleToRoleId, registerUserWithOkta,
   //make an api call to change password and security question
 });
 
+//TESTED - except updating user in database
 router.post('/firstlogin', changeOktaPassword, changeOktaQuestion, (req, res) => {
   //front-end will send
       //1 new password
@@ -87,13 +93,13 @@ router.post('/firstlogin', changeOktaPassword, changeOktaQuestion, (req, res) =>
   axios.post(`https://dev-833124.okta.com/api/v1/authn`, loginInfo)
   .then(response => {
     //update user in database
-    Users.update(req.token.id, { question: newQuestion }).then(() => {
+    Users.update({ id: req.token.id }, { question: newQuestion }).then(() => {
       res.status(200).json(response.data);
     }).catch(err => {
       res.status(400).json({ 
         error: err, 
         message: 'Failed to change security question in Schematic Capture database.', 
-        step: 'api/auth/changepassword'});
+        step: 'api/auth/firslogin'});
     })
   })
   .catch(err => {
@@ -107,6 +113,7 @@ router.post('/firstlogin', changeOktaPassword, changeOktaQuestion, (req, res) =>
 });
 
 //need some way of retrieving security question
+//TESTED
 router.get('/securityquestion/:id', (req, res) => {
   //get security question from db and send to front-end
   Users.getQuestion(req.params.id)
@@ -122,8 +129,10 @@ router.get('/securityquestion/:id', (req, res) => {
   })
 });
 
-router.post('/forgotpassword', (req, res) => {
-  //front end must send password (new password), answer to the security question and the useId (okta user id)
+//TESTED
+router.post('/forgotpassword', getIdByEmail, (req, res) => {
+  //front end must send password (new password), answer to the security question
+  //get userId through email? middleware?
   const data = {
       password: { value: req.body.password },
       recovery_question: { answer: req.body.answer}
@@ -140,6 +149,7 @@ router.post('/forgotpassword', (req, res) => {
       data, 
       header)
   .then(response => {
+      //log user in?
       res.status(200).json(response.data);
   })
   .catch(err => {
@@ -148,6 +158,7 @@ router.post('/forgotpassword', (req, res) => {
 });
 
 //returns an array of security questions
+//TESTED
 router.get('/questions', (req, res) => {
   //this url will be different
   axios
@@ -164,7 +175,8 @@ router.get('/questions', (req, res) => {
 //ONLY USE FOR DEVELOPMENT!!!
 router.post('/register', roleToRoleId, (req, res) => {
   //send the user's name, email, role, password
-  const [first, ...last] = req.body.name.split(' ');
+  let [first, ...last] = req.body.name.split(' ');
+  last = last.join(' ');
   const header = {
       headers: {
           Authorization: `SSWS ${process.env.OKTA_REGISTER_TOKEN}`

@@ -1,13 +1,19 @@
+const jwt = require('jsonwebtoken');
+const axios = require('axios');
+const { jwtSecret } = require('../../../utils/secrets');
+
 module.exports = (req, res, next) => {
     const { newPassword } = req.body;
     //decode token
     jwt.verify(req.body.token, jwtSecret, (err, decodedToken) => {
         if (err) {
+            console.log(err);
             res.status(401).json({ message: 'Invalid token' });
         } else {
             req.token = decodedToken;
         }
     });
+    // req.token = jwt.decode(req.body.token);
     //make an api call to change password
     const header = {
         headers: {
