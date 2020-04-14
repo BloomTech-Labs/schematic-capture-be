@@ -21,8 +21,12 @@ router.post('/login', (req, res) => {
     //this url will change when we get our official okta account.
     axios
     .post(`https://dev-833124.okta.com/api/v1/authn`, loginInfo)
-    .then(Response => {
-        res.status(200).json(Response.data);
+    .then(response => {
+        //get user from database via email
+        return user.findBy(response._embedded.user.profile.login);
+    })
+    .then(user => {
+        res.status(200).json(user.data);
     })
     .catch(err => {
         res.status(500).json({error: err, message: 'Login with Okta failed.', step: 'api/auth/login'});

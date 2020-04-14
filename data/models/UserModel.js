@@ -14,8 +14,9 @@ class UserModel extends BaseModel {
           .where({ id: user.role_id })
           .first()
           .then(role => {
+            user.roleId = user.role_id;
             delete user.role_id;
-            user.role = role
+            user.role = role;
             return user;
           })
       })
