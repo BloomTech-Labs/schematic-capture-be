@@ -1,13 +1,7 @@
 const router = require("express").Router();
-const jwt = require("jsonwebtoken");
 const axios = require("axios");
-
-const reqToDb = require("../../utils/reqToDb");
-const dbToRes = require("../../utils/dbToRes");
 const { Users } = require("../../data/models");
-const { generatePassword } = require('../../utils/generatePassword');
-const { generateToken } = require('../../utils/generateToken');
-const { jwtSecret } = require('../../utils/secrets');
+const validateRegistration = require('../middleware/auth/validateRegistration');
 const roleToRoleId = require('../middleware/users/roleToRoleId');
 const registerUserWithOkta = require('../middleware/auth/registerUserWithOkta');
 const sendEmailInvite = require('../middleware/auth/sendEmailInvite');
@@ -15,6 +9,11 @@ const changeOktaPassword = require('../middleware/auth/changeOktaPassword');
 const changeOktaQuestion = require('../middleware/auth/changeOktaQuestion');
 
 router.post('/login', (req, res) => {
+    if (!req.body) {
+        res.status(400).json({ message: "Missing post data. Ensure you sent the user's login information." });
+    } else if (!req.body.username || !req.body.password) {
+        res.status(400).json({ message: "Incomplete user data. Please include the user's username and password" });
+    }
     const loginInfo = {
         username: req.body.username,
         password: req.body.password,
@@ -39,8 +38,10 @@ router.post('/login', (req, res) => {
 });
 
 //register user with email invite
-router.post('/invite', roleToRoleId, registerUserWithOkta, sendEmailInvite, (req, res) => {
+router.post('/invite', validateRegistration, roleToRoleId, registerUserWithOkta, sendEmailInvite, (req, res) => {
   //front-end sends technician email, role, full name as name
+  //separate full name into first name and last name
+  const [first, ...last] = req.body.name.split(' ');
   const data = {
     id: req.id,
     role_id: req.body.roleId,
