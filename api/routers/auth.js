@@ -50,7 +50,7 @@ router.post('/invite', roleToRoleId, registerUserWithOkta, sendEmailInvite, (req
     question: "Who's a major player in the cowboy scene?"
   }
   //add user to database
-  users.add(data).then(addedUser => {
+  Users.add(data).then(addedUser => {
     res.status(201).json({ user: addedUser });
   }).catch(err => {
     res.status(500).json({ 
@@ -86,7 +86,7 @@ router.post('/firstlogin', changeOktaPassword, changeOktaQuestion, (req, res) =>
   axios.post(`https://dev-833124.okta.com/api/v1/authn`, loginInfo)
   .then(response => {
     //update user in database
-    users.update(req.token.id, { question: newQuestion }).then(() => {
+    Users.update(req.token.id, { question: newQuestion }).then(() => {
       res.status(200).json(response.data);
     }).catch(err => {
       res.status(400).json({ 
@@ -108,7 +108,7 @@ router.post('/firstlogin', changeOktaPassword, changeOktaQuestion, (req, res) =>
 //need some way of retrieving security question
 router.get('/securityquestion/:id', (req, res) => {
   //get security question from db and send to front-end
-  users.getQuestion(req.params.id)
+  Users.getQuestion(req.params.id)
   .then(question => {
       if (Object.keys(question).length === 0) { //No question found
           res.status(400).json({ errorMessage: 'No security question was found for the user.', step: 'api/auth/securityquestion/:id'});
