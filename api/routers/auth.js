@@ -55,7 +55,7 @@ router.post('/invite', (req, res) => {
   //send registration to Okta
   const header = {
       headers: {
-          Authorization: `SSWS ${process.env.OKTA_REGISTER_TOKEN_TEST}` //this will be different
+          Authorization: `SSWS ${process.env.OKTA_REGISTER_TOKEN}` //this will be different
       }
   }
   const registerInfo = {
@@ -147,7 +147,7 @@ router.post('/changepasswordandquestion', (req, res) => {
   //make an api call to change password
   const header = {
       headers: {
-          Authorization: `SSWS ${process.env.OKTA_REGISTER_TOKEN_TEST}`
+          Authorization: `SSWS ${process.env.OKTA_REGISTER_TOKEN}`
       }
   }
   const passwordInfo = {
@@ -203,6 +203,31 @@ router.get('/securityquestion/:id', (req, res) => {
   })
   .catch(err => {
       res.status(500).json({error: err, message: 'Couldn\'t get security question', step: 'api/auth/securityquestion/:id'});
+  })
+});
+
+router.post('/forgotpassword', (req, res) => {
+  //front end must send password (new password), answer to the security question and the useId (okta user id)
+  const data = {
+      password: { value: req.body.password },
+      recovery_question: { answer: req.body.answer}
+  }
+  const header = {
+      headers: {
+          Authorization: `SSWS ${process.env.OKTA_REGISTER_TOKEN}`
+      }
+  }
+  //this url will be different
+  axios
+  .post(
+      `https://dev-833124.okta.com/api/v1/users/${req.body.userId}/credentials/forgot_password?sendEmail=false`,
+      data, 
+      header)
+  .then(response => {
+      res.status(200).json(response.data);
+  })
+  .catch(err => {
+      res.status(500).json({error: err, message: 'Couldn\'t reset the password with Okta.', step: 'api/auth/forgotpassword'});
   })
 });
 
