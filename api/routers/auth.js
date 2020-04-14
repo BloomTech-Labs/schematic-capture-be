@@ -190,4 +190,20 @@ router.post('/changepasswordandquestion', (req, res) => {
   });
 });
 
+//need some way of retrieving security question
+router.get('/securityquestion/:id', (req, res) => {
+  //get security question from db and send to front-end
+  users.getQuestion(req.params.id)
+  .then(question => {
+      if (Object.keys(question).length === 0) { //No question found
+          res.status(400).json({ errorMessage: 'No security question was found for the user.', step: 'api/auth/securityquestion/:id'});
+      } else {
+          res.status(200).json(question);
+      }
+  })
+  .catch(err => {
+      res.status(500).json({error: err, message: 'Couldn\'t get security question', step: 'api/auth/securityquestion/:id'});
+  })
+});
+
 module.exports = router;
