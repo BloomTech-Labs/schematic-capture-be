@@ -39,20 +39,6 @@ router.post('/invite', roleToRoleId, (req, res) => {
   //front-end sends technician email, role, full name as name
   //separate full name into first name and last name
   const [first, ...last] = req.body.name.split(' ');
-  //convert role id to group id
-  let groupId
-  switch (req.body.roleId) {
-      case 1:
-          //These groupIds will be different for SchemCap's groups
-          groupId = '00g4ym8nmTwfhWeEm4x6';
-          break;
-      case 2:
-          groupId = '00g4ymzijCXBwLK2h4x6';
-          break;
-      default:
-          groupId = '00g4ym8k0Wc6sGqCW4x6';
-          break;
-  }
   //generate a password
   const password = generatePassword(8);
   //generate security question and answer
@@ -72,7 +58,7 @@ router.post('/invite', roleToRoleId, (req, res) => {
       },
       groupIds: [
           //group id is in url in dashboard when you click on a group.
-          groupId
+          req.groupId
       ],
       credentials: {
           password : { value: password },
@@ -111,6 +97,7 @@ router.post('/invite', roleToRoleId, (req, res) => {
           },
           template_id: templateId
       };
+      //send email
       axios
       .post("https://api.sendgrid.com/v3/mail/send", data, config)
       .then(() => {
@@ -123,6 +110,7 @@ router.post('/invite', roleToRoleId, (req, res) => {
           last_name: last,
           question: "Who's a major player in the cowboy scene?"
         }
+        //add user to database
         users.add(data).then(addedUser => {
           res.status(201).json({ user: addedUser });
         }).catch(err => {
