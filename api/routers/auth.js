@@ -115,7 +115,8 @@ router.post('/invite', (req, res) => {
           role_id: req.body.roleId,
           email: req.body.email,
           first_name: first,
-          last_name: last
+          last_name: last,
+          question: "Who's a major player in the cowboy scene?"
         }
         users.add(data).then(addedUser => {
           res.status(201).json({ user: addedUser });
@@ -200,7 +201,14 @@ router.post('/changepasswordandquestion', (req, res) => {
       return axios.post(`https://dev-833124.okta.com/api/v1/authn`, loginInfo)
   })
   .then(response => {
-      res.status(200).json(response.data);
+      users.update(token.id, { question: newQuestion }).then(() => {
+        res.status(200).json(response.data);
+      }).catch(err => {
+        res.status(400).json({ 
+          error: err, 
+          message: 'Failed to change security question in Schematic Capture database.', 
+          step: 'api/auth/changepassword'});
+      })
   })
   .catch(err => {
       console.log(err);
