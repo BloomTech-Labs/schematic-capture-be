@@ -2,7 +2,6 @@ const router = require('express').Router();
 
 // middleware
 const getUserInfo = require('../middleware/users/getUserInfo');
-const getUserOrganizations = require('../middleware/users/getUserOrganizations');
 
 const { Clients, Projects } = require('../../data/models');
 const reqToDb = require('../../utils/reqToDb');
@@ -32,7 +31,7 @@ router.get('/:id/projects', (req, res) => {
     .catch(error => res.status(500).json({ error: error.message, step: '/' }));
 });
 
-router.post('/:id/projects', getUserOrganizations, async (req, res) => {
+router.post('/:id/projects', async (req, res) => {
   const clientId = Number(req.params.id)
 
   try {

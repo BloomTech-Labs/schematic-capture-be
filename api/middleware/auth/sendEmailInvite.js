@@ -3,7 +3,8 @@ module.exports = (req, res, next) => {
     const sgApiKey = process.env.SG_API_KEY;
     const templateId = process.env.SG_TEMPLATE_ID;
     //CANNOT register at any other endpoint. This is how we make sure people were invited
-    const registrationUrl = `schematiccapture.com/firstlogin/${req.token}`;
+    //this method of attaching token to the url should be eventually changed.
+    const registrationUrl = `https://schematiccapture.com/firstlogin/${req.token}`;
     const config = {
         headers: {
             Authorization: `Bearer ${sgApiKey}`
