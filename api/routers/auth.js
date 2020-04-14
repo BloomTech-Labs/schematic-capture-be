@@ -11,6 +11,8 @@ const { jwtSecret } = require('../../utils/secrets');
 const roleToRoleId = require('../middleware/users/roleToRoleId');
 const registerUserWithOkta = require('../middleware/auth/registerUserWithOkta');
 const sendEmailInvite = require('../middleware/auth/sendEmailInvite');
+const changeOktaPassword = require('../middleware/auth/changeOktaPassword');
+const changeOktaQuestion = require('../middleware/auth/changeOktaQuestion');
 
 router.post('/login', (req, res) => {
     const loginInfo = {
@@ -65,40 +67,14 @@ router.post('/invite', roleToRoleId, registerUserWithOkta, sendEmailInvite, (req
   //make an api call to change password and security question
 });
 
-router.post('/changepasswordandquestion', (req, res) => {
+router.post('/firstlogin', changeOktaPassword, changeOktaQuestion, (req, res) => {
   //front-end will send
       //1 new password
       //2 new security question and answer
       //3 token from url
-  const { newPassword, newQuestion, newAnswer } = req.body;
-  //decode token
-  let token;
-  jwt.verify(req.body.token, jwtSecret, (err, decodedToken) => {
-      if (err) {
-          res.status(401).json({ message: 'Invalid token' });
-      } else {
-          token = decodedToken;
-      }
-  });
-  //make an api call to change password
-  const header = {
-      headers: {
-          Authorization: `SSWS ${process.env.OKTA_REGISTER_TOKEN}`
-      }
-  }
-  const passwordInfo = {
-      oldPassword: token.password,
-      newPassword: newPassword
-  }
-  const questionInfo = {
-      password: { value: newPassword },
-      recovery_question: {
-          question: newQuestion,
-          answer: newAnswer
-      }
-  }
+  const { newPassword, newQuestion } = req.body;
   const loginInfo = {
-      username: token.email,
+      username: req.token.email,
       password: newPassword,
       options: {
           multiOptionalFactorEnroll: true,
@@ -106,30 +82,26 @@ router.post('/changepasswordandquestion', (req, res) => {
       }
   }
   //this url will be different.
-  axios
-  .post(`https://dev-833124.okta.com/api/v1/users/${token.id}/credentials/change_password`, passwordInfo, header)
+  //log user in
+  axios.post(`https://dev-833124.okta.com/api/v1/authn`, loginInfo)
   .then(response => {
-      //make an api call to change security question and answer
-      return axios
-      .post(`https://dev-833124.okta.com/api/v1/users/${token.id}/credentials/change_recovery_question`, questionInfo, header)
-  })
-  .then(response => {
-      //log user in
-      return axios.post(`https://dev-833124.okta.com/api/v1/authn`, loginInfo)
-  })
-  .then(response => {
-      users.update(token.id, { question: newQuestion }).then(() => {
-        res.status(200).json(response.data);
-      }).catch(err => {
-        res.status(400).json({ 
-          error: err, 
-          message: 'Failed to change security question in Schematic Capture database.', 
-          step: 'api/auth/changepassword'});
-      })
+    //update user in database
+    users.update(req.token.id, { question: newQuestion }).then(() => {
+      res.status(200).json(response.data);
+    }).catch(err => {
+      res.status(400).json({ 
+        error: err, 
+        message: 'Failed to change security question in Schematic Capture database.', 
+        step: 'api/auth/changepassword'});
+    })
   })
   .catch(err => {
-      console.log(err);
-      res.status(500).json({error: err, message: 'Failed to change password and security question.', step: 'api/auth/changepassword'});
+    console.log(err);
+    res.status(500).json({
+      error: err, 
+      message: 'Failed to log user in after changing password and security question.', 
+      step: 'api/auth/changepassword'
+    });
   });
 });
 
