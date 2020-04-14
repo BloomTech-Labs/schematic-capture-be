@@ -8,6 +8,7 @@ const { Users } = require("../../data/models");
 const { generatePassword } = require('../../utils/generatePassword');
 const { generateToken } = require('../../utils/generateToken');
 const { jwtSecret } = require('../../utils/secrets');
+const roleToRoleId = require('../middleware/users/roleToRoleId');
 
 router.post('/login', (req, res) => {
     const loginInfo = {
@@ -34,8 +35,8 @@ router.post('/login', (req, res) => {
 });
 
 //register user with email invite
-router.post('/invite', (req, res) => {
-  //front-end sends technician email, roleId, full name as name
+router.post('/invite', roleToRoleId, (req, res) => {
+  //front-end sends technician email, role, full name as name
   //separate full name into first name and last name
   const [first, ...last] = req.body.name.split(' ');
   //convert role id to group id
