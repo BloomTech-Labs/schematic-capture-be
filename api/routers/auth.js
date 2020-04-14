@@ -108,7 +108,25 @@ router.post('/invite', (req, res) => {
       };
       axios
       .post("https://api.sendgrid.com/v3/mail/send", data, config)
-      .then(() => console.log(`successfully sent invitation to ${email}`))
+      .then(() => {
+        console.log(`successfully sent invitation to ${email}`)
+        const data = {
+          id: response.data.id,
+          role_id: req.body.roleId,
+          email: req.body.email,
+          first_name: first,
+          last_name: last
+        }
+        users.add(data).then(addedUser => {
+          res.status(201).json({ user: addedUser });
+        }).catch(err => {
+          res.status(500).json({ 
+            error: err, 
+            message: 'Failed to add user to Schematic Capture database.', 
+            step: 'api/auth/invite'
+          });
+        })
+      })
       .catch(error => console.log(error));
       console.log(response);
       res.status(200).json(response.data);
