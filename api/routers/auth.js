@@ -14,6 +14,26 @@ const validateRegistration = require('../middleware/auth/validateRegistration');
 const checkRoleExists = require('../middleware/roles/checkRoleExists');
 const emailLogin = require('../middleware/auth/emailLogin');
 
+router.post('/login', (req, res) => {
+    const loginInfo = {
+        username: req.body.username,
+        password: req.body.password,
+        options: {
+            multiOptionalFactorEnroll: true,
+            warnBeforePasswordExpired: true
+        }
+    }
+    //this url will change when we get our official okta account.
+    axios
+    .post(`https://dev-833124.okta.com/api/v1/authn`, loginInfo)
+    .then(Response => {
+        res.status(200).json(Response.data);
+    })
+    .catch(err => {
+        res.status(500).json({error: err, message: 'Login with Okta failed.', step: 'api/auth/login'});
+    });
+});
+
 router.post('/register', validateIdToken, checkAccountExists(false), validateInviteToken, validateRegistration, (req, res) => {
   Users
     .add(reqToDb(req.userData))
@@ -26,14 +46,6 @@ router.post('/register', validateIdToken, checkAccountExists(false), validateInv
       }
       res.status(500).json({ error: error.message, step: 'register' });
     });
-});
-
-router.post("/login", emailLogin, validateIdToken, checkAccountExists(true), async (req, res) => {
-  const { email } = req.decodedIdToken;
-  Users
-    .findBy(email) 
-    .then(user => res.status(200).json({ ...dbToRes(user), token: req.token }))
-    .catch(error => res.status(500).json({ error: error.message, message: 'There was a problem logging the user in.' }));
 });
 
 router.post("/forgotPassword", (req, res) => {
