@@ -231,4 +231,17 @@ router.post('/forgotpassword', (req, res) => {
   })
 });
 
+//returns an array of security questions
+router.get('/questions', (req, res) => {
+  //this url will be different
+  axios
+  .get('https://dev-833124.okta.com/api/v1/users/00u4syc0frXBxcDtF4x6/factors/questions')
+  .then(response => {
+      res.status(200).json(response.data);
+  })
+  .catch(err => {
+      res.status(500).json({error: err, message: 'Couldn\'t get recovery questions from Okta.', step: 'api/auth/questions'});
+  })
+});
+
 module.exports = router;
