@@ -2,17 +2,12 @@ const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
 
-const { firebase, admin } = require('../../utils/firebase');
 const reqToDb = require("../../utils/reqToDb");
 const dbToRes = require("../../utils/dbToRes");
 const { Users } = require("../../data/models");
-
-const checkAccountExists = require('../middleware/auth/checkAccountExists');
-const validateIdToken = require('../middleware/auth/validateIdToken');
-const validateInviteToken = require('../middleware/auth/validateInviteToken');
-const validateRegistration = require('../middleware/auth/validateRegistration');
-const checkRoleExists = require('../middleware/roles/checkRoleExists');
-const emailLogin = require('../middleware/auth/emailLogin');
+const { generatePassword } = require('../../utils/generatePassword');
+const { generateToken } = require('../../utils/generateToken');
+const { jwtSecret } = require('../../utils/secrets');
 
 router.post('/login', (req, res) => {
     const loginInfo = {
@@ -34,103 +29,104 @@ router.post('/login', (req, res) => {
     });
 });
 
-router.post('/register', validateIdToken, checkAccountExists(false), validateInviteToken, validateRegistration, (req, res) => {
-  Users
-    .add(reqToDb(req.userData))
-    .then(user => res.status(201).json(dbToRes(user)))
-    .catch(async error => {
-      if (req.canDeleteFirebaseAccount) {
-        const { auth } = admin;
-        const { uid } = req.decodedIdToken;
-        await auth().deleteUser(uid)
+//register user with email invite
+router.post('/invite', (req, res) => {
+  //front-end sends technician email, roleId, full name as name
+  //separate full name into first name and last name
+  const [first, ...last] = req.body.name.split(' ');
+  //convert role id to group id
+  let groupId
+  switch (req.body.roleId) {
+      case 1:
+          //These groupIds will be different for SchemCap's groups
+          groupId = '00g4ym8nmTwfhWeEm4x6';
+          break;
+      case 2:
+          groupId = '00g4ymzijCXBwLK2h4x6';
+          break;
+      default:
+          groupId = '00g4ym8k0Wc6sGqCW4x6';
+          break;
+  }
+  //generate a password
+  const password = generatePassword(8);
+  //generate security question and answer
+  const answer = generatePassword(10);
+  //send registration to Okta
+  const header = {
+      headers: {
+          Authorization: `SSWS ${process.env.OKTA_REGISTER_TOKEN_TEST}` //this will be different
       }
-      res.status(500).json({ error: error.message, step: 'register' });
-    });
-});
-
-router.post("/forgotPassword", (req, res) => {
-  const { email } = req.body;
-  const auth = firebase.auth();
-
-  auth
-    .sendPasswordResetEmail(email)
-    .then(() => {
-      return res.status(200).json({
-        success: "Please check your inbox for the password reset e-mail."
-      });
-    })
-    .catch(error => {
-      return res.status(500).json({ error });
-    });
-});
-
-router.post("/changeEmail", validateIdToken, (req, res) => {
-  const { newEmail } = req.body;
-  const user = firebase.auth().currentUser;
-
-  user
-    .updateEmail(newEmail)
-    .then(() => {
-      return res.status(200).json({
-        success: `Your email address has been changed to ${newEmail}`
-      });
-    })
-    .catch(error => {
-      console.log(error);
-      res.status(500).json({ error: "Unable to update email address." });
-    });
-});
-
-router.post("/invite", validateIdToken, checkRoleExists, async (req, res) => {
-  const inviter = await Users.findBy(req.decodedIdToken.email);
-
-  const { roleId, name, email } = req.body;
-
-  const contents = { organizationId: inviter.organizations[0].id, roleId, inviter: inviter.id, time: new Date().getTime() };
-
-  const sgApiKey = process.env.SG_API_KEY;
-  const templateId = process.env.SG_TEMPLATE_ID;
-  const registrationUrl = process.env.REGISTER_URL;
-  const inviteToken = signInvite(contents);
-
-  const config = {
-    headers: {
-      Authorization: `Bearer ${sgApiKey}`
-    }
-  };
-
-  const data = {
-    personalizations: [
-      {
-        to: [{ email, name }],
-        dynamic_template_data: { registrationUrl, inviteToken }
+  }
+  const registerInfo = {
+      profile: {
+          firstName: first,
+          lastName: last,
+          email: req.body.email,
+          login: req.body.email
+      },
+      groupIds: [
+          //group id is in url in dashboard when you click on a group.
+          groupId
+      ],
+      credentials: {
+          password : { value: password },
+          recovery_question: {
+              question: "Who's a major player in the cowboy scene?",
+              answer: answer
+          }
       }
-    ],
-    from: {
-      email: "invitation@schematiccapture.com",
-      name: "Schematic Capture"
-    },
-    template_id: templateId
-  };
-
+  }
+  //This url will be different
   axios
-    .post("https://api.sendgrid.com/v3/mail/send", data, config)
-    .then(() =>
-      res
-        .status(202)
-        .json({ message: `successfully sent invitation to ${email}` })
-    )
-    .catch(error => {
-      res.status(500).json({ error: error.message, step: "sendgridInvite" });
-    });
+  .post(`https://dev-833124.okta.com/api/v1/users?activate=true`, registerInfo, header)
+  .then(response => {
+      //generate a token that contains the password and security answer
+      const token = generateToken(response.data.id, req.body.roleId, req.body.email, password, answer);
+      //send an email that contains a link to sign-in with the token in the url
+      const sgApiKey = process.env.SG_API_KEY;
+      const templateId = process.env.SG_TEMPLATE_ID;
+      //CANNOT register at any other endpoint. This is how we make sure people were invited
+      const registrationUrl = `somethinglike.schematiccapture.com/firstregistration/${token}`;
+      const config = {
+          headers: {
+              Authorization: `Bearer ${sgApiKey}`
+          }
+      };
+      const data = {
+          personalizations: [
+              {
+                  to: [{ email: req.body.email, name: req.body.name }],
+                  dynamic_template_data: { registrationUrl, token }
+              }
+          ],
+          from: {
+              email: "invitation@schematiccapture.com",
+              name: "Schematic Capture"
+          },
+          template_id: templateId
+      };
+      axios
+      .post("https://api.sendgrid.com/v3/mail/send", data, config)
+      .then(() => console.log(`successfully sent invitation to ${email}`))
+      .catch(error => console.log(error));
+      console.log(response);
+      res.status(200).json(response.data);
+  })
+  .catch(err => {
+      console.log(err);
+      res.status(500).json({ 
+          error: err, 
+          message: 'Failed to register to new user with Okta.', 
+          step: 'api/auth/invite'
+      });
+  });
+      //upon first sign in, user must change password and security question
+      //front-end will send
+          //1 new password
+          //2 new security question and answer
+          //3 token from url
+  //make an api call to change password and security question
 });
-
-
-function signInvite(contents) {
-  const secret = process.env.INVITE_SECRET;
-  const options = { expiresIn: "1hr" };
-  
-  return jwt.sign(contents, secret, options);
-}
 
 module.exports = router;
