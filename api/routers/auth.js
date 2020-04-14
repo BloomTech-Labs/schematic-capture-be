@@ -10,6 +10,7 @@ const { generateToken } = require('../../utils/generateToken');
 const { jwtSecret } = require('../../utils/secrets');
 const roleToRoleId = require('../middleware/users/roleToRoleId');
 const registerUserWithOkta = require('../middleware/auth/registerUserWithOkta');
+const sendEmailInvite = require('../middleware/auth/sendEmailInvite');
 
 router.post('/login', (req, res) => {
     const loginInfo = {
@@ -36,58 +37,26 @@ router.post('/login', (req, res) => {
 });
 
 //register user with email invite
-router.post('/invite', roleToRoleId, registerUserWithOkta, (req, res) => {
+router.post('/invite', roleToRoleId, registerUserWithOkta, sendEmailInvite, (req, res) => {
   //front-end sends technician email, role, full name as name
-  //send an email that contains a link to sign-in with the token in the url
-  const sgApiKey = process.env.SG_API_KEY;
-  const templateId = process.env.SG_TEMPLATE_ID;
-  //CANNOT register at any other endpoint. This is how we make sure people were invited
-  const registrationUrl = `somethinglike.schematiccapture.com/firstregistration/${req.token}`;
-  const config = {
-      headers: {
-          Authorization: `Bearer ${sgApiKey}`
-      }
-  };
   const data = {
-      personalizations: [
-          {
-              to: [{ email: req.body.email, name: req.body.name }],
-              dynamic_template_data: { registrationUrl, token: req.token }
-          }
-      ],
-      from: {
-          email: "invitation@schematiccapture.com",
-          name: "Schematic Capture"
-      },
-      template_id: templateId
-  };
-  //send email
-  axios
-  .post("https://api.sendgrid.com/v3/mail/send", data, config)
-  .then(() => {
-    console.log(`successfully sent invitation to ${req.body.email}`)
-    const data = {
-      id: req.id,
-      role_id: req.body.roleId,
-      email: req.body.email,
-      first_name: first,
-      last_name: last,
-      question: "Who's a major player in the cowboy scene?"
-    }
-    //add user to database
-    users.add(data).then(addedUser => {
-      res.status(201).json({ user: addedUser });
-    }).catch(err => {
-      res.status(500).json({ 
-        error: err, 
-        message: 'Failed to add user to Schematic Capture database.', 
-        step: 'api/auth/invite'
-      });
-    })
-  })
-  .catch(error => console.log(error));
-  console.log(response);
-  res.status(200).json(response.data);
+    id: req.id,
+    role_id: req.body.roleId,
+    email: req.body.email,
+    first_name: first,
+    last_name: last,
+    question: "Who's a major player in the cowboy scene?"
+  }
+  //add user to database
+  users.add(data).then(addedUser => {
+    res.status(201).json({ user: addedUser });
+  }).catch(err => {
+    res.status(500).json({ 
+      error: err, 
+      message: 'Failed to add user to Schematic Capture database.', 
+      step: 'api/auth/invite'
+    });
+  });
   //upon first sign in, user must change password and security question
   //front-end will send
       //1 new password
