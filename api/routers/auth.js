@@ -129,4 +129,65 @@ router.post('/invite', (req, res) => {
   //make an api call to change password and security question
 });
 
+router.post('/changepasswordandquestion', (req, res) => {
+  //front-end will send
+      //1 new password
+      //2 new security question and answer
+      //3 token from url
+  const { newPassword, newQuestion, newAnswer } = req.body;
+  //decode token
+  let token;
+  jwt.verify(req.body.token, jwtSecret, (err, decodedToken) => {
+      if (err) {
+          res.status(401).json({ message: 'Invalid token' });
+      } else {
+          token = decodedToken;
+      }
+  });
+  //make an api call to change password
+  const header = {
+      headers: {
+          Authorization: `SSWS ${process.env.OKTA_REGISTER_TOKEN_TEST}`
+      }
+  }
+  const passwordInfo = {
+      oldPassword: token.password,
+      newPassword: newPassword
+  }
+  const questionInfo = {
+      password: { value: newPassword },
+      recovery_question: {
+          question: newQuestion,
+          answer: newAnswer
+      }
+  }
+  const loginInfo = {
+      username: token.email,
+      password: newPassword,
+      options: {
+          multiOptionalFactorEnroll: true,
+          warnBeforePasswordExpired: true
+      }
+  }
+  //this url will be different.
+  axios
+  .post(`https://dev-833124.okta.com/api/v1/users/${token.id}/credentials/change_password`, passwordInfo, header)
+  .then(response => {
+      //make an api call to change security question and answer
+      return axios
+      .post(`https://dev-833124.okta.com/api/v1/users/${token.id}/credentials/change_recovery_question`, questionInfo, header)
+  })
+  .then(response => {
+      //log user in
+      return axios.post(`https://dev-833124.okta.com/api/v1/authn`, loginInfo)
+  })
+  .then(response => {
+      res.status(200).json(response.data);
+  })
+  .catch(err => {
+      console.log(err);
+      res.status(500).json({error: err, message: 'Failed to change password and security question.', step: 'api/auth/changepassword'});
+  });
+});
+
 module.exports = router;
