@@ -15,7 +15,7 @@ router.post('/create', async (req, res) => {
 
 //works
 router.get('/assigned', async (req, res) => {
-  const { email } = req.decodedIdToken;
+  const { email } = req.decodedToken;
 
   let jobsheets;
 

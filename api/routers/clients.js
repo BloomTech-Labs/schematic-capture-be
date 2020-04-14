@@ -9,7 +9,6 @@ const reqToDb = require('../../utils/reqToDb');
 const dbToRes = require('../../utils/dbToRes');
 
 router.get('/', async (req, res) => {
-  const { user_id } = req.decodedIdToken;
   console.log('in get / in clients router')
   try {
 
