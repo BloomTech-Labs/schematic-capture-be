@@ -22,7 +22,8 @@ server.use(helmet());
 
 server.use("/api/auth", auth);
 server.use("/api/roles", roles);
-server.use("/api/clients", validateIdToken, checkAccountExists(true), clients);
+// server.use("/api/clients", validateIdToken, checkAccountExists(true), clients);
+server.use("/api/clients", clients);
 server.use("/api/projects", validateIdToken, projects);
 server.use("/api/jobsheets", validateIdToken, jobsheets);
 server.use("/api/users", users);

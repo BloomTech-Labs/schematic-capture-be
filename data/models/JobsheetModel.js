@@ -27,6 +27,13 @@ class JobsheetModel extends BaseModel {
           });
       })
   }
+  findByClientId(id) {
+    return db('jobsheets as j')
+      .join('projects as p', 'j.project_id', 'p.id')
+      .join('clients as c', 'p.client_id', 'c.id')
+      .select('j.completed')
+      .where('client_id', id);
+  }
 }
 
 module.exports = JobsheetModel;

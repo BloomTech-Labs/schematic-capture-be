@@ -3,12 +3,11 @@ const router = require('express').Router();
 // middleware
 const getUserInfo = require('../middleware/users/getUserInfo');
 
-const { Clients, Projects } = require('../../data/models');
+const { Clients, Projects, Jobsheets } = require('../../data/models');
 const reqToDb = require('../../utils/reqToDb');
 const dbToRes = require('../../utils/dbToRes');
 
 router.get('/', async (req, res) => {
-  console.log('in get / in clients router')
   try {
 
     let clients = await Clients.find();
@@ -21,6 +20,32 @@ router.get('/', async (req, res) => {
 
   }
 });
+
+router.get('/withcompleted', (req, res) => {
+  Clients.find().then(async clients => {
+    const clientsWithCompleted = await Promise.all(clients.map(async client => {
+      await Jobsheets.findByClientId(client.id).then(completedCol => {
+        if (completedCol.length > 0) { //has jobsheets
+          for (let jobsheet of completedCol) {
+            if (jobsheet.completed === 0) {
+              client.completed = false;
+            }
+          }
+        } else { //doesn't have jobsheets
+          client.completed = true;
+        }
+      });
+      return client;
+    }));
+    res.status(200).json(clientsWithCompleted);
+  }).catch(err => {
+    res.status(500).json({
+      error: err, 
+      message: 'Failed to get client information.', 
+      step: 'api/clients/withcompleted'
+    });
+  })
+})
 
 router.get('/:id/projects', (req, res) => {
   const clientId = Number(req.params.id);
@@ -36,7 +61,6 @@ router.post('/:id/projects', async (req, res) => {
 
   try {
     const clients = await Clients.findByMultiple('organization_id', req.userOrganizations);
-    console.log(clients);
 
     if (!clients.map(client => client.id).includes(clientId)) {
       return res.status(400).json({ message: 'client not associated with this user' })
