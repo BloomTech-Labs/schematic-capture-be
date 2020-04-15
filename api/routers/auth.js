@@ -1,136 +1,229 @@
 const router = require("express").Router();
-const jwt = require("jsonwebtoken");
 const axios = require("axios");
-
-const { firebase, admin } = require('../../utils/firebase');
-const reqToDb = require("../../utils/reqToDb");
-const dbToRes = require("../../utils/dbToRes");
 const { Users } = require("../../data/models");
-
-const checkAccountExists = require('../middleware/auth/checkAccountExists');
-const validateIdToken = require('../middleware/auth/validateIdToken');
-const validateInviteToken = require('../middleware/auth/validateInviteToken');
 const validateRegistration = require('../middleware/auth/validateRegistration');
-const checkRoleExists = require('../middleware/roles/checkRoleExists');
-const emailLogin = require('../middleware/auth/emailLogin');
+const roleToRoleId = require('../middleware/users/roleToRoleId');
+const registerUserWithOkta = require('../middleware/auth/registerUserWithOkta');
+const sendEmailInvite = require('../middleware/auth/sendEmailInvite');
+const changeOktaPassword = require('../middleware/auth/changeOktaPassword');
+const changeOktaQuestion = require('../middleware/auth/changeOktaQuestion');
+const getIdByEmail = require('../middleware/users/getIdByEmail');
 
-router.post('/g', (req, res) => { // use to get a test idToken;
-  const { email, password } = req.body;
-  firebase
-    .auth()
-    .signInWithEmailAndPassword(email, password)
-    .then(async data => {
-      const token = await data.user.getIdToken();
-      res.status(200).json(token);
-    })
-    .catch(error => res.status(500).json({ error: error.code, step: '/g' }));
-})
-
-router.post('/register', validateIdToken, checkAccountExists(false), validateInviteToken, validateRegistration, (req, res) => {
-  Users
-    .add(reqToDb(req.userData))
-    .then(user => res.status(201).json(dbToRes(user)))
-    .catch(async error => {
-      if (req.canDeleteFirebaseAccount) {
-        const { auth } = admin;
-        const { uid } = req.decodedIdToken;
-        await auth().deleteUser(uid)
-      }
-      res.status(500).json({ error: error.message, step: 'register' });
-    });
-});
-
-router.post("/login", emailLogin, validateIdToken, checkAccountExists(true), async (req, res) => {
-  const { email } = req.decodedIdToken;
-  Users
-    .findBy(email) 
-    .then(user => res.status(200).json({ ...dbToRes(user), token: req.token }))
-    .catch(error => res.status(500).json({ error: error.message, message: 'There was a problem logging the user in.' }));
-});
-
-router.post("/forgotPassword", (req, res) => {
-  const { email } = req.body;
-  const auth = firebase.auth();
-
-  auth
-    .sendPasswordResetEmail(email)
-    .then(() => {
-      return res.status(200).json({
-        success: "Please check your inbox for the password reset e-mail."
-      });
-    })
-    .catch(error => {
-      return res.status(500).json({ error });
-    });
-});
-
-router.post("/changeEmail", validateIdToken, (req, res) => {
-  const { newEmail } = req.body;
-  const user = firebase.auth().currentUser;
-
-  user
-    .updateEmail(newEmail)
-    .then(() => {
-      return res.status(200).json({
-        success: `Your email address has been changed to ${newEmail}`
-      });
-    })
-    .catch(error => {
-      console.log(error);
-      res.status(500).json({ error: "Unable to update email address." });
-    });
-});
-
-router.post("/invite", validateIdToken, checkRoleExists, async (req, res) => {
-  const inviter = await Users.findBy(req.decodedIdToken.email);
-
-  const { roleId, name, email } = req.body;
-
-  const contents = { organizationId: inviter.organizations[0].id, roleId, inviter: inviter.id, time: new Date().getTime() };
-
-  const sgApiKey = process.env.SG_API_KEY;
-  const templateId = process.env.SG_TEMPLATE_ID;
-  const registrationUrl = process.env.REGISTER_URL;
-  const inviteToken = signInvite(contents);
-
-  const config = {
-    headers: {
-      Authorization: `Bearer ${sgApiKey}`
+//TESTED
+router.post('/login', (req, res) => {
+    if (!req.body) {
+        res.status(400).json({ message: "Missing post data. Ensure you sent the user's login information." });
+    } else if (!req.body.username || !req.body.password) {
+        res.status(400).json({ message: "Incomplete user data. Please include the user's username and password" });
     }
-  };
+    const loginInfo = {
+        username: req.body.username,
+        password: req.body.password,
+        options: {
+            multiOptionalFactorEnroll: true,
+            warnBeforePasswordExpired: true
+        }
+    }
+    //this url will change when we get our official okta account.
+    axios
+    .post(`https://dev-833124.okta.com/api/v1/authn`, loginInfo)
+    .then(response => {
+      //get user from database via email
+      console.log(response.data._embedded.user.profile.login);
+      user.findBy(response.data._embedded.user.profile.login)
+      .then(user => {
+        res.status(200).json(user.data);
+      });
+    })
+    .catch(err => {
+        res.status(500).json({error: err, message: 'Login with Okta failed.', step: 'api/auth/login'});
+    });
+});
 
+//register user with email invite
+//TESTED - except adding to database
+router.post('/invite', validateRegistration, roleToRoleId, registerUserWithOkta, sendEmailInvite, (req, res) => {
+  //front-end sends technician email, role, full name as name
+  //separate full name into first name and last name
+  let [first, ...last] = req.body.name.split(' ');
+  last = last.join(' ');
   const data = {
-    personalizations: [
-      {
-        to: [{ email, name }],
-        dynamic_template_data: { registrationUrl, inviteToken }
+    id: req.id,
+    role_id: parseInt(req.body.roleId),
+    email: req.body.email,
+    first_name: first,
+    last_name: last,
+    question: "Who's a major player in the cowboy scene?"
+  }
+  //add user to database
+  Users.add(data).then(addedUser => {
+    res.status(201).json({ user: addedUser });
+  }).catch(err => {
+    res.status(500).json({ 
+      error: err, 
+      message: 'Failed to add user to Schematic Capture database.', 
+      step: 'api/auth/invite'
+    });
+  });
+  //upon first sign in, user must change password and security question
+  //front-end will send
+      //1 new password
+      //2 new security question and answer
+      //3 token from url
+  //make an api call to change password and security question
+});
+
+//TESTED - except updating user in database
+router.post('/firstlogin', changeOktaPassword, changeOktaQuestion, (req, res) => {
+  //front-end will send
+      //1 new password
+      //2 new security question and answer
+      //3 token from url
+  const { newPassword, newQuestion } = req.body;
+  const loginInfo = {
+      username: req.token.email,
+      password: newPassword,
+      options: {
+          multiOptionalFactorEnroll: true,
+          warnBeforePasswordExpired: true
       }
-    ],
-    from: {
-      email: "invitation@schematiccapture.com",
-      name: "Schematic Capture"
-    },
-    template_id: templateId
-  };
+  }
+  //this url will be different.
+  //log user in
+  axios.post(`https://dev-833124.okta.com/api/v1/authn`, loginInfo)
+  .then(response => {
+    //update user in database
+    Users.update({ id: req.token.id }, { question: newQuestion }).then(() => {
+      res.status(200).json(response.data);
+    }).catch(err => {
+      res.status(400).json({ 
+        error: err, 
+        message: 'Failed to change security question in Schematic Capture database.', 
+        step: 'api/auth/firslogin'});
+    })
+  })
+  .catch(err => {
+    console.log(err);
+    res.status(500).json({
+      error: err, 
+      message: 'Failed to log user in after changing password and security question.', 
+      step: 'api/auth/changepassword'
+    });
+  });
+});
+
+//need some way of retrieving security question
+//TESTED
+router.get('/securityquestion/:id', (req, res) => {
+  //get security question from db and send to front-end
+  Users.getQuestion(req.params.id)
+  .then(question => {
+      if (Object.keys(question).length === 0) { //No question found
+          res.status(400).json({ errorMessage: 'No security question was found for the user.', step: 'api/auth/securityquestion/:id'});
+      } else {
+          res.status(200).json(question);
+      }
+  })
+  .catch(err => {
+      res.status(500).json({error: err, message: 'Couldn\'t get security question', step: 'api/auth/securityquestion/:id'});
+  })
+});
+
+//TESTED
+router.post('/forgotpassword', getIdByEmail, (req, res) => {
+  //front end must send password (new password), answer to the security question
+  //get userId through email? middleware?
+  const data = {
+      password: { value: req.body.password },
+      recovery_question: { answer: req.body.answer}
+  }
+  const header = {
+      headers: {
+          Authorization: `SSWS ${process.env.OKTA_REGISTER_TOKEN}`
+      }
+  }
+  //this url will be different
+  axios
+  .post(
+      `https://dev-833124.okta.com/api/v1/users/${req.body.userId}/credentials/forgot_password?sendEmail=false`,
+      data, 
+      header)
+  .then(response => {
+      //log user in?
+      res.status(200).json(response.data);
+  })
+  .catch(err => {
+      res.status(500).json({error: err, message: 'Couldn\'t reset the password with Okta.', step: 'api/auth/forgotpassword'});
+  })
+});
+
+//returns an array of security questions
+//TESTED
+router.get('/questions', (req, res) => {
+  //this url will be different
+  axios
+  .get('https://dev-833124.okta.com/api/v1/users/00u4syc0frXBxcDtF4x6/factors/questions')
+  .then(response => {
+      res.status(200).json(response.data);
+  })
+  .catch(err => {
+      res.status(500).json({error: err, message: 'Couldn\'t get recovery questions from Okta.', step: 'api/auth/questions'});
+  })
+});
+
+//register user WITHOUT email invite
+//ONLY USE FOR DEVELOPMENT!!!
+router.post('/register', roleToRoleId, (req, res) => {
+  //send the user's name, email, role, password
+  let [first, ...last] = req.body.name.split(' ');
+  last = last.join(' ');
+  const header = {
+      headers: {
+          Authorization: `SSWS ${process.env.OKTA_REGISTER_TOKEN}`
+      }
+  }
+  const registerInfo = {
+      profile: {
+          firstName: first,
+          lastName: last,
+          email: req.body.email,
+          login: req.body.email
+      },
+      groupIds: [
+          //group id is in url in dashboard when you click on a group.
+          req.groupId
+      ],
+      credentials: {
+          password : { value: req.body.password },
+          recovery_question: {
+              question: "Who's a major player in the cowboy scene?",
+              answer: "Annie Oakley"
+          }
+      }
+  }
 
   axios
-    .post("https://api.sendgrid.com/v3/mail/send", data, config)
-    .then(() =>
-      res
-        .status(202)
-        .json({ message: `successfully sent invitation to ${email}` })
-    )
-    .catch(error => {
-      res.status(500).json({ error: error.message, step: "sendgridInvite" });
-    });
+  .post(`https://dev-833124.okta.com/api/v1/users?activate=true`, registerInfo, header)
+  .then(response => {
+      console.log(response);
+      //Add user to database.
+      const data = {
+        id: response.id,
+        role_id: req.body.roleId,
+        email: req.body.email,
+        first_name: first,
+        last_name: last,
+        question: "Who's a major player in the cowboy scene?"
+      }
+      //add user to database
+      return Users.add(data).then(addedUser => {
+        res.status(201).json({ user: addedUser });
+      })
+  })
+  .catch(err => {
+      console.log(err);
+      res.status(500).json({error: err, message: 'Registration with Okta failed.', step: 'api/auth/resgister'});
+  });
 });
-
-
-function signInvite(contents) {
-  const secret = process.env.INVITE_SECRET;
-  const options = { expiresIn: "1hr" };
-  
-  return jwt.sign(contents, secret, options);
-}
 
 module.exports = router;
