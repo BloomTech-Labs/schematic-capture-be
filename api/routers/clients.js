@@ -27,7 +27,7 @@ router.get('/withcompleted', (req, res) => {
       await Jobsheets.findByClientId(client.id).then(completedCol => {
         if (completedCol.length > 0) { //has jobsheets
           for (let jobsheet of completedCol) {
-            if (jobsheet.completed === 0) {
+            if (jobsheet.completed === false) { //0 for SQLite3, false for PostreSQL
               client.completed = false;
             }
           }
