@@ -23,7 +23,7 @@
 #       # A GitHub action to install Yarn
 #       - uses: actions/setup-node@master
 #         with:
-#           node-version: "8"
+#           node-version: "12.x"
 #           # Run the NPM install command before proceeding
 #       - run: npm install
 #       # A GitHub action for running tests and publishing coverage

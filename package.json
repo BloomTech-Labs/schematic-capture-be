@@ -2,11 +2,24 @@
     "name": "schematic-capture-be",
     "description": "REST API for the schematic capture app using the Express framework",
     "scripts": {
+        "test": "cross-env DB_ENV=test TEST_USER=bob_johnson@lambdaschool.com TEST_USER_PASSWORD=Testing123! jest --watch",
+        "coverage": "cross-env DB_ENV=test jest --coverage --detectOpenHandles --forceExit || true",
+        "test-migrate-latest": "cross-env DB_ENV=test knex --env test migrate:latest",
+        "test-migrate-rollback": "cross-env DB_ENV=test knex --env test migrate:rollback",
+        "test-seed": "cross-env DB_ENV=test knex --env test seed:run",
         "start": "node index.js",
         "server": "nodemon index.js"
     },
     "engines": {
         "node": ">=8"
+    },
+    "jest": {
+        "collectCoverageFrom": [
+            "**/*.{js,jsx}",
+            "!**/node_modules/**",
+            "!**/vendor/**",
+            "!**/__tests__/**"
+        ]
     },
     "dependencies": {
         "axios": "^0.19.2",
