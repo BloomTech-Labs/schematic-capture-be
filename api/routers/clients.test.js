@@ -21,7 +21,7 @@ describe('Clients router', () => {
     });
 
     describe('GET /', () => {
-        test('/ should return a status 200 with an array of client objects', async () => {
+        test('should return a status 200 with an array of client objects', async () => {
             const res = await request(server).get('/api/clients/').set('Authorization', `Bearer ${token}`);
             expect(res.status).toBe(200);
             expect(Array.isArray(res.body)).toBe(true);
