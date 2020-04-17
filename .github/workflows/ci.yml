@@ -24,7 +24,7 @@ jobs:
       - uses: actions/setup-node@master
         with:
           node-version: "12.x"
-          # Run the NPM install command before proceeding
+          # Run the yarn install command before proceeding
       - run: yarn
       # A GitHub action for running tests and publishing coverage
       - uses: paambaati/codeclimate-action@v2.4.0

@@ -2,7 +2,7 @@
     "name": "schematic-capture-be",
     "description": "REST API for the schematic capture app using the Express framework",
     "scripts": {
-        "test": "cross-env DB_ENV=test TEST_USER=bob_johnson@lambdaschool.com TEST_USER_PASSWORD=Testing123! jest --watch",
+        "test": "cross-env DB_ENV=test jest --watch",
         "coverage": "cross-env DB_ENV=test jest --coverage --detectOpenHandles --forceExit || true",
         "test-migrate-latest": "cross-env DB_ENV=test knex --env test migrate:latest",
         "test-migrate-rollback": "cross-env DB_ENV=test knex --env test migrate:rollback",
