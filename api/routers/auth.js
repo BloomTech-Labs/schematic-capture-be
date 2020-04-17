@@ -8,6 +8,7 @@ const sendEmailInvite = require('../middleware/auth/sendEmailInvite');
 const changeOktaPassword = require('../middleware/auth/changeOktaPassword');
 const changeOktaQuestion = require('../middleware/auth/changeOktaQuestion');
 const getIdByEmail = require('../middleware/users/getIdByEmail');
+const generateToken = require('../../utils/generateToken');
 
 //TESTED
 router.post('/login', (req, res) => {
@@ -29,10 +30,11 @@ router.post('/login', (req, res) => {
     .post(`https://dev-833124.okta.com/api/v1/authn`, loginInfo)
     .then(response => {
       //get user from database via email
-      console.log(response.data._embedded.user.profile.login);
-      user.findBy(response.data._embedded.user.profile.login)
+      Users.findBy({ email: response.data._embedded.user.profile.login })
       .then(user => {
-        res.status(200).json(user.data);
+        const token = generateToken(user.id, req.body.password, user.email, user.role.id);
+        user.token = token;
+        res.status(200).json(user);
       });
     })
     .catch(err => {
@@ -94,6 +96,8 @@ router.post('/firstlogin', changeOktaPassword, changeOktaQuestion, (req, res) =>
   .then(response => {
     //update user in database
     Users.update({ id: req.token.id }, { question: newQuestion }).then(() => {
+      const token = generateToken(req.token.id, newPassword, req.token.email, req.token.roleId);
+      response.data.token = token;
       res.status(200).json(response.data);
     }).catch(err => {
       res.status(400).json({ 
@@ -118,7 +122,7 @@ router.get('/securityquestion/:id', (req, res) => {
   //get security question from db and send to front-end
   Users.getQuestion(req.params.id)
   .then(question => {
-      if (Object.keys(question).length === 0) { //No question found
+      if (question.question === null) { //No question found
           res.status(400).json({ errorMessage: 'No security question was found for the user.', step: 'api/auth/securityquestion/:id'});
       } else {
           res.status(200).json(question);
@@ -217,6 +221,8 @@ router.post('/register', roleToRoleId, (req, res) => {
       }
       //add user to database
       return Users.add(data).then(addedUser => {
+        const token = generateToken(addedUser.id, req.body.password, data.email, addedUser.role.id);
+        addedUser.token = token;
         res.status(201).json({ user: addedUser });
       })
   })

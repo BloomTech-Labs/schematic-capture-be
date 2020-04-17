@@ -1,11 +1,10 @@
 const jwt = require('jsonwebtoken');
 const { jwtSecret } = require('./secrets');
 
-module.exports = (id, roleId, email, password, answer) => {
+module.exports = (id, roleId, email, password) => {
     const payload = {
         id,
         password,
-        answer,
         email,
         roleId
     }
