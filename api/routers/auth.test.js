@@ -53,7 +53,7 @@ describe('Auth router', () => {
 
     describe('GET api/auth/questions', () => {
         test('should return a status 200 with an array of question objects', async () => {
-            const res = await request(server).get('api/auth/questions');
+            const res = await request(server).get('/api/auth/questions');
             expect(res.status).toBe(200);
             expect(Array.isArray(res.body)).toBe(true);
             expect(res.body[0]).toMatchObject({
