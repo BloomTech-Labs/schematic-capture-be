@@ -26,6 +26,8 @@ jobs:
           node-version: "12.x"
           # Run the yarn install command before proceeding
       - run: yarn
+      - run: yarn test-migrate-latest
+      - run: yarn test-seed
       # A GitHub action for running tests and publishing coverage
       - uses: paambaati/codeclimate-action@v2.4.0
         env:
@@ -35,8 +37,7 @@ jobs:
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
 
         with:
-          migrateTablesCommand: yarn test-migrate-latest
-          seedTablesCommand: yarn test-seed
           # Run our `coverage` command from our `package.json`
-          coverageCommand: yarn run coverage
-          rollbackTables: yarn test-migrate-rollback
+          # coverageCommand: yarn run coverage
+          run: yarn coverage
+      -run: yarn test-migrate-rollback
