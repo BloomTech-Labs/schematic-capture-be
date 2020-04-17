@@ -8,7 +8,6 @@ module.exports = shouldExist => (req, res, next) => {
     .then(user => {
       //!! - force truthy value instead of actual value
       const accountExists = !!user;
-      console.log({ accountExists })
       if (accountExists === shouldExist) {
         next();
       } else {

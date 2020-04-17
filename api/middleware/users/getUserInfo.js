@@ -4,7 +4,7 @@ module.exports = (req, res, next) => {
     const { email } = req.decodedToken;
 
     Users
-        .findBy(email)
+        .findBy({ email })
         .then(user => {
             req.userInfo = user;
             next();

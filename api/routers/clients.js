@@ -59,6 +59,7 @@ router.get('/withcompleted', (req, res) => {
 router.get('/:id/projects', (req, res) => {
   const clientId = Number(req.params.id);
 
+  //id returning snake case, needs to be converted to camelCase for front-end
   Projects
     .findBy(reqToDb({ clientId }))
     .then(projects => res.status(200).json(projects))
@@ -69,14 +70,9 @@ router.post('/:id/projects', async (req, res) => {
   const clientId = Number(req.params.id)
 
   try {
-    const clients = await Clients.findByMultiple('organization_id', req.userOrganizations);
-
-    if (!clients.map(client => client.id).includes(clientId)) {
-      return res.status(400).json({ message: 'client not associated with this user' })
-    }
-
     const projectData = req.body;
     projectData.clientId = clientId;
+    projectData.completed = false;
     
     const project = await Projects.add(reqToDb(projectData));
 
@@ -89,8 +85,6 @@ router.post('/:id/projects', async (req, res) => {
 
 router.post('/create', getUserInfo, (req, res) => {
   const clientData = req.body;
-  const [organization] = req.userInfo.organizations;
-  clientData.organizationId = organization.id;
 
   Clients
     .add(reqToDb(clientData))
@@ -109,10 +103,11 @@ router.put('/:id', async (req, res) => {
     .status(404)
     .json({ errror: 'the specified client with this id does not exist'});
   }
+  //expects snake case
   await Clients.update({ id }, req.body);
 
   return res.status(200).json({
-    messsage: 'client has been updated'
+    message: 'client has been updated'
   });
 } catch (error) {
   return res.status(500).json({
