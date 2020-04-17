@@ -2,19 +2,16 @@ require("dotenv").config();
 
 module.exports = {
     test: {
-        client: "pg",
+        client: 'sqlite3',
         connection: {
-            host: process.env.DB_HOST,
-            port: process.env.DB_PORT,
-            user: process.env.DB_USER,
-            password: process.env.DB_PASSWORD,
-            database: process.env.DB_DATABASE
+            filename: './data/test.db3'
         },
+        useNullAsDefault: true,
         migrations: {
-            directory: "./data/migrations"
+            directory: './data/migrations',
         },
         seeds: {
-            directory: "./data/seeds"
+            directory: './data/seeds',
         }
     },
     staging: {
@@ -33,7 +30,6 @@ module.exports = {
     },
     production: {
         client: "pg",
-        // connection: process.env.DATABASE_URL,
         connection: process.env.DATABASE_URL,
         pool: {
             min: 2,
