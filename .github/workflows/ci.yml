@@ -26,6 +26,8 @@ jobs:
           node-version: "12.x"
           # Run the yarn install command before proceeding
       - run: yarn
+      - run: yarn test-migrate-latest
+      - run: yarn test-seed
       # A GitHub action for running tests and publishing coverage
       - uses: paambaati/codeclimate-action@v2.4.0
         env:
@@ -37,3 +39,4 @@ jobs:
         with:
           # Run our `coverage` command from our `package.json`
           coverageCommand: yarn run coverage
+      -run: yarn test-migrate-rollback
