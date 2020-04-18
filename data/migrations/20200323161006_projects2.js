@@ -8,7 +8,11 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
   return knex.schema.table('projects', tbl => {
-    tbl.dropColumn('assigned_status');
+    knex.schema.hasColumn('projects', 'assigned_status').then(exists => {
+      if (exists) {
+        tbl.dropColumn('assigned_status');
+      }
+    });
     tbl.dropColumn('completed');
   });
 };
