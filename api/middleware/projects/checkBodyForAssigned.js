@@ -1,10 +1,10 @@
-const { Projects } = require ('../../../data/models')
-
 module.exports = (req, res, next) => {
-    console.log(`middleware for assigning technicians jobs ${req.body.assigned_user_id}`)
-    if(req.body.assigned_user_id) {
+    if(req.body.email) {
         next()
     } else {
-        res.status(400).json({ message: 'does not update assigned_user_id' })
+        res.status(400).json({ 
+            message: 'Please include the email of the user you want to assign to the project.', 
+            step: 'checkBodyForAssigned' 
+        });
     }
 }

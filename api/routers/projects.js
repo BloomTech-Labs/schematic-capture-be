@@ -26,21 +26,29 @@ router.get("/:id/jobsheets", checkIfProjectExists, async (req, res) => {
     } catch (error) {
         return res
             .status(500)
-            .json({ error: error.message, step: "/:id/jobsheets" });
+            .json({ error: error.message, step: "/:id" });
     }
 });
 
-router.put('/:id/jobsheets', checkIfProjectExists, checkBodyForAssigned, async (req, res) => {
-    const { id } = req.params
+//This endpoint is to assign a technician to a project
+//TODO: middleware validation that the user being assigned exists
+router.put('/:id/assignuser', checkIfProjectExists, checkBodyForAssigned, async (req, res) => {
+    const { id } = req.params;
 
-    Jobsheets.update({ project_id: id }, req.body)
+    const changes = { status: 'assigned', user_email: req.body.email }
+
+    Jobsheets.update({ project_id: id }, changes)
     .then(updatedJob => {
-        res.status(201).json(updatedJob)
+        res.status(201).json(updatedJob);
     })
     .catch(err => {
         err.status(404)
-        .json({ error: error.message, step: "/:id/jobsheets" })
-    })
-})
+        .json({ 
+            error: error.message, 
+            message: 'Unable to make the required changes to the database.', 
+            step: "/:id/assignuser" 
+        });
+    });
+});
 
 module.exports = router;
