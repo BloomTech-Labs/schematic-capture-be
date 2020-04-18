@@ -65,8 +65,7 @@ describe('Clients router', () => {
                 id: expect.any(Number),
                 client_id: expect.any(Number),
                 name: expect.any(String),
-                completed: expect.any(Number),
-                assigned_status: null
+                completed: expect.any(Number)
             });
         });
     });
@@ -84,8 +83,7 @@ describe('Clients router', () => {
                 id: expect.any(Number),
                 client_id: expect.any(Number),
                 name: expect.stringMatching(testMachine),
-                completed: expect.any(Number),
-                assigned_status: null
+                completed: expect.any(Number)
             });
         })
     })

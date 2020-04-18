@@ -15,8 +15,6 @@ const knex = require('knex')({
     }
 });
 
-console.log('hello')
-
 describe('Database migrations and seeds', () => {
     test('should run the test', function() {
         expect(true).toBe(true);
