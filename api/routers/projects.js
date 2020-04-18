@@ -7,26 +7,7 @@ const checkBodyForAssigned = require("../middleware/projects/checkBodyForAssigne
 
 router.get("/:id/jobsheets", checkIfProjectExists, async (req, res) => {
     const { id } = req.params;
-
-    let project;
-
-    try {
-        project = await Projects.findBy({ id }).first();
-
-        if (!project) {
-            return res
-                .status(404)
-                .json({ error: "project with this id does not exists" });
-        }
-        
-    } catch (error) {
-        return res
-            .status(500)
-            .json({ error: error.message, step: "/:id/jobsheets" });
-    }
-
     let jobsheets;
-
     try {
         jobsheets = await Jobsheets.findBy({ project_id: id });
         return res.status(200).json(jobsheets);
@@ -39,18 +20,7 @@ router.get("/:id/jobsheets", checkIfProjectExists, async (req, res) => {
 
     router.put("/:id", checkIfProjectExists, async (req, res) => {
     const { id } = req.params;
-
-    let project;
-
     try {
-        project = await Projects.findBy({ id }).first();
-
-        if (!project) {
-            return res
-                .status(404)
-                .json({ error: "project with this id does not exist" });
-        }
-
         await Projects.update({ id }, req.body);
         return res.status(200).json({ message: "project has been updated" });
     } catch (error) {

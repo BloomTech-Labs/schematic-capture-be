@@ -6,7 +6,6 @@ module.exports = (req, res, next) => {
     Projects
       .findBy({ id })
       .then(proj => {
-        console.log(proj)
         if (proj && Object.entries(proj).length) {
           next();
         } else {

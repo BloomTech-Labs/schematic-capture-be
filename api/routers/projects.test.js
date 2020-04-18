@@ -35,5 +35,9 @@ describe('Projects router', () => {
                 user_email: expect.stringMatching(process.env.TEST_USER)
             });
         });
+        test('should return status 404 if a project with the passed id doesn\'t exist.', async () => {
+            const res = await request(server).get('/api/projects/12/jobsheets').set('Authorization', `Bearer ${token}`);
+            expect(res.status).toBe(404);
+        })
     });
 });
