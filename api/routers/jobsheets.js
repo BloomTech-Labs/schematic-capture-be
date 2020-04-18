@@ -3,6 +3,8 @@ const dbToRes = require('../../utils/dbToRes');
 const reqToDb = require('../../utils/reqToDb');
 const { Projects, Jobsheets, Components } = require('../../data/models');
 
+//TODO: This endpoint is weak on validation. I recommend adding more validation middleware when there's time.
+
 //Works as long as the custom column is included in the database.
 router.post('/create', async (req, res) => {
   try {
@@ -14,6 +16,7 @@ router.post('/create', async (req, res) => {
 });
 
 //works
+//This endpoint users the Bearer token to return the the projects the user is assigned to, the jobsheets they are assigned to and the components for each jobsheet.
 router.get('/assigned', async (req, res) => {
   const { email } = req.decodedToken;
 
@@ -24,6 +27,8 @@ router.get('/assigned', async (req, res) => {
   } catch (error) {
     return res.status(500).json({ error: error.message, step: '/assigned-getcomponents' });
   }
+
+  console.log(jobsheets);
 
   let assignments;
 
@@ -67,14 +72,14 @@ router.get('/:id/components', async (req, res) => {
   Components
     .findBy({ jobsheet_id: id })
     .then(components => res.status(200).json(components.map(component => dbToRes(component))))
-    .catch(error => res.status(500).json({ error: error.message, step: '/:id' }));
+    .catch(error => res.status(500).json({ error: error.message, step: '/:id-Components.findBy' }));
 });
 
 router.get('/:id', async (req, res) => {
   const id = Number(req.params.id);
 
   Jobsheets.findBy({ id })
-    .then(jobsheet => res.status(200).json(jobsheet))
+    .then(jobsheet => res.status(200).json(jobsheet[0]))
     .catch(error => res.status(500).json({ error: error.message, step: '/:id' }));
 });
 
@@ -83,7 +88,7 @@ router.put('/:id/update', (req, res) => {
 
   Jobsheets.update({ id }, req.body)
     .then(jobsheet => {
-      res.status(201).json(jobsheet);
+      res.status(201).json(jobsheet[0]);
     }).catch(error => {
       res.status(500).json({ error: error.message, step: '/:id/update' });
     });
