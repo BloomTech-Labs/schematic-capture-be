@@ -1,8 +1,7 @@
 require("dotenv").config();
 
 exports.up = function(knex) {
-    return knex.schema
-        .createTable("roles", table => {
+    return knex.schema.createTable("roles", table => {
             table.increments();
             table.string("name").notNullable();
         })
