@@ -20,20 +20,22 @@ describe('Jobsheets router', () => {
         });
     });
 
+    const typicalJobsheetObject = {
+        id: expect.any(Number),
+        updated_at: expect.any(String),
+        status: expect.any(String),
+        user_email: expect.any(String),
+        name: expect.any(String),
+        project_id: expect.any(Number),
+        completed: expect.any(Number)
+    }
+
     describe('GET /:id', () => {
         test('should return status 200 with the requested jobsheet', async () => {
             const res = await request(server).get('/api/jobsheets/1').set('Authorization', `Bearer ${token}`);
             expect(res.status).toBe(200);
             expect(res.body.id).toBe(1);
-            expect(res.body).toMatchObject({
-                id: expect.any(Number),
-                updated_at: expect.any(String),
-                status: expect.any(String),
-                user_email: expect.any(String),
-                name: expect.any(String),
-                project_id: expect.any(Number),
-                completed: expect.any(Number)
-            })
+            expect(res.body).toMatchObject(typicalJobsheetObject);
         })
     });
 
@@ -86,15 +88,8 @@ describe('Jobsheets router', () => {
             expect(res.status).toBe(201);
             expect(res.body.id).toBe(1);
             expect(res.body.name).toBe(changes.name);
-            expect(res.body).toMatchObject({
-                id: expect.any(Number),
-                updated_at: expect.any(String),
-                status: expect.any(String),
-                user_email: expect.any(String),
-                name: expect.any(String),
-                project_id: expect.any(Number),
-                completed: expect.any(Number)
-            });
+            expect(res.body).toMatchObject(typicalJobsheetObject);
         });
     });
 });
+

@@ -1,37 +1,14 @@
 
-exports.up = function(knex) {
-    return knex.schema.table('users', tbl => {
-        knex.schema.hasColumn('users', 'role_id')
-            .then(exists => {
-                if(exists){
-                    tbl.dropColumn('role_id')
-                    tbl
-                        .integer('role_id')
-                        .unsigned()
-                        .references('id')
-                        .inTable('roles')
-                        .notNullable()
-                        .onDelete('CASCADE')
-                        .onUpdate('CASCADE')
-                }
-            })
-            .then(success => {
-                if(success){
-                    knex.schema.hasColumn('projects', 'assigned_status')
-                        .then(exists => {
-                            if(exists) {
-                                knex.schema.dropColumn('assigned_status')
-                            }
-                        })
-                        .catch(err => {
-                            console.log(err, 'error taking down assignedstatus from proj')
-                        })
-                }
-            })
-            .catch(err =>{
-                console.log(err, 'error removing role_id old and then creating role_id new')
-            })
-    })
+exports.up = async knex => {
+    await knex.schema.table('users', tbl => {
+        tbl.dropColumn('role_id');
+    });
+    await knex.schema.table('users', tbl => {
+        tbl.integer('role_id').unsigned().references('id').inTable('roles').onDelete('CASCADE').onUpdate('CASCADE');
+    });
+    return knex.schema.table('projects', tbl => {
+        tbl.dropColumn('assigned_status');
+    });
 };
 
 exports.down = function(knex) {
