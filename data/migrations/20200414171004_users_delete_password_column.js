@@ -7,6 +7,6 @@ exports.up = function(knex) {
 
 exports.down = function(knex) {
     return knex.schema.table('users', tbl => {
-        tbl.string("password").notNullable();
+        tbl.string("password");
     });
 };
