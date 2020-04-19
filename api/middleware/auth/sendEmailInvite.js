@@ -1,16 +1,16 @@
 const axios = require('axios');
+
+const config = {
+    headers: {
+        Authorization: `Bearer ${process.env.SG_API_KEY}`
+    }
+};
+
 module.exports = (req, res, next) => {
     //send an email that contains a link to sign-in with the token in the url
-    const sgApiKey = process.env.SG_API_KEY;
-    const templateId = process.env.SG_TEMPLATE_ID;
     //CANNOT register at any other endpoint. This is how we make sure people were invited
     //this method of attaching token to the url should be eventually changed.
     const registrationUrl = `https://schematiccapture.com/firstlogin/${req.token}`;
-    const config = {
-        headers: {
-            Authorization: `Bearer ${sgApiKey}`
-        }
-    };
     const data = {
         personalizations: [
             {
@@ -22,21 +22,12 @@ module.exports = (req, res, next) => {
             email: "invitation@schematiccapture.com",
             name: "Schematic Capture"
         },
-        template_id: templateId
+        template_id: process.env.SG_TEMPLATE_ID
     };
     //send email
-    axios
-    .post("https://api.sendgrid.com/v3/mail/send", data, config)
-    .then(() => {
-        console.log(`successfully sent invitation to ${req.body.email}`);
+    axios.post("https://api.sendgrid.com/v3/mail/send", data, config).then(() => {
         next();
-    })
-    .catch(error => {
-        console.log(error);
-        res.status(500).json({ 
-            error: err, 
-            message: 'Failed to send email to user.', 
-            step: 'sendEmailInvite middleware'
-        });
+    }).catch(error => {
+        res.status(500).json({ error: err, message: 'Failed to send email to user.', step: 'sendEmailInvite middleware' });
     });
 }

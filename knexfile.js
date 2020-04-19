@@ -1,5 +1,20 @@
 require("dotenv").config();
 
+const postgresConfig = {
+    client: "pg",
+    connection: process.env.DATABASE_URL,
+    pool: {
+        min: 2,
+        max: 20
+    },
+    migrations: {
+        directory: "./data/migrations"
+    },
+    seeds: {
+        directory: "./data/seeds"
+    }
+}
+
 module.exports = {
     test: {
         client: 'sqlite3',
@@ -14,34 +29,8 @@ module.exports = {
             directory: './data/seeds',
         }
     },
-    staging: {
-        client: "pg",
-        connection: process.env.DATABASE_URL,
-        pool: {
-            min: 2,
-            max: 20
-        },
-        migrations: {
-            directory: "./data/migrations"
-        },
-        seeds: {
-            directory: "./data/seeds"
-        }
-    },
-    production: {
-        client: "pg",
-        connection: process.env.DATABASE_URL,
-        pool: {
-            min: 2,
-            max: 20
-        },
-        migrations: {
-            directory: "./data/migrations"
-        },
-        seeds: {
-            directory: "./data/seeds"
-        }
-    },
+    staging: postgresConfig,
+    production: postgresConfig,
     development: {
         client: 'sqlite3',
         connection: {
