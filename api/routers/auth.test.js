@@ -38,17 +38,15 @@ describe('Auth router', () => {
             expect(res.body).toMatchObject({ question: expect.any(String) });
         });
 
-        test('with an invalid id you should get a status 500.', async () => {
-            const res = await request(server).get(`/api/auth/securityquestion/2`);
-            expect(res.status).toBe(500);
-            expect(res.body).toMatchObject({});
-        });
-
-        test('if the user doesn\'t have a security question, you should get an error 400', async () => {
-            const res = await request(server).get(`/api/auth/securityquestion/nMAqmtW3qAWIpBzPUE1DXxxw5aB2`);
-            expect(res.status).toBe(400);
-            expect(res.body).toMatchObject({});
-        })
+        const testError = (testStatement, url, expectedStatus) => {
+            test(testStatement, async () => {
+                const res = await request(server).get(url);
+                expect(res.status).toBe(expectedStatus);
+                expect(res.body).toMatchObject({});
+            });
+        }
+        testError('with an invalid id you should get a status 500.', `/api/auth/securityquestion/2`, 500);
+        testError('if the user doesn\'t have a security question, you should get an error 400', `/api/auth/securityquestion/nMAqmtW3qAWIpBzPUE1DXxxw5aB2`, 400);
     });
 
     describe('GET api/auth/questions', () => {
