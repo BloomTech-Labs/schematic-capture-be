@@ -18,9 +18,9 @@ describe('Auth router', () => {
             expect(res.body).toMatchObject({
                 id: expect.any(String),
                 email: expect.stringMatching(process.env.TEST_USER),
-                first_name: expect.stringMatching('Bob'),
-                last_name: expect.stringMatching('Johnson'),
-                license_id: null,
+                firstName: expect.stringMatching('Bob'),
+                lastName: expect.stringMatching('Johnson'),
+                licenseId: null,
                 phone: expect.any(String),
                 question: expect.any(String),
                 roleId: expect.any(Number),

@@ -9,6 +9,7 @@ const changeOktaPassword = require('../middleware/auth/changeOktaPassword');
 const changeOktaQuestion = require('../middleware/auth/changeOktaQuestion');
 const getIdByEmail = require('../middleware/users/getIdByEmail');
 const generateToken = require('../../utils/generateToken');
+const dbToRes = require('../../utils/dbToRes');
 
 //TESTED
 router.post('/login', (req, res) => {
@@ -34,7 +35,7 @@ router.post('/login', (req, res) => {
       .then(user => {
         const token = generateToken(user.id, req.body.password, user.email, user.role.id);
         user.token = token;
-        res.status(200).json(user);
+        res.status(200).json(dbToRes(user));
       });
     })
     .catch(err => {
@@ -59,7 +60,7 @@ router.post('/invite', validateRegistration, roleToRoleId, registerUserWithOkta,
   }
   //add user to database
   Users.add(data).then(addedUser => {
-    res.status(201).json({ user: addedUser });
+    res.status(201).json({ user: dbToRes(addedUser) });
   }).catch(err => {
     res.status(500).json({ 
       error: err, 
@@ -223,7 +224,7 @@ router.post('/register', roleToRoleId, (req, res) => {
       return Users.add(data).then(addedUser => {
         const token = generateToken(addedUser.id, req.body.password, data.email, addedUser.role.id);
         addedUser.token = token;
-        res.status(201).json({ user: addedUser });
+        res.status(201).json({ user: dbToRes(addedUser) });
       })
   })
   .catch(err => {

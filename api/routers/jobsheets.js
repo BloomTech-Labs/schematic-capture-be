@@ -9,7 +9,7 @@ const { Projects, Jobsheets, Components } = require('../../data/models');
 router.post('/create', async (req, res) => {
   try {
     const jobsheet = await Jobsheets.add(reqToDb(req.body));
-    res.status(201).json(jobsheet);
+    res.status(201).json(dbToRes(jobsheet));
   } catch (error) {
     return res.status(500).json({ error: error.message, step: '/create' });
   }
@@ -79,7 +79,7 @@ router.get('/:id', async (req, res) => {
   const id = Number(req.params.id);
 
   Jobsheets.findBy({ id })
-    .then(jobsheet => res.status(200).json(jobsheet[0]))
+    .then(jobsheet => res.status(200).json(dbToRes(jobsheet[0])))
     .catch(error => res.status(500).json({ error: error.message, step: '/:id' }));
 });
 
@@ -88,7 +88,7 @@ router.put('/:id/update', (req, res) => {
 
   Jobsheets.update({ id }, req.body)
     .then(jobsheet => {
-      res.status(201).json(jobsheet[0]);
+      res.status(201).json(dbToRes(jobsheet[0]));
     }).catch(error => {
       res.status(500).json({ error: error.message, step: '/:id/update' });
     });
