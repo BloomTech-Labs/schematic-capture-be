@@ -35,7 +35,7 @@ router.get('/withcompleted', (req, res) => {
           for (let jobsheet of completedCol) {
             if (jobsheet.completed === test) { //0 for SQLite3, false for PostreSQL
               client.completed = false;
-              return client;
+              return dbToRes(client);
             }
           }
           client.completed = true;
@@ -43,9 +43,8 @@ router.get('/withcompleted', (req, res) => {
           client.completed = true;
         }
       });
-      return client;
+      return dbToRes(client);
     }));
-    //This is currently returning snake case. Should be switched to camel case for front-end
     res.status(200).json(clientsWithCompleted);
   }).catch(err => {
     res.status(500).json({
@@ -59,11 +58,12 @@ router.get('/withcompleted', (req, res) => {
 router.get('/:id/projects', (req, res) => {
   const clientId = Number(req.params.id);
 
-  //id returning snake case, needs to be converted to camelCase for front-end
   Projects
     .findBy(reqToDb({ clientId }))
-    .then(projects => res.status(200).json(projects))
-    .catch(error => res.status(500).json({ error: error.message, step: '/' }));
+    .then(projects => {
+      projects = projects.map(project => dbToRes(project));
+      res.status(200).json(projects)
+    }).catch(error => res.status(500).json({ error: error.message, step: '/' }));
 });
 
 router.post('/:id/projects', async (req, res) => {
@@ -76,7 +76,7 @@ router.post('/:id/projects', async (req, res) => {
     
     const project = await Projects.add(reqToDb(projectData));
 
-    res.status(201).json(project);
+    res.status(201).json(dbToRes(project));
 
   } catch (error) {
       return res.status(500).json({ error: error.message, step: '/:id/projects' })
@@ -88,7 +88,7 @@ router.post('/create', getUserInfo, (req, res) => {
 
   Clients
     .add(reqToDb(clientData))
-    .then(client => res.status(201).json(client))
+    .then(client => res.status(201).json(dbToRes(client)))
     .catch(error => res.status(500).json({ error: error.message, step: '/create' }));
 });
 
@@ -103,8 +103,7 @@ router.put('/:id', async (req, res) => {
     .status(404)
     .json({ errror: 'the specified client with this id does not exist'});
   }
-  //expects snake case
-  await Clients.update({ id }, req.body);
+  await Clients.update({ id }, reqToDb(req.body));
 
   return res.status(200).json({
     message: 'client has been updated'

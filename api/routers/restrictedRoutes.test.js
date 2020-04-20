@@ -58,7 +58,7 @@ describe('Restricted routes', () => {
                 expect(Array.isArray(res.body)).toBe(true);
                 expect(res.body[0]).toMatchObject({
                     id: expect.any(Number),
-                    company_name: expect.any(String),
+                    companyName: expect.any(String),
                     phone: expect.any(String),
                     street: expect.any(String),
                     city: expect.any(String),
@@ -71,7 +71,7 @@ describe('Restricted routes', () => {
     
         const typicalProject = {
             id: expect.any(Number),
-            client_id: expect.any(Number),
+            clientId: expect.any(Number),
             name: expect.any(String),
             completed: expect.any(Number)
         }
@@ -80,7 +80,7 @@ describe('Restricted routes', () => {
                 const res = await request(server).get('/api/clients/1/projects').set('Authorization', `Bearer ${token}`);
                 expect(res.status).toBe(200);
                 expect(Array.isArray(res.body)).toBe(true);
-                expect(res.body[0].client_id).toBe(1);
+                expect(res.body[0].clientId).toBe(1);
                 expect(res.body[0]).toMatchObject(typicalProject);
             });
         });
@@ -90,7 +90,7 @@ describe('Restricted routes', () => {
                 const testMachine = 'industrial boiler'
                 const res = await requestWithBody('post', '/api/clients/1/projects', { name: testMachine }, token)
                 expect(res.status).toBe(201);
-                expect(res.body.client_id).toBe(1);
+                expect(res.body.clientId).toBe(1);
                 expect(res.body.completed).toBe(0);
                 expect(res.body.name).toBe(testMachine)
                 expect(res.body).toMatchObject(typicalProject);
@@ -100,12 +100,12 @@ describe('Restricted routes', () => {
         describe('PUT /:id', () => {
             const testChange = 'ACME Industrial';
             test('should return status 200 with a message confirming the client has been updated', async () => {
-                const res = await requestWithBody('put', '/api/clients/1', { company_name: testChange }, token);
+                const res = await requestWithBody('put', '/api/clients/1', { companyName: testChange }, token);
                 expect(res.status).toBe(200);
                 expect(res.body).toMatchObject({ message: expect.stringMatching("client has been updated") });
             });
             test('should return a status 404 with an invalid client id', async () => {
-                const res = await requestWithBody('put', '/api/clients/12', { company_name: testChange }, token);
+                const res = await requestWithBody('put', '/api/clients/12', { companyName: testChange }, token);
                 expect(res.status).toBe(404);
             });
         });
@@ -124,7 +124,7 @@ describe('Restricted routes', () => {
                 expect(res.status).toBe(201);
                 expect(res.body).toMatchObject({
                     id: expect.any(Number),
-                    company_name: expect.stringMatching(clientInfo.companyName),
+                    companyName: expect.stringMatching(clientInfo.companyName),
                     phone: expect.stringMatching(clientInfo.phone),
                     street: expect.stringMatching(clientInfo.street),
                     city: expect.stringMatching(clientInfo.city),
