@@ -10,7 +10,7 @@ const performsTest = () => {
     });
 }
 
-const requestWithBody = (putOrPost, url, changes) => {
+const requestWithBody = (putOrPost, url, changes, token) => {
     if (putOrPost === 'put') {
         return request(server).put(url).set('Authorization', `Bearer ${token}`).send(changes);
     } else {
@@ -23,8 +23,7 @@ describe('Restricted routes', () => {
 
     let token;
     beforeAll(done => {
-        request(server)
-        .post('/api/auth/login')
+        request(server).post('/api/auth/login')
         .send({ username: process.env.TEST_USER, password: process.env.TEST_USER_PASSWORD })
         .end((err, res) => {
             token = res.body.token;
@@ -89,7 +88,7 @@ describe('Restricted routes', () => {
         describe('POST /:id/projects', () => {
             test('should insert a project to the database and return it with a status 201', async () => {
                 const testMachine = 'industrial boiler'
-                const res = await requestWithBody('post', '/api/clients/1/projects', { name: testMachine })
+                const res = await requestWithBody('post', '/api/clients/1/projects', { name: testMachine }, token)
                 expect(res.status).toBe(201);
                 expect(res.body.client_id).toBe(1);
                 expect(res.body.completed).toBe(0);
@@ -101,14 +100,12 @@ describe('Restricted routes', () => {
         describe('PUT /:id', () => {
             const testChange = 'ACME Industrial';
             test('should return status 200 with a message confirming the client has been updated', async () => {
-                const res = await requestWithBody('put', '/api/clients/1', { company_name: testChange });
+                const res = await requestWithBody('put', '/api/clients/1', { company_name: testChange }, token);
                 expect(res.status).toBe(200);
-                expect(res.body).toMatchObject({
-                    message: expect.stringMatching("client has been updated")
-                });
+                expect(res.body).toMatchObject({ message: expect.stringMatching("client has been updated") });
             });
             test('should return a status 404 with an invalid client id', async () => {
-                const res = await requestWithBody('put', '/api/clients/12', { company_name: testChange });
+                const res = await requestWithBody('put', '/api/clients/12', { company_name: testChange }, token);
                 expect(res.status).toBe(404);
             });
         });
@@ -123,7 +120,7 @@ describe('Restricted routes', () => {
                     state: "NJ",
                     zip: "10612"
                 };
-                const res = await requestWithBody('post', '/api/clients/create', clientInfo);
+                const res = await requestWithBody('post', '/api/clients/create', clientInfo, token);
                 expect(res.status).toBe(201);
                 expect(res.body).toMatchObject({
                     id: expect.any(Number),
@@ -171,8 +168,7 @@ describe('Restricted routes', () => {
     
         describe('GET /:id/components', () => {
             test('should return a status 200 with an array of components.', async () => {
-                const res = await request(server)
-                    .get('/api/jobsheets/1/components').set('Authorization', `Bearer ${token}`);
+                const res = await request(server).get('/api/jobsheets/1/components').set('Authorization', `Bearer ${token}`);
                 expect(res.status).toBe(200);
                 expect(Array.isArray(res.body)).toBe(true);
                 expect(res.body[0].jobsheetId).toBe(1);
@@ -202,7 +198,7 @@ describe('Restricted routes', () => {
         describe('PUT /:id/update', () => {
             test('should return status 201 with the requested jobsheet', async () => {
                 const changes = { name: "ACME Manifolds Jobsheet" }
-                const res = await requestWithBody('put', '/api/jobsheets/1/update', changes);
+                const res = await requestWithBody('put', '/api/jobsheets/1/update', changes, token);
                 expect(res.status).toBe(201);
                 expect(res.body.id).toBe(1);
                 expect(res.body.name).toBe(changes.name);
@@ -237,7 +233,7 @@ describe('Restricted routes', () => {
 
         const test404Error = (testStatement, changes, url) => {
             test(testStatement, async () => {
-                const res = await requestWithBody('put', url, changes);
+                const res = await requestWithBody('put', url, changes, token);
                 expect(res.status).toBe(404);
             });
         }
@@ -245,7 +241,7 @@ describe('Restricted routes', () => {
         describe('PUT /:id', () => {
             const changes = { name: 'The Manhattan Project' };
             test('should return status 200 and an array of projects', async () => {
-                const res = await requestWithBody('put', '/api/projects/1', changes);
+                const res = await requestWithBody('put', '/api/projects/1', changes, token);
                 expect(res.status).toBe(200);
                 expect(res.body).toMatchObject({ message: expect.stringMatching("project has been updated") });
             });
@@ -255,7 +251,7 @@ describe('Restricted routes', () => {
         describe('PUT /:id/assignuser', () => {
             const changes = { email: 'bob_johnson@lambdaschool.com' };
             test('should return a status 201 with the updated jobsheets', async () => {
-                const res = await requestWithBody('put', '/api/projects/1/assignuser', changes);
+                const res = await requestWithBody('put', '/api/projects/1/assignuser', changes, token);
                 expect(res.status).toBe(201);
                 expect(Array.isArray(res.body)).toBe(true);
                 expect(res.body[0]).toMatchObject({
@@ -270,7 +266,7 @@ describe('Restricted routes', () => {
             });
             test404Error('should return status 404 if a project with the passed id doesn\'t exist.', changes, '/api/projects/25/assignuser');
             test('should return status 400 if an email isn\'t included in the request body.', async () => {
-                const res = await requestWithBody('put', '/api/projects/1/assignuser', { somethingElse: 'not an email' });
+                const res = await requestWithBody('put', '/api/projects/1/assignuser', { somethingElse: 'not an email' }, token);
                 expect(res.status).toBe(400);
             });
         });

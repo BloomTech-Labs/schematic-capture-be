@@ -1,5 +1,6 @@
 const request = require('supertest');
 const server = require('../app');
+const { testForStatus200 } = require('./users.test');
 
 describe('Roles router', () => {
     test('should run the test', () => {
@@ -7,10 +8,7 @@ describe('Roles router', () => {
     });
 
     describe('GET /', () => {
-        test('should return 200 ok', async () => {
-            const res = await request(server).get('/api/roles');
-            expect(res.status).toBe(200);
-        });
+        testForStatus200('/api/roles')
 
         test('should return an array of 3 role objects', async () => {
             const res = await request(server).get('/api/roles');
