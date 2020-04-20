@@ -140,11 +140,11 @@ describe('Restricted routes', () => {
 
         const typicalJobsheetObject = {
             id: expect.any(Number),
-            updated_at: expect.any(String),
+            updatedAt: expect.any(String),
             status: expect.any(String),
-            user_email: expect.any(String),
+            userEmail: expect.any(String),
             name: expect.any(String),
-            project_id: expect.any(Number),
+            projectId: expect.any(Number),
             completed: expect.any(Number)
         }
     
