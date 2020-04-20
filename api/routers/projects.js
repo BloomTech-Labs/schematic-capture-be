@@ -3,6 +3,7 @@ const { Projects, Jobsheets, Components } = require("../../data/models");
 const getUserInfo = require("../middleware/users/getUserInfo");
 const checkIfProjectExists = require("../middleware/projects/checkIfProjectExists")
 const checkBodyForAssigned = require("../middleware/projects/checkBodyForAssigned")
+const dbToRes = require('../../utils/dbToRes');
 
 
 router.get("/:id/jobsheets", checkIfProjectExists, async (req, res) => {
@@ -10,6 +11,7 @@ router.get("/:id/jobsheets", checkIfProjectExists, async (req, res) => {
     let jobsheets;
     try {
         jobsheets = await Jobsheets.findBy({ project_id: id });
+        jobsheets = jobsheets.map(jobsheet => dbToRes(jobsheet));
         return res.status(200).json(jobsheets);
     } catch (error) {
         return res
@@ -39,7 +41,7 @@ router.put('/:id/assignuser', checkIfProjectExists, checkBodyForAssigned, async 
 
     Jobsheets.update({ project_id: id }, changes)
     .then(updatedJob => {
-        res.status(201).json(updatedJob);
+        res.status(201).json(dbToRes(updatedJob[0]));
     })
     .catch(err => {
         err.status(404)

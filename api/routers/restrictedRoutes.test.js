@@ -219,10 +219,10 @@ describe('Restricted routes', () => {
                     completed: expect.any(Number),
                     id: expect.any(Number),
                     name: expect.any(String),
-                    project_id: expect.any(Number),
+                    projectId: expect.any(Number),
                     status: expect.any(String),
-                    updated_at: expect.any(String),
-                    user_email: expect.stringMatching(process.env.TEST_USER)
+                    updatedAt: expect.any(String),
+                    userEmail: expect.stringMatching(process.env.TEST_USER)
                 });
             });
             test('should return status 404 if a project with the passed id doesn\'t exist.', async () => {
@@ -253,14 +253,13 @@ describe('Restricted routes', () => {
             test('should return a status 201 with the updated jobsheets', async () => {
                 const res = await requestWithBody('put', '/api/projects/1/assignuser', changes, token);
                 expect(res.status).toBe(201);
-                expect(Array.isArray(res.body)).toBe(true);
-                expect(res.body[0]).toMatchObject({
+                expect(res.body).toMatchObject({
                     id: expect.any(Number),
-                    updated_at: expect.any(String),
+                    updatedAt: expect.any(String),
                     status: expect.stringMatching('assigned'),
-                    user_email: expect.stringMatching(changes.email),
+                    userEmail: expect.stringMatching(changes.email),
                     name: expect.any(String),
-                    project_id: expect.any(Number),
+                    projectId: expect.any(Number),
                     completed: expect.any(Number)
                 });
             });
