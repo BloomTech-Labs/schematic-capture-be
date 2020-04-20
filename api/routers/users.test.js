@@ -23,11 +23,11 @@ describe('Users router', () => {
             expect(Array.isArray(res.body)).toBe(true);
             expect(res.body[0]).toMatchObject({
                 id: expect.any(String),
-                role_id: expect.any(Number),
+                roleId: expect.any(Number),
                 email: expect.stringMatching(process.env.TEST_USER),
-                first_name: expect.stringMatching('Bob'),
-                last_name: expect.stringMatching('Johnson'),
-                license_id: null,
+                firstName: expect.stringMatching('Bob'),
+                lastName: expect.stringMatching('Johnson'),
+                licenseId: null,
                 phone: expect.any(String),
                 question: expect.any(String)
             });
