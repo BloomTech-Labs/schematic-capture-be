@@ -22,12 +22,15 @@ To get the server running locally:
 
 #### Authentication Routes
 
-| Method | Endpoint                  | Access Control |                                                                |
-| ------ | ------------------------- | -------------- | -------------------------------------------------------------- |
-| POST   | `api/auth/register`       | all users      | creates an account                                             |
-| POST   | `api/auth/login`          | all users      | returns the user's info                                        |
-| POST   | `api/auth/forgotpassword` | all users      | changes the user's password                                    |
-| POST   | `api/auth/invite`         | admin          | sends an email to the invited person containing a unique token |
+| Method | Endpoint                       | Access Control |                                                                |
+| ------ | ------------------------------ | -------------- | -------------------------------------------------------------- |
+| POST   | `api/auth/register`            | all users      | creates an account without an invite (development only)        |
+| POST   | `api/auth/login`               | all users      | returns the user's info along with a token                     |
+| POST   | `api/auth/forgotpassword`      | all users      | changes the user's password                                    |
+| POST   | `api/auth/invite`              | admin          | sends an email to the invited person containing a unique token |
+| POST   | `api/auth/firstlogin`          | all users      | Changes the user's password and security question & answer     |
+| POST   | `api/auth/securityquestion/:id`| all users      | Gets the user's security question                              |
+| POST   | `api/auth/questions`           | all users      | Returns an array of security questions from Okta               |
 
 #### Clients Routes
 
