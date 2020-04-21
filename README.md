@@ -54,13 +54,13 @@ To get the server running locally:
 
 #### Jobsheets Routes
 
-| Method | Endpoint                  | Access Control   | Description                                                 |
-| ------ | ------------------------- | ---------------- | ----------------------------------------------------------- |
-| POST   | `/api/jobsheets/create`   | employee / admin | creates a jobsheet                                          |
-| GET    | `/api/jobsheets/:id`      | employee / admin | returns all components for a specific jobsheet              |
-| GET   | `/api/jobsheets/assigned`  | technician       | returns jobsheets assigned to the authenticated technician. |
-| GET   | `/api/jobsheets/:id`       | technician       | returns a jobsheet that corresponds to the id passed in params. |
-| PUT   | `/api/jobsheets/:id/update`| admin            | edits a jobsheet that corresponds to the id passed in params. |
+| Method | Endpoint                       | Access Control   | Description                                                     |
+| ------ | ------------------------------ | ---------------- | --------------------------------------------------------------- |
+| POST   | `/api/jobsheets/create`        | employee / admin | creates a jobsheet                                              |
+| GET    | `/api/jobsheets/:id/components`| employee / admin | returns all components for a specific jobsheet                  |
+| GET    | `/api/jobsheets/assigned`      | employee / admin | returns jobsheets assigned to the authenticated technician.     |
+| GET    | `/api/jobsheets/:id`           | employee / admin | returns a jobsheet that corresponds to the id passed in params. |
+| PUT    | `/api/jobsheets/:id/update`    | employee / admin | edits a jobsheet that corresponds to the id passed in params.   |
 
 #### Roles Routes
 
