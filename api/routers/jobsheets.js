@@ -2,6 +2,7 @@ const router = require('express').Router();
 const dbToRes = require('../../utils/dbToRes');
 const reqToDb = require('../../utils/reqToDb');
 const { Projects, Jobsheets, Components } = require('../../data/models');
+const updateProjectCompleted = require('../../utils/updateProjectCompleted');
 
 //TODO: This endpoint is weak on validation. I recommend adding more validation middleware when there's time.
 
@@ -9,6 +10,7 @@ const { Projects, Jobsheets, Components } = require('../../data/models');
 router.post('/create', async (req, res) => {
   try {
     const jobsheet = await Jobsheets.add(reqToDb(req.body));
+    updateProjectCompleted(jobsheet.id);
     res.status(201).json(dbToRes(jobsheet));
   } catch (error) {
     return res.status(500).json({ error: error.message, step: '/create' });
@@ -87,8 +89,11 @@ router.put('/:id/update', (req, res) => {
   const id = Number(req.params.id);
 
   Jobsheets.update({ id }, req.body)
-    .then(jobsheet => {
-      res.status(201).json(dbToRes(jobsheet[0]));
+    .then(jobsheets => {
+      if (req.body.completed || req.body.completed === false) {
+        updateProjectCompleted(jobsheets[0].id);
+      }
+      res.status(201).json(dbToRes(jobsheets[0]));
     }).catch(error => {
       res.status(500).json({ error: error.message, step: '/:id/update' });
     });
