@@ -5,6 +5,8 @@
 
 #### 1️⃣ Backend delpoyed at [Heroku](https://sc-be-production.herokuapp.com/) <br>
 
+#### [Postman documentation](https://documenter.getpostman.com/view/10351390/Szf82TeL?version=latest) <br>
+
 ## 1️⃣ Getting started
 
 To get the server running locally:
