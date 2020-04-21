@@ -49,6 +49,7 @@ To get the server running locally:
 | Method | Endpoint                      | Access Control   | Description                                         |
 | ------ | ----------------------------- | ---------------- | --------------------------------------------------- |
 | GET    | `/api/projects/:id/jobsheets` | employee / admin | returns jobsheets created under a specific project. |
+| PUT    | `/api/projects/:id/assignuser`| employee / admin | assigns a user to a project                         |
 
 
 #### Jobsheets Routes
