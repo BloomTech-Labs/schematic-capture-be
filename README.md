@@ -68,23 +68,13 @@ To get the server running locally:
 | ------ | ------------ | -------------- | ----------------------------------- |
 | GET    | `/api/roles` | all users      | returns an array of possible roles. |
 
-# Data Model
+#### Users Routes
 
-#### 2️⃣ ORGANIZATIONS
+| Method | Endpoint     | Access Control | Description                         |
+| ------ | ------------ | -------------- | ----------------------------------- |
+| GET    | `/api/users` | all users      | returns an array of all users.      |
 
----
-
-```
-{
-  id: UUID
-  name: STRING
-  phone: STRING
-  street: BOOLEAN
-  city: STRING
-  state: STRING
-  zip: STRING
-}
-```
+# 2️⃣ Data Model
 
 #### USERS
 
@@ -96,29 +86,10 @@ To get the server running locally:
   role_id: INT foreign key in ROLES table
   first_name: STRING
   last_name: STRING
+  license_id: STRING
   email: STRING
   phone: STRING
-}
-```
-
-#### USERS_ORGANIZATIONS
-
----
-
-```
-{
-  user_email: STRING foreign key in USERS table
-  organization_id: INT foreign key in ROLES table
-}
-```
-
-#### INVITE_TOKENS
-
----
-
-```
-{
-  id: Unique jwt
+  question: STRING
 }
 ```
 
@@ -129,13 +100,24 @@ To get the server running locally:
 ```
 {
   id: UUID
-  organization_id: INT foreign key in ROLES table
   company_name: STRING
   phone: STRING
   street: STRING
   city: STRING
   state: STRING
   zip: STRING
+}
+```
+
+#### USERS_CLIENTS
+
+---
+
+```
+{
+  id: INT
+  client_id: INT foreign key in CLIENTS table
+  user_id: STRING foreign key in USERS table
 }
 ```
 
@@ -148,6 +130,8 @@ To get the server running locally:
   id: UUID
   client_id: INT foreign key in CLIENTS table
   name: STRING
+  completed: BOOLEAN
+  assigned_status: BOOLEAN
 }
 ```
 
@@ -163,18 +147,7 @@ To get the server running locally:
   user_email: STRING foreign key in USERS table
   name: STRING
   project_id: foreign key in PROJECTS table
-}
-```
-
-#### CUSTOM_FIELDS
-
----
-
-```
-{
-  id: UUID
-  jobsheet_id: INT foreign key in JOBSHEETS table
-  col_name: STRING
+  completed: BOOLEAN
 }
 ```
 
