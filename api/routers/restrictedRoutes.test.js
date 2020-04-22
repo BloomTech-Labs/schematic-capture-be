@@ -46,7 +46,8 @@ describe('Restricted routes', () => {
                     street: expect.any(String),
                     city: expect.any(String),
                     state: null,
-                    zip: expect.any(String)
+                    zip: expect.any(String),
+                    image: null
                 });
             });
         });
@@ -64,6 +65,7 @@ describe('Restricted routes', () => {
                     city: expect.any(String),
                     state: null,
                     zip: expect.any(String),
+                    image: null,
                     completed: expect.any(Boolean)
                 });
             });
@@ -73,7 +75,8 @@ describe('Restricted routes', () => {
             id: expect.any(Number),
             clientId: expect.any(Number),
             name: expect.any(String),
-            completed: expect.any(Number)
+            completed: expect.any(Number),
+            description: null
         }
         describe('GET /:id/projects', () => {
             test('should return a status 200 with an array of projects', async () => {
@@ -129,7 +132,8 @@ describe('Restricted routes', () => {
                     street: expect.stringMatching(clientInfo.street),
                     city: expect.stringMatching(clientInfo.city),
                     state: expect.stringMatching(clientInfo.state),
-                    zip: expect.stringMatching(clientInfo.zip)
+                    zip: expect.stringMatching(clientInfo.zip),
+                    image: null
                 });
             });
         })
@@ -145,7 +149,8 @@ describe('Restricted routes', () => {
             userEmail: expect.any(String),
             name: expect.any(String),
             projectId: expect.any(Number),
-            completed: expect.any(Number)
+            completed: expect.any(Number),
+            description: null
         }
     
         describe('GET /:id', () => {
@@ -190,7 +195,8 @@ describe('Restricted routes', () => {
                     resources: expect.any(String),
                     cutsheet: expect.any(String),
                     maintenanceVideo: expect.any(String),
-                    custom: null
+                    custom: null,
+                    notes: null
                 });
             });
         });
@@ -222,7 +228,8 @@ describe('Restricted routes', () => {
                     projectId: expect.any(Number),
                     status: expect.any(String),
                     updatedAt: expect.any(String),
-                    userEmail: expect.stringMatching(process.env.TEST_USER)
+                    userEmail: expect.stringMatching(process.env.TEST_USER),
+                    description: null
                 });
             });
             test('should return status 404 if a project with the passed id doesn\'t exist.', async () => {
@@ -260,7 +267,8 @@ describe('Restricted routes', () => {
                     userEmail: expect.stringMatching(changes.email),
                     name: expect.any(String),
                     projectId: expect.any(Number),
-                    completed: expect.any(Number)
+                    completed: expect.any(Number),
+                    description: null
                 });
             });
             test404Error('should return status 404 if a project with the passed id doesn\'t exist.', changes, '/api/projects/25/assignuser');
