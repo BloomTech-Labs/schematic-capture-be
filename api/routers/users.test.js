@@ -29,7 +29,8 @@ describe('Users router', () => {
                 lastName: expect.stringMatching('Johnson'),
                 licenseId: null,
                 phone: expect.any(String),
-                question: expect.any(String)
+                question: expect.any(String),
+                image: null
             });
         });
     });

@@ -23,6 +23,7 @@ describe('Auth router', () => {
                 licenseId: null,
                 phone: expect.any(String),
                 question: expect.any(String),
+                image: null,
                 roleId: expect.any(Number),
                 role: expect.any(Object),
                 token: expect.any(String)
