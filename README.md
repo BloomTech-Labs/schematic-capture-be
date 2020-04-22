@@ -224,44 +224,9 @@ create a .env file that includes the following:
 -   DB_PASSWORD=(password for database)
 -   DB_DATABASE=(name of database)
 
-### Configs for firebase sdk 
+### configs for Okta
 
-The values for these variables can be found in the firebase console under the apps section. They are extracted from the provided JSON.
-```javascript
-const firebaseConfig = {
-  apiKey: "-",
-  authDomain: "-",
-  databaseURL: "-",
-  projectId: "-",
-  storageBucket: "-",
-  messagingSenderId: "-",
-  appId: "-",
-  measurementId: "-"
-};
-```
-
--   FB_KEY
--   FB_AUTH_DOMAIN
--   FB_DB_URL
--   FB_PROJECT_ID
--   FB_STORAGE_BUCKET
--   FB_MESSAGING_SENDER_ID
--   FB_APP_ID
--   FB_MEASUREMENT_ID
-
-### configs for firebase-admin
-Values can be retrieved from the JSON file created when making a new Service Account.
-
--   SERVICE_ACCOUNT_TYPE
--   SERVICE_ACCOUNT_PROJECT_ID
--   SERVICE_ACCOUNT_PRIVATE_KEY_ID
--   SERVICE_ACCOUNT_PRIVATE_KEY
--   SERVICE_ACCOUNT_CLIENT_EMAIL
--   SERVICE_ACCOUNT_CLIENT_ID
--   SERVICE_ACCOUNT_AUTH_URI
--   SERVICE_ACCOUNT_TOKEN_URI
--   SERVICE_ACCOUNT_AUTH_PROVIDER_X509_CERT_URL
--   SERVICE_ACCOUNT_CLIENT_X509_CERT_URL
+-   OKTA_REGISTER_TOKEN
 
 ### configs for sendgrid api
 
@@ -269,6 +234,11 @@ Values can be retrieved from the JSON file created when making a new Service Acc
 -   SG_API_KEY=(api key forthe sendgrid account)
 -   SG_TEMPLATE_ID=(sendgrid template id)
 -   INVITE_SECRET=(custom secret to sign invite token)
+
+### configs for testing
+
+-   TEST_USER
+-   TEST_USER_PASSWORD
 
 
 ## Deploying a Postgres database with Docker for testing and/or development
