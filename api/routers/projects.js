@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const { Projects, Jobsheets, Components } = require("../../data/models");
-const getUserInfo = require("../middleware/users/getUserInfo");
 const checkIfProjectExists = require("../middleware/projects/checkIfProjectExists")
 const checkBodyForAssigned = require("../middleware/projects/checkBodyForAssigned")
 const dbToRes = require('../../utils/dbToRes');
