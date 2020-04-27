@@ -1,14 +1,7 @@
 exports.up = function(knex) {
   return knex.schema.createTable("components", table => {
     table.increments();
-
-    table
-      .integer("jobsheet_id")
-      .unsigned()
-      .references("id")
-      .inTable("jobsheets")
-      .notNullable();
-
+    table.integer("jobsheet_id").unsigned().references("id").inTable("jobsheets").notNullable();
     table.string("component_id").notNullable();
     table.string("rl_category");
     table.string("rl_number");

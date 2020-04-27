@@ -1,62 +1,42 @@
 require("dotenv").config();
 
+const postgresConfig = {
+    client: "pg",
+    connection: process.env.DATABASE_URL,
+    pool: {
+        min: 2,
+        max: 20
+    },
+    migrations: {
+        directory: "./data/migrations"
+    },
+    seeds: {
+        directory: "./data/seeds"
+    }
+}
+
 module.exports = {
     test: {
-        client: "pg",
+        client: 'sqlite3',
         connection: {
-            host: process.env.DB_HOST,
-            port: process.env.DB_PORT,
-            user: process.env.DB_USER,
-            password: process.env.DB_PASSWORD,
-            database: process.env.DB_DATABASE
+            filename: './data/test.db3'
         },
+        useNullAsDefault: true,
         migrations: {
-            directory: "./data/migrations"
+            directory: './data/migrations',
         },
         seeds: {
-            directory: "./data/seeds"
+            directory: './data/seeds',
         }
     },
-    staging: {
-        client: "pg",
-        connection: process.env.DATABASE_URL,
-        pool: {
-            min: 2,
-            max: 20
-        },
-        migrations: {
-            directory: "./data/migrations"
-        },
-        seeds: {
-            directory: "./data/seeds"
-        }
-    },
-    production: {
-        client: "pg",
-        // connection: process.env.DATABASE_URL,
-        connection: process.env.DATABASE_URL,
-        pool: {
-            min: 2,
-            max: 20
-        },
-        migrations: {
-            directory: "./data/migrations"
-        },
-        seeds: {
-            directory: "./data/seeds"
-        }
-    },
+    staging: postgresConfig,
+    production: postgresConfig,
     development: {
         client: 'sqlite3',
         connection: {
             filename: './data/schematic_capture.db3'
         },
         useNullAsDefault: true,
-        pool: {
-            afterCreate: (conn, done) => {
-                conn.run('PRAGMA foreign_keys = ON', done);
-            }
-        },
         migrations: {
             directory: './data/migrations',
         },

@@ -5,6 +5,8 @@
 
 #### 1️⃣ Backend delpoyed at [Heroku](https://sc-be-production.herokuapp.com/) <br>
 
+#### [Postman documentation](https://documenter.getpostman.com/view/10351390/Szf82TeL?version=latest) <br>
+
 ## 1️⃣ Getting started
 
 To get the server running locally:
@@ -20,21 +22,26 @@ To get the server running locally:
 
 #### Authentication Routes
 
-| Method | Endpoint                  | Access Control |                                                                |
-| ------ | ------------------------- | -------------- | -------------------------------------------------------------- |
-| POST   | `api/auth/register`       | all users      | creates an account                                             |
-| POST   | `api/auth/login`          | all users      | returns the user's info                                        |
-| POST   | `api/auth/forgotpassword` | all users      | changes the user's password                                    |
-| POST   | `api/auth/invite`         | admin          | sends an email to the invited person containing a unique token |
+| Method | Endpoint                       | Access Control |                                                                |
+| ------ | ------------------------------ | -------------- | -------------------------------------------------------------- |
+| POST   | `api/auth/register`            | all users      | creates an account without an invite (development only)        |
+| POST   | `api/auth/login`               | all users      | returns the user's info along with a token                     |
+| POST   | `api/auth/forgotpassword`      | all users      | changes the user's password                                    |
+| POST   | `api/auth/invite`              | admin          | sends an email to the invited person containing a unique token |
+| POST   | `api/auth/firstlogin`          | all users      | Changes the user's password and security question & answer     |
+| GET    | `api/auth/securityquestion/:id`| all users      | Gets the user's security question                              |
+| GET    | `api/auth/questions`           | all users      | Returns an array of security questions from Okta               |
 
 #### Clients Routes
 
 | Method | Endpoint                    | Access Control   | Description                                             |
 | ------ | --------------------------- | ---------------- | ------------------------------------------------------- |
-| GET    | `/api/clients`              | employee / admin | returns clients associated with the user's organization |
-| GET    | `/api/clients/:id/projects` | employee / admin | returns projects created for a specific client.         |
-| POST   | `/api/clients/:id/projects` | employee / admin | creates a new project for a specific client.            |
+| GET    | `/api/clients`              | employee / admin | returns all clients                                     |
+| GET    | `/api/clients/:id/projects` | employee / admin | returns projects created for a specific client          |
+| GET    | `/api/clients/withcompleted`| employee / admin | returns all clients with a completed boolean            |
+| POST   | `/api/clients/:id/projects` | employee / admin | creates a new project for a specific client             |
 | POST   | `/api/clients/create`       | employee / admin | creates a new client                                    |
+| PUT    | `/api/clients/:id`          | employee / admin | edits a client's details                                |
 
 
 #### Projects Routes
@@ -42,17 +49,18 @@ To get the server running locally:
 | Method | Endpoint                      | Access Control   | Description                                         |
 | ------ | ----------------------------- | ---------------- | --------------------------------------------------- |
 | GET    | `/api/projects/:id/jobsheets` | employee / admin | returns jobsheets created under a specific project. |
+| PUT    | `/api/projects/:id/assignuser`| employee / admin | assigns a user to a project                         |
 
 
 #### Jobsheets Routes
 
-| Method | Endpoint                  | Access Control   | Description                                                 |
-| ------ | ------------------------- | ---------------- | ----------------------------------------------------------- |
-| POST   | `/api/jobsheets/create`   | employee / admin | creates a jobsheet                                          |
-| GET    | `/api/jobsheets/:id`      | employee / admin | returns all components for a specific jobsheet              |
-| GET   | `/api/jobsheets/assigned`  | technician       | returns jobsheets assigned to the authenticated technician. |
-| GET   | `/api/jobsheets/:id`       | technician       | returns a jobsheet that corresponds to the id passed in params. |
-| PUT   | `/api/jobsheets/:id/update`| admin            | edits a jobsheet that corresponds to the id passed in params. |
+| Method | Endpoint                       | Access Control   | Description                                                     |
+| ------ | ------------------------------ | ---------------- | --------------------------------------------------------------- |
+| POST   | `/api/jobsheets/create`        | employee / admin | creates a jobsheet                                              |
+| GET    | `/api/jobsheets/:id/components`| employee / admin | returns all components for a specific jobsheet                  |
+| GET    | `/api/jobsheets/assigned`      | employee / admin | returns jobsheets assigned to the authenticated technician.     |
+| GET    | `/api/jobsheets/:id`           | employee / admin | returns a jobsheet that corresponds to the id passed in params. |
+| PUT    | `/api/jobsheets/:id/update`    | employee / admin | edits a jobsheet that corresponds to the id passed in params.   |
 
 #### Roles Routes
 
@@ -60,23 +68,13 @@ To get the server running locally:
 | ------ | ------------ | -------------- | ----------------------------------- |
 | GET    | `/api/roles` | all users      | returns an array of possible roles. |
 
-# Data Model
+#### Users Routes
 
-#### 2️⃣ ORGANIZATIONS
+| Method | Endpoint     | Access Control | Description                         |
+| ------ | ------------ | -------------- | ----------------------------------- |
+| GET    | `/api/users` | all users      | returns an array of all users.      |
 
----
-
-```
-{
-  id: UUID
-  name: STRING
-  phone: STRING
-  street: BOOLEAN
-  city: STRING
-  state: STRING
-  zip: STRING
-}
-```
+# 2️⃣ Data Model
 
 #### USERS
 
@@ -88,29 +86,10 @@ To get the server running locally:
   role_id: INT foreign key in ROLES table
   first_name: STRING
   last_name: STRING
+  license_id: STRING
   email: STRING
   phone: STRING
-}
-```
-
-#### USERS_ORGANIZATIONS
-
----
-
-```
-{
-  user_email: STRING foreign key in USERS table
-  organization_id: INT foreign key in ROLES table
-}
-```
-
-#### INVITE_TOKENS
-
----
-
-```
-{
-  id: Unique jwt
+  question: STRING
 }
 ```
 
@@ -121,13 +100,24 @@ To get the server running locally:
 ```
 {
   id: UUID
-  organization_id: INT foreign key in ROLES table
   company_name: STRING
   phone: STRING
   street: STRING
   city: STRING
   state: STRING
   zip: STRING
+}
+```
+
+#### USERS_CLIENTS
+
+---
+
+```
+{
+  id: INT
+  client_id: INT foreign key in CLIENTS table
+  user_id: STRING foreign key in USERS table
 }
 ```
 
@@ -140,6 +130,8 @@ To get the server running locally:
   id: UUID
   client_id: INT foreign key in CLIENTS table
   name: STRING
+  completed: BOOLEAN
+  assigned_status: BOOLEAN
 }
 ```
 
@@ -155,18 +147,7 @@ To get the server running locally:
   user_email: STRING foreign key in USERS table
   name: STRING
   project_id: foreign key in PROJECTS table
-}
-```
-
-#### CUSTOM_FIELDS
-
----
-
-```
-{
-  id: UUID
-  jobsheet_id: INT foreign key in JOBSHEETS table
-  col_name: STRING
+  completed: BOOLEAN
 }
 ```
 
@@ -243,44 +224,9 @@ create a .env file that includes the following:
 -   DB_PASSWORD=(password for database)
 -   DB_DATABASE=(name of database)
 
-### Configs for firebase sdk 
+### configs for Okta
 
-The values for these variables can be found in the firebase console under the apps section. They are extracted from the provided JSON.
-```javascript
-const firebaseConfig = {
-  apiKey: "-",
-  authDomain: "-",
-  databaseURL: "-",
-  projectId: "-",
-  storageBucket: "-",
-  messagingSenderId: "-",
-  appId: "-",
-  measurementId: "-"
-};
-```
-
--   FB_KEY
--   FB_AUTH_DOMAIN
--   FB_DB_URL
--   FB_PROJECT_ID
--   FB_STORAGE_BUCKET
--   FB_MESSAGING_SENDER_ID
--   FB_APP_ID
--   FB_MEASUREMENT_ID
-
-### configs for firebase-admin
-Values can be retrieved from the JSON file created when making a new Service Account.
-
--   SERVICE_ACCOUNT_TYPE
--   SERVICE_ACCOUNT_PROJECT_ID
--   SERVICE_ACCOUNT_PRIVATE_KEY_ID
--   SERVICE_ACCOUNT_PRIVATE_KEY
--   SERVICE_ACCOUNT_CLIENT_EMAIL
--   SERVICE_ACCOUNT_CLIENT_ID
--   SERVICE_ACCOUNT_AUTH_URI
--   SERVICE_ACCOUNT_TOKEN_URI
--   SERVICE_ACCOUNT_AUTH_PROVIDER_X509_CERT_URL
--   SERVICE_ACCOUNT_CLIENT_X509_CERT_URL
+-   OKTA_REGISTER_TOKEN
 
 ### configs for sendgrid api
 
@@ -288,6 +234,11 @@ Values can be retrieved from the JSON file created when making a new Service Acc
 -   SG_API_KEY=(api key forthe sendgrid account)
 -   SG_TEMPLATE_ID=(sendgrid template id)
 -   INVITE_SECRET=(custom secret to sign invite token)
+
+### configs for testing
+
+-   TEST_USER
+-   TEST_USER_PASSWORD
 
 
 ## Deploying a Postgres database with Docker for testing and/or development

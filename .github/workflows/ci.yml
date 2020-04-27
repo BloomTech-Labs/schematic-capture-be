@@ -23,14 +23,19 @@ jobs:
       # A GitHub action to install Yarn
       - uses: actions/setup-node@master
         with:
-          node-version: "8"
-          # Run the NPM install command before proceeding
-      - run: npm install
+          node-version: "12.x"
+          # Run the yarn install command before proceeding
+      - run: yarn
+      - run: yarn test-migrate-latest
+      - run: yarn test-seed
       # A GitHub action for running tests and publishing coverage
       - uses: paambaati/codeclimate-action@v2.4.0
         env:
           # An environment variable, the value is a GitHub repo secret
           CC_TEST_REPORTER_ID: ${{ secrets.CodeClimateReporterId }}
+          TEST_USER: ${{ secrets.TEST_USER }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+
         with:
           # Run our `coverage` command from our `package.json`
           coverageCommand: yarn run coverage

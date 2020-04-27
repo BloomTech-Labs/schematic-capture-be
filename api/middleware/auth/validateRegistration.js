@@ -1,41 +1,10 @@
-const { admin } = require('../../../utils/firebase');
-
 module.exports = async (req, res, next) => {
-  const { firstName, lastName, phone } = req.body;
-  const errors = {};
-
-  if (firstName === undefined || firstName.trim() === "") {
-    errors.firstName = "must not be empty";
-  }
-
-  if (lastName === undefined || lastName.trim() === "") {
-    errors.lastName = "must not be empty";
-  }
-
-  if (phone === undefined || phone.trim() === "") {
-    errors.phone = "must not be empty";
-  }
-
-  if (Object.entries(errors).length) {
-    if (req.canDeleteFirebaseAccount) {
-      const { auth } = admin;
-      const { uid } = req.decodedIdToken;
-      await auth().deleteUser(uid)
+    //front-end sends technician email, role, full name as name
+    if (!req.body) {
+        res.status(400).json({ message: "Missing post data. Ensure you sent the user's data." });
+    } else if (!req.body.name || !req.body.email || !req.body.role) {
+        res.status(400).json({ message: "Incomplete user data. Please include the user's name, role, and email." });
+    } else {
+        next();
     }
-    return res.status(400).json(errors);
-  }
-
-  req.userData = {
-    id: req.decodedIdToken.uid,
-    email: req.decodedIdToken.email,
-    firstName,
-    lastName,
-    phone,
-    organizationId: req.decodedInviteToken.organizationId,
-    roleId: req.decodedInviteToken.roleId,
-    inviteToken: req.inviteToken
-  }
-
-
-  next();
 };

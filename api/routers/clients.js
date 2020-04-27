@@ -2,15 +2,12 @@ const router = require('express').Router();
 
 // middleware
 const getUserInfo = require('../middleware/users/getUserInfo');
-const getUserOrganizations = require('../middleware/users/getUserOrganizations');
 
-const { Clients, Projects } = require('../../data/models');
+const { Clients, Projects, Jobsheets } = require('../../data/models');
 const reqToDb = require('../../utils/reqToDb');
 const dbToRes = require('../../utils/dbToRes');
 
 router.get('/', async (req, res) => {
-  const { user_id } = req.decodedIdToken;
-  console.log('in get / in clients router')
   try {
 
     let clients = await Clients.find();
@@ -24,32 +21,62 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/withcompleted', (req, res) => {
+  Clients.find().then(async clients => {
+    const clientsWithCompleted = await Promise.all(clients.map(async client => {
+      await Jobsheets.findByClientId(client.id).then(completedCol => {
+        if (completedCol.length > 0) { //has jobsheets
+          let test;
+          if (process.env.DB_ENV === 'test' || process.env.DB_ENV === 'development') {
+            test = 0;
+          } else {
+            test = false;
+          }
+          for (let jobsheet of completedCol) {
+            if (jobsheet.completed === test) { //0 for SQLite3, false for PostreSQL
+              client.completed = false;
+              return dbToRes(client);
+            }
+          }
+          client.completed = true;
+        } else { //doesn't have jobsheets
+          client.completed = true;
+        }
+      });
+      return dbToRes(client);
+    }));
+    res.status(200).json(clientsWithCompleted);
+  }).catch(err => {
+    res.status(500).json({
+      error: err, 
+      message: 'Failed to get client information.', 
+      step: 'api/clients/withcompleted'
+    });
+  })
+})
+
 router.get('/:id/projects', (req, res) => {
   const clientId = Number(req.params.id);
 
   Projects
     .findBy(reqToDb({ clientId }))
-    .then(projects => res.status(200).json(projects))
-    .catch(error => res.status(500).json({ error: error.message, step: '/' }));
+    .then(projects => {
+      projects = projects.map(project => dbToRes(project));
+      res.status(200).json(projects)
+    }).catch(error => res.status(500).json({ error: error.message, step: '/' }));
 });
 
-router.post('/:id/projects', getUserOrganizations, async (req, res) => {
+router.post('/:id/projects', async (req, res) => {
   const clientId = Number(req.params.id)
 
   try {
-    const clients = await Clients.findByMultiple('organization_id', req.userOrganizations);
-    console.log(clients);
-
-    if (!clients.map(client => client.id).includes(clientId)) {
-      return res.status(400).json({ message: 'client not associated with this user' })
-    }
-
     const projectData = req.body;
     projectData.clientId = clientId;
+    projectData.completed = false;
     
     const project = await Projects.add(reqToDb(projectData));
 
-    res.status(201).json(project);
+    res.status(201).json(dbToRes(project));
 
   } catch (error) {
       return res.status(500).json({ error: error.message, step: '/:id/projects' })
@@ -58,12 +85,10 @@ router.post('/:id/projects', getUserOrganizations, async (req, res) => {
 
 router.post('/create', getUserInfo, (req, res) => {
   const clientData = req.body;
-  const [organization] = req.userInfo.organizations;
-  clientData.organizationId = organization.id;
 
   Clients
     .add(reqToDb(clientData))
-    .then(client => res.status(201).json(client))
+    .then(client => res.status(201).json(dbToRes(client)))
     .catch(error => res.status(500).json({ error: error.message, step: '/create' }));
 });
 
@@ -78,10 +103,10 @@ router.put('/:id', async (req, res) => {
     .status(404)
     .json({ errror: 'the specified client with this id does not exist'});
   }
-  await Clients.update({ id }, req.body);
+  await Clients.update({ id }, reqToDb(req.body));
 
   return res.status(200).json({
-    messsage: 'client has been updated'
+    message: 'client has been updated'
   });
 } catch (error) {
   return res.status(500).json({

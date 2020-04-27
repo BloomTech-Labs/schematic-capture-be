@@ -2,13 +2,16 @@
     "name": "schematic-capture-be",
     "description": "REST API for the schematic capture app using the Express framework",
     "scripts": {
-        "test": "cross-env DB_ENV=test DB_PORT=5435 DB_PASSWORD=testing123! jest --watch",
-        "coverage": "cross-env DB_ENV=test DB_PORT=5435 DB_PASSWORD=testing123! jest --coverage --detectOpenHandles --forceExit || true",
-        "test-migrate-latest": "cross-env DB_ENV=test DB_PORT=5435 DB_PASSWORD=testing123! knex --env test migrate:latest",
-        "test-migrate-rollback": "cross-env DB_ENV=test DB_PORT=5435 DB_PASSWORD=testing123! knex --env test migrate:rollback",
-        "test-seed": "cross-env DB_ENV=test DB_PORT=5435 DB_PASSWORD=testing123! knex --env test seed:run",
+        "test": "cross-env DB_ENV=test jest --watch",
+        "coverage": "cross-env DB_ENV=test jest --coverage --detectOpenHandles --forceExit || true",
+        "test-migrate-latest": "cross-env DB_ENV=test knex --env test migrate:latest",
+        "test-migrate-rollback": "cross-env DB_ENV=test knex --env test migrate:rollback",
+        "test-seed": "cross-env DB_ENV=test knex --env test seed:run",
         "start": "node index.js",
         "server": "nodemon index.js"
+    },
+    "engines": {
+        "node": ">=8"
     },
     "jest": {
         "collectCoverageFrom": [
@@ -18,19 +21,11 @@
             "!**/__tests__/**"
         ]
     },
-    "engines": {
-        "node": ">=8"
-    },
     "dependencies": {
         "axios": "^0.19.2",
-        "bcryptjs": "^2.4.3",
-        "busboy": "^0.3.1",
         "cors": "^2.8.5",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
-        "firebase": "^7.12.0",
-        "firebase-admin": "^8.10.0",
-        "firebase-functions": "^3.5.0",
         "helmet": "^3.21.3",
         "jsonwebtoken": "^8.5.1",
         "knex": "^0.20.12",

@@ -20,17 +20,18 @@ class BaseModel {
 
 
     _add(data, filter=null) {
-      return db(this.table)
-        .insert(data, 'id')
-        .then(ids => {
-          const [id] = ids;
-          return this.findBy(filter || { id }).first();
-        });
+        return db(this.table)
+            .insert(data, 'id')
+            .then(ids => {
+                const [id] = ids;
+                return this.findBy(filter || { id }).first();
+            });
     }
 
 
     _update(filter, changes) {
-        return this.findBy(filter)
+        return db(this.table)
+            .where(filter)
             .update(changes, "id")
             .then(ids => {
                 // const [id] = ids;
