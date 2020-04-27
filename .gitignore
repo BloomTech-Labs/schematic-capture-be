@@ -119,6 +119,3 @@ dist
 
 # from Labs 20
 admin-key*
-
-# for Vincent Sanders
-knexfile.js
