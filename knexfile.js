@@ -5,8 +5,7 @@ const postgresConfig = {
     connection: process.env.DATABASE_URL,
     pool: {
         min: 2,
-        max: 20,
-        propagateCreateError: false
+        max: 20
     },
     migrations: {
         directory: "./data/migrations"
