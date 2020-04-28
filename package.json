@@ -1,6 +1,7 @@
 {
     "name": "schematic-capture-be",
     "description": "REST API for the schematic capture app using the Express framework",
+    "main": "index.js",
     "scripts": {
         "test": "cross-env DB_ENV=test jest --watch",
         "coverage": "cross-env DB_ENV=test jest --coverage --detectOpenHandles --forceExit || true",
@@ -9,9 +10,6 @@
         "test-seed": "cross-env DB_ENV=test knex --env test seed:run",
         "start": "node index.js",
         "server": "nodemon index.js"
-    },
-    "engines": {
-        "node": ">=8"
     },
     "jest": {
         "collectCoverageFrom": [
