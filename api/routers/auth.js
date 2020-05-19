@@ -10,6 +10,7 @@ const changeOktaQuestion = require('../middleware/auth/changeOktaQuestion');
 const getIdByEmail = require('../middleware/users/getIdByEmail');
 const generateToken = require('../../utils/generateToken');
 const dbToRes = require('../../utils/dbToRes');
+const superRoleIdAuth = require('../middleware/auth/superRoleIdAuth')
 
 //TESTED
 router.post('/login', (req, res) => {
@@ -45,7 +46,7 @@ router.post('/login', (req, res) => {
 
 //register user with email invite
 //TESTED - except adding to database
-router.post('/invite', validateRegistration, roleToRoleId, registerUserWithOkta, sendEmailInvite, (req, res) => {
+router.post('/invite', superRoleIdAuth, validateRegistration, roleToRoleId, registerUserWithOkta, sendEmailInvite, (req, res) => {
   //front-end sends technician email, role, full name as name
   //separate full name into first name and last name
   let [first, ...last] = req.body.name.split(' ');
