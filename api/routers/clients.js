@@ -2,6 +2,7 @@ const router = require('express').Router();
 
 // middleware
 const getUserInfo = require('../middleware/users/getUserInfo');
+const roleIdAuth = require("../middleware/auth/roleIdAuth")
 
 const { Clients, Projects, Jobsheets } = require('../../data/models');
 const reqToDb = require('../../utils/reqToDb');
@@ -21,7 +22,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/withcompleted', (req, res) => {
+router.get('/withcompleted', (req, res) => { //returns incomplete and complete??
   Clients.find().then(async clients => {
     const clientsWithCompleted = await Promise.all(clients.map(async client => {
       await Jobsheets.findByClientId(client.id).then(completedCol => {
@@ -66,7 +67,7 @@ router.get('/:id/projects', (req, res) => {
     }).catch(error => res.status(500).json({ error: error.message, step: '/' }));
 });
 
-router.post('/:id/projects', async (req, res) => {
+router.post('/:id/projects', roleIdAuth ,async (req, res) => {
   const clientId = Number(req.params.id)
 
   try {

@@ -233,4 +233,23 @@ router.post('/register', roleToRoleId, (req, res) => {
   });
 });
 
+// router.delete('/api/auth/delete/:id', (req, res) => {
+// const { id } = req.params;
+
+// const header = {
+//   headers: {
+//       Authorization: `SSWS ${process.env.OKTA_REGISTER_TOKEN}`
+//   }
+// }
+
+// axios
+//     .delete(`https://dev-833124.okta.com/api/v1/users/${userId}`, header)
+//     .then(res => {
+//     res.status(200).json({message: ''})
+//     })
+//     .catch(err => {
+//         res.status(500).json({error: err, message: 'Login with Okta failed.', step: 'api/auth/login'});
+//     });
+// });
+
 module.exports = router;
