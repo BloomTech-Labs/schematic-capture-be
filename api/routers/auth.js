@@ -33,7 +33,7 @@ router.post('/login', (req, res) => {
       //get user from database via email
       Users.findBy({ email: response.data._embedded.user.profile.login })
       .then(user => {
-        const token = generateToken(user.id, req.body.password, user.email, user.role.id);
+        const token = generateToken(user.id, user.role.id, user.email );
         user.token = token;
         res.status(200).json(dbToRes(user));
       });
@@ -97,7 +97,7 @@ router.post('/firstlogin', changeOktaPassword, changeOktaQuestion, (req, res) =>
   .then(response => {
     //update user in database
     Users.update({ id: req.token.id }, { question: newQuestion }).then(() => {
-      const token = generateToken(req.token.id, newPassword, req.token.email, req.token.roleId);
+      const token = generateToken(req.token.id, req.token.roleId, req.token.email);
       response.data.token = token;
       res.status(200).json(response.data);
     }).catch(err => {
@@ -222,7 +222,7 @@ router.post('/register', roleToRoleId, (req, res) => {
       }
       //add user to database
       return Users.add(data).then(addedUser => {
-        const token = generateToken(addedUser.id, req.body.password, data.email, addedUser.role.id);
+        const token = generateToken(addedUser.id, addedUser.role.id, data.email, );
         addedUser.token = token;
         res.status(201).json({ user: dbToRes(addedUser) });
       })

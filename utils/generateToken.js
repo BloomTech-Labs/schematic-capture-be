@@ -1,12 +1,12 @@
 const jwt = require('jsonwebtoken');
 const { jwtSecret } = require('./secrets');
 
-module.exports = (id, roleId, email, password) => {
+module.exports = (id, roleId, email) => {
     const payload = {
         id,
-        password,
+        roleId,
         email,
-        roleId
+   
     }
     const options = {
         //Talk with team and change to concensus expiration time.

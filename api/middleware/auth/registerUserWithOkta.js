@@ -36,7 +36,7 @@ module.exports = (req, res, next) => {
     //This url will be different
     axios.post(`https://dev-833124.okta.com/api/v1/users?activate=true`, registerInfo, header).then(response => {
         //generate a token that contains the password and security answer
-        req.token = generateToken(response.data.id, req.body.roleId, req.body.email, password);
+        req.token = generateToken(response.data.id, req.body.roleId, req.body.email);
         req.id = response.data.id;
         next();
     }).catch(err => {
