@@ -24,55 +24,55 @@ To get the server running locally:
 
 | Method | Endpoint                       | Access Control |                                                                |
 | ------ | ------------------------------ | -------------- | -------------------------------------------------------------- |
-| POST   | `api/auth/register`            | all users      | creates an account without an invite (development only)        |
+| POST   | `api/auth/register`            | development    | creates an account without an invite (development only)        |
 | POST   | `api/auth/login`               | all users      | returns the user's info along with a token                     |
 | POST   | `api/auth/forgotpassword`      | all users      | changes the user's password                                    |
-| POST   | `api/auth/invite`              | admin          | sends an email to the invited person containing a unique token |
+| POST   | `api/auth/invite`              | super admin    | sends an email to the invited person containing a unique token |
 | POST   | `api/auth/firstlogin`          | all users      | Changes the user's password and security question & answer     |
 | GET    | `api/auth/securityquestion/:id`| all users      | Gets the user's security question                              |
-| GET    | `api/auth/questions`           | all users      | Returns an array of security questions from Okta               |
+| GET    | `api/auth/questions`           | development    | Returns an array of security questions from Okta               |
 
 #### Clients Routes
 
 | Method | Endpoint                    | Access Control   | Description                                             |
 | ------ | --------------------------- | ---------------- | ------------------------------------------------------- |
-| GET    | `/api/clients`              | employee / admin | returns all clients                                     |
-| GET    | `/api/clients/:id/projects` | employee / admin | returns projects created for a specific client          |
-| GET    | `/api/clients/withcompleted`| employee / admin | returns all clients with a completed boolean            |
-| POST   | `/api/clients/:id/projects` | employee / admin | creates a new project for a specific client             |
-| POST   | `/api/clients/create`       | employee / admin | creates a new client                                    |
-| PUT    | `/api/clients/:id`          | employee / admin | edits a client's details                                |
+| GET    | `/api/clients`              | all users        | returns all clients                                     |
+| GET    | `/api/clients/:id/projects` | all users        | returns projects created for a specific client          |
+| GET    | `/api/clients/withcompleted`| all users        | returns all clients with a completed boolean            |
+| POST   | `/api/clients/:id/projects` | super admin      | creates a new project for a specific client             |
+| POST   | `/api/clients/create`       | super admin      | creates a new client                                    |
+| PUT    | `/api/clients/:id`          | super admin      | edits a client's details                                |
 
 
 #### Projects Routes
 
 | Method | Endpoint                      | Access Control   | Description                                         |
 | ------ | ----------------------------- | ---------------- | --------------------------------------------------- |
-| GET    | `/api/projects/:id/jobsheets` | employee / admin | returns jobsheets created under a specific project. |
-| PUT    | `/api/projects/:id/assignuser`| employee / admin | assigns a user to a project                         |
+| GET    | `/api/projects/:id/jobsheets` | all users        | returns jobsheets created under a specific project. |
+| PUT    | `/api/projects/:id/assignuser`| all admins       | assigns a user to a project                         |
 
 
 #### Jobsheets Routes
 
 | Method | Endpoint                       | Access Control   | Description                                                     |
 | ------ | ------------------------------ | ---------------- | --------------------------------------------------------------- |
-| POST   | `/api/jobsheets/create`        | employee / admin | creates a jobsheet                                              |
-| GET    | `/api/jobsheets/:id/components`| employee / admin | returns all components for a specific jobsheet                  |
-| GET    | `/api/jobsheets/assigned`      | employee / admin | returns jobsheets assigned to the authenticated technician.     |
-| GET    | `/api/jobsheets/:id`           | employee / admin | returns a jobsheet that corresponds to the id passed in params. |
-| PUT    | `/api/jobsheets/:id/update`    | employee / admin | edits a jobsheet that corresponds to the id passed in params.   |
+| POST   | `/api/jobsheets/create`        | super admin      | creates a jobsheet                                              |
+| GET    | `/api/jobsheets/:id/components`| all users        | returns all components for a specific jobsheet                  |
+| GET    | `/api/jobsheets/assigned`      | technician       | returns jobsheets assigned to the authenticated technician.     |
+| GET    | `/api/jobsheets/:id`           | all users        | returns a jobsheet that corresponds to the id passed in params. |
+| PUT    | `/api/jobsheets/:id/update`    | all users        | edits a jobsheet that corresponds to the id passed in params.   |
 
 #### Roles Routes
 
 | Method | Endpoint     | Access Control | Description                         |
 | ------ | ------------ | -------------- | ----------------------------------- |
-| GET    | `/api/roles` | all users      | returns an array of possible roles. |
+| GET    | `/api/roles` | development    | returns an array of possible roles. |
 
 #### Users Routes
 
 | Method | Endpoint     | Access Control | Description                         |
 | ------ | ------------ | -------------- | ----------------------------------- |
-| GET    | `/api/users` | all users      | returns an array of all users.      |
+| GET    | `/api/users` | development    | returns an array of all users.      |
 
 # 2️⃣ Data Model
 

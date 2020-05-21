@@ -165,7 +165,7 @@ router.post('/forgotpassword', getIdByEmail, (req, res) => {
 
 //returns an array of security questions
 //TESTED
-router.get('/questions', (req, res) => {
+router.get('/questions', superRoleIdAuth, (req, res) => {
   //this url will be different
   axios
   .get('https://dev-833124.okta.com/api/v1/users/00u4syc0frXBxcDtF4x6/factors/questions')

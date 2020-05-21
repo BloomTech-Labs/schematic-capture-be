@@ -3,9 +3,9 @@ const { Projects, Jobsheets, Components } = require("../../data/models");
 const checkIfProjectExists = require("../middleware/projects/checkIfProjectExists")
 const checkBodyForAssigned = require("../middleware/projects/checkBodyForAssigned")
 const dbToRes = require('../../utils/dbToRes');
+const roleIdAuth = require('../middleware/auth/roleIdAuth')
 
-
-router.get("/:id/jobsheets", checkIfProjectExists, async (req, res) => {
+router.get("/:id/jobsheets", checkIfProjectExists,  async (req, res) => {
     const { id } = req.params;
     let jobsheets;
     try {
@@ -33,7 +33,7 @@ router.get("/:id/jobsheets", checkIfProjectExists, async (req, res) => {
 
 //This endpoint is to assign a technician to a project
 //TODO: middleware validation that the user being assigned exists
-router.put('/:id/assignuser', checkIfProjectExists, checkBodyForAssigned, async (req, res) => {
+router.put('/:id/assignuser', checkIfProjectExists, checkBodyForAssigned, roleIdAuth, async (req, res) => {
     const { id } = req.params;
 
     const changes = { status: 'assigned', user_email: req.body.email }
