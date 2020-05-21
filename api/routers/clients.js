@@ -2,7 +2,7 @@ const router = require('express').Router();
 
 // middleware
 const getUserInfo = require('../middleware/users/getUserInfo');
-const roleIdAuth = require("../middleware/auth/roleIdAuth")
+const superRoleIdAuth = require("../middleware/auth/superRoleIdAuth")
 
 const { Clients, Projects, Jobsheets } = require('../../data/models');
 const reqToDb = require('../../utils/reqToDb');
@@ -67,7 +67,7 @@ router.get('/:id/projects', (req, res) => {
     }).catch(error => res.status(500).json({ error: error.message, step: '/' }));
 });
 
-router.post('/:id/projects', roleIdAuth ,async (req, res) => {
+router.post('/:id/projects', superRoleIdAuth ,async (req, res) => {
   const clientId = Number(req.params.id)
 
   try {
@@ -84,7 +84,7 @@ router.post('/:id/projects', roleIdAuth ,async (req, res) => {
   }
 });
 
-router.post('/create', getUserInfo, (req, res) => {
+router.post('/create', getUserInfo, superRoleIdAuth, (req, res) => {
   const clientData = req.body;
 
   Clients
@@ -93,7 +93,7 @@ router.post('/create', getUserInfo, (req, res) => {
     .catch(error => res.status(500).json({ error: error.message, step: '/create' }));
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', superRoleIdAuth, async (req, res) => {
   const { id } = req.params;
   let client;
 

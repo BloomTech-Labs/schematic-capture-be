@@ -3,11 +3,11 @@ const dbToRes = require('../../utils/dbToRes');
 const reqToDb = require('../../utils/reqToDb');
 const { Projects, Jobsheets, Components } = require('../../data/models');
 const updateProjectCompleted = require('../../utils/updateProjectCompleted');
-
+const superRoleIdAuth = require('../middleware/auth/superRoleIdAuth')
 //TODO: This endpoint is weak on validation. I recommend adding more validation middleware when there's time.
 
 //Works as long as the custom column is included in the database.
-router.post('/create', async (req, res) => {
+router.post('/create', superRoleIdAuth, async (req, res) => {
   try {
     const jobsheet = await Jobsheets.add(reqToDb(req.body));
     updateProjectCompleted(jobsheet.id);
