@@ -62,6 +62,12 @@ To get the server running locally:
 | GET    | `/api/jobsheets/:id`           | all users        | returns a jobsheet that corresponds to the id passed in params. |
 | PUT    | `/api/jobsheets/:id/update`    | all users        | edits a jobsheet that corresponds to the id passed in params.   |
 
+### Components Routes
+
+| Method | Endpoint                       | Access Control   | Description                                                     |
+| ------ | ------------------------------ | ---------------- | --------------------------------------------------------------- |
+| PUT   | `/api/components/:id/update`        | all users     | edits a component corresponding to the id passed in params                                              |
+
 #### Roles Routes
 
 | Method | Endpoint     | Access Control | Description                         |
