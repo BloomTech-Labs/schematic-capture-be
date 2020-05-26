@@ -236,72 +236,78 @@ router.get("/questions", validateIdToken, superRoleIdAuth, (req, res) => {
 
 //register user WITHOUT email invite
 //ONLY USE FOR DEVELOPMENT!!!
-router.post("/register", roleToRoleId, (req, res) => {
-	//send the user's name, email, role, password
-	let [first, ...last] = req.body.name.split(" ");
-	last = last.join(" ");
-	const header = {
-		headers: {
-			Authorization: `SSWS ${process.env.OKTA_REGISTER_TOKEN}`,
-		},
-	};
-	const registerInfo = {
-		profile: {
-			firstName: first,
-			lastName: last,
-			email: req.body.email,
-			login: req.body.email,
-		},
-		groupIds: [
-			//group id is in url in dashboard when you click on a group.
-			req.groupId,
-		],
-		credentials: {
-			password: { value: req.body.password },
-			recovery_question: {
-				question: "Who's a major player in the cowboy scene?",
-				answer: "Annie Oakley",
+router.post(
+	"/register",
+	validateIdToken,
+	superRoleIdAuth,
+	roleToRoleId,
+	(req, res) => {
+		//send the user's name, email, role, password
+		let [first, ...last] = req.body.name.split(" ");
+		last = last.join(" ");
+		const header = {
+			headers: {
+				Authorization: `SSWS ${process.env.OKTA_REGISTER_TOKEN}`,
 			},
-		},
-	};
-
-	axios
-		.post(
-			`https://dev-833124.okta.com/api/v1/users?activate=true`,
-			registerInfo,
-			header
-		)
-		.then((response) => {
-			console.log(response);
-			//Add user to database.
-			const data = {
-				id: response.id,
-				role_id: req.body.roleId,
+		};
+		const registerInfo = {
+			profile: {
+				firstName: first,
+				lastName: last,
 				email: req.body.email,
-				first_name: first,
-				last_name: last,
-				question: "Who's a major player in the cowboy scene?",
-			};
-			//add user to database
-			return Users.add(data).then((addedUser) => {
-				const token = generateToken(
-					addedUser.id,
-					addedUser.role.id,
-					data.email
-				);
-				addedUser.token = token;
-				res.status(201).json({ user: dbToRes(addedUser) });
+				login: req.body.email,
+			},
+			groupIds: [
+				//group id is in url in dashboard when you click on a group.
+				req.groupId,
+			],
+			credentials: {
+				password: { value: req.body.password },
+				recovery_question: {
+					question: "Who's a major player in the cowboy scene?",
+					answer: "Annie Oakley",
+				},
+			},
+		};
+
+		axios
+			.post(
+				`https://dev-833124.okta.com/api/v1/users?activate=true`,
+				registerInfo,
+				header
+			)
+			.then((response) => {
+				console.log(response);
+				//Add user to database.
+				const data = {
+					id: response.id,
+					role_id: req.body.roleId,
+					email: req.body.email,
+					first_name: first,
+					last_name: last,
+					question: "Who's a major player in the cowboy scene?",
+				};
+				//add user to database
+				return Users.add(data).then((addedUser) => {
+					const token = generateToken(
+						addedUser.id,
+						addedUser.role.id,
+						data.email
+					);
+					addedUser.token = token;
+					res.status(201).json({ user: dbToRes(addedUser) });
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+				res.status(500).json({
+					error: err,
+					message: "Registration with Okta failed.",
+					step: "api/auth/resgister",
+				});
 			});
-		})
-		.catch((err) => {
-			console.log(err);
-			res.status(500).json({
-				error: err,
-				message: "Registration with Okta failed.",
-				step: "api/auth/resgister",
-			});
-		});
-});
+	}
+);
 
 // router.delete('/api/auth/delete/:id', (req, res) => {
 // const { id } = req.params;
