@@ -36,7 +36,7 @@ module.exports = (req, res, next) => {
 			},
 		},
 	};
-	// This url will be different
+	//This url will be different
 	axios
 		.post(
 			`https://dev-833124.okta.com/api/v1/users?activate=true`,
@@ -60,9 +60,10 @@ module.exports = (req, res, next) => {
 				message: "Failed to register new user with Okta.",
 				step: "registerUserWithOkta middleware",
 			});
+			console.log(err.message)
 		});
-	// for testing
-	// req.token = generateToken(1, req.body.roleId, req.body.email, password);
-	// req.id = 1;
-	// next();
+	//for testing
+	//  req.token = generateToken(1, req.body.roleId, req.body.email, password);
+	//  req.id = 1;
+	//  next();
 };
