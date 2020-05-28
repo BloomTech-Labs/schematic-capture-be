@@ -24,7 +24,7 @@ class UserModel extends BaseModel {
 
   async add(data) {
     const [id] = await db('users').insert(data, 'id');
-    return this.findBy(id);
+    return db('users').where('email',data.email);
   }
 
   getQuestion(id) {
