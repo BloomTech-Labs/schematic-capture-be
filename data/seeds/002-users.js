@@ -11,10 +11,10 @@ exports.seed = function(knex) {
     },
     {
       id: "nMAqmtW3qAWIpBzPUE1DXxxw5aB2",
-      role_id: 1,
+      role_id: 2,
       first_name: "test",
-      last_name: "administrator",
-      email: "testadmin@test.com",
+      last_name: "tech",
+      email: "testTech@test.com",
       phone: "4004004000"
     }
   ]);
