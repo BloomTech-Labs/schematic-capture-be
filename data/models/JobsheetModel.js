@@ -8,12 +8,12 @@ class JobsheetModel extends BaseModel {
   }
 
   add(jobsheet) {
-    const { name, project_id, components} = jobsheet;
+    const { schematic, name, project_id, components} = jobsheet;
 
     const sanitizedComponents = components.map(component => reqToDb(component));
 
     return db(this.table)
-      .insert({ name, project_id }, 'id')
+      .insert({ schematic, name, project_id }, 'id')
       .then(jobsheet_ids => {
         const [id] = jobsheet_ids;
         const updatedComponents = sanitizedComponents.map(component => {
