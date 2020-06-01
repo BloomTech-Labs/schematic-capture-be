@@ -1,5 +1,4 @@
 const BaseModel = require('./BaseModel');
-const mapper = require('./clientMap');
 const db = require('../dbConfig');
 class ClientModel extends BaseModel {
   constructor(table) {
