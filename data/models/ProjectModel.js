@@ -14,8 +14,8 @@ class ProjectModel extends BaseModel {
             'projects.name',
             'projects.description',
             db.raw('IFNULL(group_concat(jobsheets.user_email),"Unassigned") as technicians'),
-            db.raw('(sum(case when jobsheets.completed <> FALSE THEN TRUE ELSE FALSE END)||"/"||count(jobsheets.completed)) tally'),
-            db.raw('(CASE WHEN (jobsheets.completed = false) THEN FALSE ELSE TRUE END) as completed')
+            db.raw('(sum(case when jobsheets.completed <> 0 then 1 else 0 end)||"/"||count(jobsheets.completed)) tally'),
+            db.raw('CASE WHEN jobsheets.completed is 0 THEN FALSE ELSE TRUE END as completed')
           ])
           .groupBy('projects.id').where(filter)
   }
