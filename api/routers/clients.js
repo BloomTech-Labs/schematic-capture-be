@@ -60,7 +60,7 @@ router.get('/:id/projects', (req, res) => {
   const clientId = Number(req.params.id);
 
   Projects
-    .findBy(reqToDb({ clientId }))
+    .findPlus(reqToDb({ clientId }))
     .then(projects => {
       projects = projects.map(project => dbToRes(project));
       res.status(200).json(projects)
