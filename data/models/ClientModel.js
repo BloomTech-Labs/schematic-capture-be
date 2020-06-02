@@ -12,7 +12,7 @@ class ClientModel extends BaseModel {
             'clients.*',
             db.raw('(CASE WHEN (projects.completed = false) THEN FALSE ELSE TRUE END) as completed')
           ])
-          .groupBy('clients.id','projects.completed')
+          .groupBy('clients.id')
   }
 
   findByOrganization(filter) {
