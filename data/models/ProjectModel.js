@@ -13,11 +13,11 @@ class ProjectModel extends BaseModel {
             'projects.client_id',
             'projects.name',
             'projects.description',
-            db.raw('IFNULL(string_agg(jobsheets.user_email),"Unassigned") as technicians'),
-            db.raw('(sum(case when jobsheets.completed <> FALSE THEN TRUE ELSE FALSE END)||"/"||count(jobsheets.completed)) tally'),
+            db.raw('COALESCE(array_agg(jobsheets.user_email)) as technicians'),
+            db.raw("CONCAT(count(case when jobsheets.completed THEN 1 END),'/',count(jobsheets.completed)) tally"),
             db.raw('(CASE WHEN (jobsheets.completed = false) THEN FALSE ELSE TRUE END) as completed')
           ])
-          .groupBy('projects.id').where(filter)
+          .groupBy('projects.id','jobsheets.id').where(filter)
   }
 
 }
