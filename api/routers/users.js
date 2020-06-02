@@ -21,4 +21,23 @@ router.get("/", validateIdToken, superRoleIdAuth, (req, res) => {
 		});
 });
 
+router.get("/availableTechs", validateIdToken, superRoleIdAuth, (req, res) => {
+	Users.find()
+		.where("role_id", 2)
+		.where("status", "Unassigned")
+		.then((techs) => {
+			techs = techs.map((tech) => dbToRes(tech));
+			res.status(200).json(techs);
+		})
+		.catch((err) => {
+			res
+				.status(500)
+				.json({
+					error: err,
+					message: "Couldn't get available techs",
+					step: "api/users/availableTechs",
+				});
+		});
+})
+
 module.exports = router;

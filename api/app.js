@@ -9,7 +9,6 @@ const clients = require('./routers/clients');
 const jobsheets = require('./routers/jobsheets');
 const projects = require('./routers/projects');
 const users = require('./routers/users');
-const techs = require('./routers/techs')
 const components = require('./routers/components');
 // Middleware
 const checkAccountExists = require('./middleware/auth/checkAccountExists');
