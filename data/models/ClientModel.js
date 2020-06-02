@@ -10,7 +10,7 @@ class ClientModel extends BaseModel {
           .leftJoin('projects','projects.client_id','clients.id')
           .select([
             'clients.*',
-            db.raw('CASE WHEN projects.completed is 0 THEN FALSE ELSE TRUE END as completed')
+            db.raw('(CASE WHEN (projects.completed = 0) THEN FALSE ELSE TRUE END) as completed')
           ])
           .groupBy('clients.id')
   }
