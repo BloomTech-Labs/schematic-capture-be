@@ -5,7 +5,7 @@ class ProjectModel extends BaseModel {
     super(table);
   }
 
-  findPlus(filter) {
+  findBy(filter) {
     return db("projects")
           .leftJoin('jobsheets','jobsheets.project_id','projects.id')
           .select([
