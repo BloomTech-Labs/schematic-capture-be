@@ -14,8 +14,7 @@ class ProjectModel extends BaseModel {
             'projects.name',
             'projects.description',
             db.raw('CASE WHEN jobsheets.completed is 0 THEN FALSE ELSE TRUE END as completed'),
-            db.raw('group_concat(jobsheets.user_email) as technicians'),
-            db.raw('group_concat(jobsheets.completed) as tally')
+            db.raw('group_concat(jobsheets.user_email) as technicians')
           ])
           .groupBy('projects.id').where(filter)
   }
