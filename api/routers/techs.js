@@ -1,6 +1,6 @@
 const router = require("express").Router();
-const dbToRes = require("../../utils/dbToRes");
 const { Users } = require("../../data/models");
+const dbToRes = require("../../utils/dbToRes");
 const validateIdToken = require("../middleware/auth/validateIdToken");
 const superRoleIdAuth = require("../middleware/auth/superRoleIdAuth");
 
@@ -24,8 +24,5 @@ router.get("/available", validateIdToken, superRoleIdAuth, (req, res) => {
 });
 
 //TODO: Complete this endpoint to return projects/jobsheets/components that have been assigned to the current user only.
-router.get("/assignments", validateIdToken, (req, res) => {
-    
-})
 
 module.exports = router;
