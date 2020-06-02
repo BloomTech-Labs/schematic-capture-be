@@ -1,9 +1,18 @@
 const BaseModel = require('./BaseModel');
 const db = require('../dbConfig');
-
 class ClientModel extends BaseModel {
   constructor(table) {
     super(table);
+  }
+
+  find() {
+    return db("clients")
+          .leftJoin('projects','projects.client_id','clients.id')
+          .select([
+            'clients.*',
+            db.raw('CASE WHEN projects.completed is 0 THEN FALSE ELSE TRUE END as completed')
+          ])
+          .groupBy('clients.id')
   }
 
   findByOrganization(filter) {
