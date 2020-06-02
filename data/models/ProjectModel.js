@@ -14,10 +14,10 @@ class ProjectModel extends BaseModel {
             'projects.name',
             'projects.description',
             db.raw('COALESCE(array_agg(jobsheets.user_email)) as technicians'),
-            db.raw("CONCAT(count(case when jobsheets.completed THEN 1 END),'/',count(jobsheets.completed)) tally"),
+            db.raw("CONCAT(count(case when jobsheets.completed THEN 1 END),'/',count((jobsheets.id))) tally"),
             db.raw('(CASE WHEN (jobsheets.completed = false) THEN FALSE ELSE TRUE END) as completed')
           ])
-          .groupBy('projects.id','jobsheets.id').where(filter)
+          .groupBy('projects.id','jobsheets.completed').where(filter)
   }
 
 }

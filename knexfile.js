@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const postgresConfig = {
     client: "pg",
-    connection: process.env.DATABASE_URL,
+    connection: "postgres://postgres:itsogre@localhost:5432/hello",
     pool: {
         min: 2,
         max: 20
