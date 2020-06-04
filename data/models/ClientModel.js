@@ -10,9 +10,9 @@ class ClientModel extends BaseModel {
           .leftJoin('projects','projects.client_id','clients.id')
           .select([
             'clients.*',
-            db.raw('(CASE WHEN (projects.completed = false) THEN FALSE ELSE TRUE END) as completed')
+            db.raw('MIN(CASE WHEN (projects.completed = false) THEN FALSE ELSE TRUE END::int) as completed')
           ])
-          .groupBy('clients.id','projects.completed')
+          .groupBy('clients.id')
   }
 
   findByOrganization(filter) {
