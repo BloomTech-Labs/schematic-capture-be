@@ -3,7 +3,7 @@ const router = require('express').Router();
 // middleware
 const getUserInfo = require('../middleware/users/getUserInfo');
 const superRoleIdAuth = require("../middleware/auth/superRoleIdAuth")
-
+const checkIfJobsheetsComplete = require("../middleware/projects/checkIfJobsheetsComplete")
 const { Clients, Projects, Jobsheets } = require('../../data/models');
 const reqToDb = require('../../utils/reqToDb');
 const dbToRes = require('../../utils/dbToRes');
@@ -56,7 +56,7 @@ router.get('/withcompleted', (req, res) => { //returns incomplete and complete??
   })
 })
 
-router.get('/:id/projects', (req, res) => {
+router.get('/:id/projects', checkIfJobsheetsComplete, (req, res) => {
   const clientId = Number(req.params.id);
 
   Projects
