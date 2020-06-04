@@ -34,6 +34,23 @@ class JobsheetModel extends BaseModel {
       .select('j.completed')
       .where('client_id', id);
   }
+
+  setComplete(filter) {
+    var subQuery = db("jobsheets")
+    .select('jobsheets.id')
+    .leftJoin('components','components.jobsheet_id','jobsheets.id')
+    .where('components.image',null)
+    .first();
+      
+    if(subQuery){
+    return db("jobsheets").update({completed:false}).where('id',subQuery)
+    } else {
+      return db("jobsheets").update({completed:true}).where('id')
+    }
+
+  }
+
+
 }
 
 module.exports = JobsheetModel;

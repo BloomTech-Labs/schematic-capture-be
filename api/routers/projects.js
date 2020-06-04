@@ -2,11 +2,12 @@ const router = require("express").Router();
 const { Projects, Jobsheets, Components } = require("../../data/models");
 const checkIfProjectExists = require("../middleware/projects/checkIfProjectExists");
 const checkBodyForAssigned = require("../middleware/projects/checkBodyForAssigned");
+const completeJobsheet = require("../middleware/projects/completeJobsheet");
 const dbToRes = require("../../utils/dbToRes");
 const roleIdAuth = require("../middleware/auth/roleIdAuth");
 
 
-router.get("/:id/jobsheets", checkIfProjectExists, async (req, res) => {
+router.get("/:id/jobsheets", checkIfProjectExists, completeJobsheet, async (req, res) => {
 	const { id } = req.params;
 	let jobsheets;
 	try {
