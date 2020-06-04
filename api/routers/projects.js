@@ -39,14 +39,18 @@ router.put(
 	async (req, res) => {
 		const { id } = req.params;
 
-		const changes = { status: "assigned", user_email: req.body.email };
+		const changes = {
+			status: "assigned",
+			user_email: req.body.email,
+			assigned_date: req.body.date,
+		};
 
 		Jobsheets.update({ project_id: id }, changes)
 			.then((updatedJob) => {
 				res.status(201).json(dbToRes(updatedJob[0]));
 			})
 			.catch((err) => {
-				res.status(404).json({
+				res.status(500).json({
 					error: err.message,
 					message: "Unable to make the required changes to the database.",
 					step: "/:id/assignuser",
