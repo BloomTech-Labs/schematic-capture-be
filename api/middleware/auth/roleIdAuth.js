@@ -8,4 +8,5 @@ module.exports = async (req, res, next) => {
 			message: "access denied",
 		});
 	}
+
 };

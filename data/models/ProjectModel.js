@@ -3,23 +3,37 @@ const db = require('../dbConfig');
 class ProjectModel extends BaseModel {
   constructor(table) {
     super(table);
-  }
-
+  }         
   findPlus(filter) {
     return db("projects")
           .leftJoin('jobsheets','jobsheets.project_id','projects.id')
           .select([
-            'projects.id',
-            'projects.client_id',
-            'projects.name',
-            'projects.description',
-            db.raw('COALESCE(array_agg(jobsheets.user_email)) as technicians'),
-            db.raw("CONCAT(count(case when jobsheets.completed THEN 1 END),'/',count((jobsheets.id))) tally"),
-            db.raw('(CASE WHEN (jobsheets.completed = false) THEN FALSE ELSE TRUE END) as completed')
+            'projects.*',
+            db.raw('COALESCE(array_agg(DISTINCT(jobsheets.user_email))) as technicians'),
+            db.raw("CONCAT(count(case when jobsheets.completed THEN 1 END),'/',count((jobsheets.id))) tally")
           ])
-          .groupBy('projects.id','jobsheets.completed').where(filter)
+          .groupBy('projects.id').where(filter)
   }
 
+
+  setComplete(filter) {
+    var subQuery = db("projects")
+    .select('projects.id')
+    .leftJoin('jobsheets','jobsheets.project_id','projects.id')
+    .where('jobsheets.completed',false)
+    .first();
+    
+    if(subQuery){
+    return db("projects").update({completed:false}).where('id',subQuery)
+    } else {
+      return db("projects").update({completed:true}).where('id')
+    }
+
+   
+          // .leftJoin('jobsheets','jobsheets.project_id','projects.id')
+          // .update({completed: true})
+          // .where('jobsheets.completed','true')
+  }
 }
 
 module.exports = ProjectModel;
