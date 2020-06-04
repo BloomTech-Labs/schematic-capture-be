@@ -29,10 +29,6 @@ class ProjectModel extends BaseModel {
       return db("projects").update({completed:true}).where('id')
     }
 
-   
-          // .leftJoin('jobsheets','jobsheets.project_id','projects.id')
-          // .update({completed: true})
-          // .where('jobsheets.completed','true')
   }
 }
 
