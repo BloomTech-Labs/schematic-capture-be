@@ -7,7 +7,7 @@ const dbToRes = require("../../utils/dbToRes");
 const roleIdAuth = require("../middleware/auth/roleIdAuth");
 
 
-router.get("/:id/jobsheets", checkIfProjectExists, completeJobsheet, async (req, res) => {
+router.get("/:id/jobsheets", checkIfProjectExists, async (req, res) => {
 	const { id } = req.params;
 	let jobsheets;
 	try {
