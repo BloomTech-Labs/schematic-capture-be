@@ -39,11 +39,15 @@ class JobsheetModel extends BaseModel {
     var subQuery = db("jobsheets")
     .select('jobsheets.id')
     .leftJoin('components','components.jobsheet_id','jobsheets.id')
-    .where('components.image',null)
+    .whereNull('components.image')
     .first();
+
       
+
     if(subQuery){
-    return db("jobsheets").update({completed:false}).where('id',subQuery)
+      console.log(subQuery)
+    return db("jobsheets").update({completed:true})
+    
     } else {
       return db("jobsheets").update({completed:true}).where('id')
     }
