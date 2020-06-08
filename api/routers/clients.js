@@ -9,10 +9,15 @@ const dbToRes = require('../../utils/dbToRes');
 
 router.get('/', async (req, res) => {
   try {
-
+    if(req.decodedToken.roleId === 1 || req.decodedToken.roleId === 2){
     let clients = await Clients.find();
     clients = clients.map(client => dbToRes(client));
     res.status(200).json(clients);
+    } else {
+      let clients = await Clients.findAssign(req.decodedToken.email);
+    clients = clients.map(client => dbToRes(client));
+    res.status(200).json(clients);
+    }
 
   } catch (error) {
 
@@ -56,14 +61,24 @@ router.get('/withcompleted', (req, res) => { //returns incomplete and complete??
 })
 
 router.get('/:id/projects', (req, res) => {
-  const clientId = Number(req.params.id);
+  const client_id = Number(req.params.id);
 
-  Projects
-    .findPlus(reqToDb({ clientId }))
+  if(req.decodedToken.roleId === 1 || req.decodedToken.roleId === 2 ){
+    Projects
+    .findPlus({client_id})
     .then(projects => {
       projects = projects.map(project => dbToRes(project));
       res.status(200).json(projects)
     }).catch(error => res.status(500).json({ error: error.message, step: '/' }));
+    } else {
+      Projects
+    .findAssign({client_id},req.decodedToken.email)
+    .then(projects => {
+      projects = projects.map(project => dbToRes(project));
+      res.status(200).json(projects)
+    }).catch(error => res.status(500).json({ error: error.message, step: '/' }));
+    }
+
 });
 
 router.post('/:id/projects', superRoleIdAuth ,async (req, res) => {
