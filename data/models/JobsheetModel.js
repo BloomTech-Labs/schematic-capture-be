@@ -34,6 +34,8 @@ class JobsheetModel extends BaseModel {
       .select('j.completed')
       .where('client_id', id);
   }
+
+
 }
 
 module.exports = JobsheetModel;
