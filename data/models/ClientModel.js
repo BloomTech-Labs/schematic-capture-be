@@ -8,9 +8,10 @@ class ClientModel extends BaseModel {
   find() {
     return db("clients")
           .leftJoin('projects','projects.client_id','clients.id')
+          .leftJoin('jobsheets','jobsheets.project_id','projects.id')
           .select([
             'clients.*',
-            db.raw('(CASE WHEN (MIN(CASE WHEN (projects.completed = false) THEN FALSE ELSE TRUE END::int)= 0)THEN FALSE ELSE TRUE END) as completed')
+            db.raw('(CASE WHEN (MIN(CASE WHEN (jobsheets.completed = false) THEN FALSE ELSE TRUE END::int)= 0)THEN FALSE ELSE TRUE END) as completed')
           ])
           .groupBy('clients.id')
   }
