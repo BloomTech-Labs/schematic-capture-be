@@ -10,7 +10,7 @@ router.get("/:id/jobsheets", checkIfProjectExists, async (req, res) => {
 	const { id } = req.params;
 	let jobsheets;
 	try {
-		jobsheets = await Jobsheets.findBy({ project_id: id });
+		jobsheets = await Jobsheets.findPlus({ project_id: id });
 		jobsheets = jobsheets.map((jobsheet) => dbToRes(jobsheet));
 		return res.status(200).json(jobsheets);
 	} catch (error) {
