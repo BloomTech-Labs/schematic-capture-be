@@ -43,7 +43,7 @@ exports.seed = function(knex) {
 			"Baldor",
 			"284TC",
 			application1,
-			"https://dl.dropboxusercontent.com/1/view/ke7um4j98igbzju/AlloyTest/fabens-1970s.jpg",
+			"https://www.dropbox.com/s/l4v314vfosymou5/fabens-1970s.jpg?dl=0",
 			"E099.mp4",
 			"Baldor ElectricMotor284TC.pdf"
 		),
@@ -53,7 +53,7 @@ exports.seed = function(knex) {
 			"Vickers",
 			"PVM074ER09GS02AA-28",
 			application2,
-			"https://dl.dropboxusercontent.com/1/view/bgrr2b2clp55kvz/AlloyTest/IMGP1070.JPG",
+			"https://www.dropbox.com/s/2wmcigbf1cum062/schematic.jpg?dl=0",
 			"H034.mp4",
 			"Vickers PVM AxialPistonPump.pdf"
 		),
@@ -63,7 +63,7 @@ exports.seed = function(knex) {
 			"Hydac",
 			"Not Provided",
 			application3,
-			"https://dl.dropboxusercontent.com/1/view/x86fhcnk5raxaba/AlloyTest/cnc-machine-component-250x250.jpg",
+			"https://www.dropbox.com/s/ef5yd1oipfbp6yk/cnc-machine-component-250x250.jpg?dl=0",
 			"H098.mp4",
 			"Hydac BallValve.pdf"
 		),
