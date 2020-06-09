@@ -35,6 +35,17 @@ class JobsheetModel extends BaseModel {
       .where('client_id', id);
   }
 
+  findPlus(filter) {
+    return db("jobsheets")
+          .leftJoin('components','components.jobsheet_id','jobsheets.id')
+          .leftJoin('users','users.email','jobsheets.user_email')
+          .select([
+            'jobsheets.*',
+            db.raw("CONCAT(count(case when (components.image IS NOT NULL) THEN 1 END),'/',count((components.id))) tally"),
+          ])
+          .groupBy('jobsheets.id').where(filter)
+  }
+
 
 }
 
