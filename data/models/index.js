@@ -13,5 +13,6 @@ module.exports = {
   Organizations: new BaseModel('organizations'),
   UsersOrganizations: new BaseModel('users_organizations'),
   Roles: new BaseModel('roles'),
-  InviteTokens: new BaseModel('invite_tokens')
+  InviteTokens: new BaseModel('invite_tokens'),
+  Activity: new BaseModel('activity')
 }

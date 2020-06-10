@@ -4,7 +4,7 @@ const checkIfProjectExists = require("../middleware/projects/checkIfProjectExist
 const checkBodyForAssigned = require("../middleware/projects/checkBodyForAssigned");
 const dbToRes = require("../../utils/dbToRes");
 const roleIdAuth = require("../middleware/auth/roleIdAuth");
-
+const updateActivity = require('../../utils/updateActivity');
 
 router.get("/:id/jobsheets", checkIfProjectExists, async (req, res) => {
 	const { id } = req.params;
@@ -46,6 +46,7 @@ router.put(
 		Jobsheets.update({ project_id: id }, changes)
 			.then((updatedJob) => {
 				res.status(201).json(dbToRes(updatedJob[0]));
+				updateActivity(req.decodedToken,3,{...req.body, idParam: req.params.id});
 			})
 			.catch((err) => {
 				res.status(404).json({

@@ -43,7 +43,7 @@ class JobsheetModel extends BaseModel {
             'jobsheets.*',
             db.raw("CONCAT(count(case when (components.image IS NOT NULL) THEN 1 END),'/',count((components.id))) tally"),
           ])
-          .groupBy('jobsheets.id').where(filter)
+          .groupBy('jobsheets.id').where(filter).orderBy('jobsheets.id')
   }
 
 

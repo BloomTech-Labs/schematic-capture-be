@@ -3,6 +3,7 @@ const dbToRes = require('../../utils/dbToRes');
 const reqToDb = require('../../utils/reqToDb');
 const { Projects, Jobsheets, Components } = require('../../data/models');
 const updateProjectCompleted = require('../../utils/updateProjectCompleted');
+const updateActivity = require('../../utils/updateActivity');
 const superRoleIdAuth = require('../middleware/auth/superRoleIdAuth')
 //TODO: This endpoint is weak on validation. I recommend adding more validation middleware when there's time.
 
@@ -11,6 +12,7 @@ router.post('/create', superRoleIdAuth, async (req, res) => {
   try {
     const jobsheet = await Jobsheets.add(reqToDb(req.body));
     updateProjectCompleted(jobsheet.id);
+    updateActivity(req.decodedToken,2,req.body)
     res.status(201).json(dbToRes(jobsheet));
   } catch (error) {
     return res.status(500).json({ error: error.message, step: '/create' });

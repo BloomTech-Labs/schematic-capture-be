@@ -12,7 +12,7 @@ router.put("/:id/update", (req, res) => {
 	Components.update({ id }, component)
 		.then((component) => {
 			if (req.body.image || req.body.image == null) {
-				updateJobsheetCompleted(component[0].id)
+				updateJobsheetCompleted(component[0].id,req.decodedToken)
 			  }
 			res.status(200).json(dbToRes(component[0]))
 		
