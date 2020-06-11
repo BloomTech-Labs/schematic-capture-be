@@ -1,9 +1,10 @@
 const router = require("express").Router();
 const reqToDb = require("../../utils/reqToDb");
 const dbToRes = require("../../utils/dbToRes");
+const superRoleIdAuth = require("../middleware/auth/superRoleIdAuth");
 const { Activity } = require("../../data/models");
 
-router.get('/', async (req, res) => {
+router.get('/', superRoleIdAuth ,async (req, res) => {
   
     Activity
       .find()

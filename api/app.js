@@ -28,7 +28,7 @@ server.use("/api/projects", validateIdToken, projects);
 server.use("/api/jobsheets", validateIdToken, jobsheets);
 server.use("/api/users", users);
 server.use("/api/components", validateIdToken, components);
-server.use("/api/activity", activity);
+server.use("/api/activity", validateIdToken, activity);
 
 server.get("/", (req, res) => res.status(200).json({ running: true }));
 
