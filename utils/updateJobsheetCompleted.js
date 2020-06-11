@@ -1,12 +1,12 @@
 const { Components, Jobsheets } = require('../data/models');
-
+const updateActivity = require('../utils/updateActivity');
 
 //Will keep track of completed components.
 //Use after every component is created and after every component's image column is changed.
 //If all components are completed or there are no current components,
 //The jobsheet completed column will be changed to true.
 
-module.exports = (ComponentId) => {
+module.exports = (ComponentId,token) => {
     //find jobsheet
     let jobsheetComponents;
     Components.findBy({ id: ComponentId }).then(async components => {
@@ -31,6 +31,6 @@ module.exports = (ComponentId) => {
         }
         //All jobsheets are complete
         //If all are completed update completed column
-        await Jobsheets.update({ id: jobsheetComponents[0].jobsheet_id }, { completed: true });
+        await Jobsheets.update({ id: jobsheetComponents[0].jobsheet_id }, { completed: true }).then(update => updateActivity(token,4,ComponentId));
     }).catch(error => res.status(500).json({ error: error.message, step: 'updateJobsheetCompleted' }));
 }

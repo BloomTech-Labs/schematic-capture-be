@@ -13,7 +13,7 @@ class ClientModel extends BaseModel {
             'clients.*',
             db.raw('(CASE WHEN (MIN(CASE WHEN (jobsheets.completed = false) THEN FALSE ELSE TRUE END::int)= 0)THEN FALSE ELSE TRUE END) as completed')
           ])
-          .groupBy('clients.id')
+          .groupBy('clients.id').orderBy('clients.id')
   }
 
   findAssign(email) {

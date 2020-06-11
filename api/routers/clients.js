@@ -6,6 +6,7 @@ const superRoleIdAuth = require("../middleware/auth/superRoleIdAuth")
 const { Clients, Projects, Jobsheets } = require('../../data/models');
 const reqToDb = require('../../utils/reqToDb');
 const dbToRes = require('../../utils/dbToRes');
+const updateActivity = require('../../utils/updateActivity');
 
 router.get('/', async (req, res) => {
   try {
@@ -90,7 +91,7 @@ router.post('/:id/projects', superRoleIdAuth ,async (req, res) => {
     projectData.completed = false;
     
     const project = await Projects.add(reqToDb(projectData));
-
+    updateActivity(req.decodedToken,1,{...req.body, idParam: req.params.id});
     res.status(201).json(dbToRes(project));
 
   } catch (error) {
@@ -100,10 +101,12 @@ router.post('/:id/projects', superRoleIdAuth ,async (req, res) => {
 
 router.post('/create', getUserInfo, superRoleIdAuth, (req, res) => {
   const clientData = req.body;
-
+  
   Clients
     .add(reqToDb(clientData))
-    .then(client => res.status(201).json(dbToRes(client)))
+    .then(client => {
+      updateActivity(req.decodedToken,0,req.body);
+      res.status(201).json(dbToRes(client))})
     .catch(error => res.status(500).json({ error: error.message, step: '/create' }));
 });
 

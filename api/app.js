@@ -10,6 +10,7 @@ const jobsheets = require('./routers/jobsheets');
 const projects = require('./routers/projects');
 const users = require('./routers/users');
 const components = require('./routers/components');
+const activity = require('./routers/activity')
 // Middleware
 const checkAccountExists = require('./middleware/auth/checkAccountExists');
 const validateIdToken = require('./middleware/auth/validateIdToken');
@@ -27,6 +28,7 @@ server.use("/api/projects", validateIdToken, projects);
 server.use("/api/jobsheets", validateIdToken, jobsheets);
 server.use("/api/users", users);
 server.use("/api/components", validateIdToken, components);
+server.use("/api/activity", validateIdToken, activity);
 
 server.get("/", (req, res) => res.status(200).json({ running: true }));
 

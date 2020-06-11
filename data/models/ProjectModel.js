@@ -14,7 +14,7 @@ class ProjectModel extends BaseModel {
             db.raw("CONCAT(count(case when jobsheets.completed THEN 1 END),'/',count((jobsheets.id))) tally"),
             db.raw('(CASE WHEN (MIN(CASE WHEN (jobsheets.completed = false) THEN FALSE ELSE TRUE END::int)= 0) THEN FALSE ELSE TRUE END) as completed')
           ])
-          .groupBy('projects.id').where(filter)
+          .groupBy('projects.id').where(filter).orderBy('projects.id')
   }
 
   findAssign(filter,email) {
