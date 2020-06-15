@@ -56,7 +56,7 @@ module.exports = (token,caseNum,info) => {
 
 
         
-        await Activity.add({ email: token.email ,action: `${switcher(caseNum)}` });
+        await Activity.add({ email: token.email ,action: `${switcher(caseNum)}`, timestamp: new Date().toISOString() });
 
     }).catch(error => res.status(500).json({ error: error.message, step: 'updateActivity.js' }));
 }
