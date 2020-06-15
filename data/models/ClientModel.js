@@ -11,7 +11,7 @@ class ClientModel extends BaseModel {
           .leftJoin('jobsheets','jobsheets.project_id','projects.id')
           .select([
             'clients.*',
-            db.raw("count(projects.id) projects"),
+            db.raw("count(DISTINCT(projects.id)) projects"),
             db.raw('(CASE WHEN (MIN(CASE WHEN (jobsheets.completed = false) THEN FALSE ELSE TRUE END::int)= 0)THEN FALSE ELSE TRUE END) as completed')
           ])
           .groupBy('clients.id').orderBy('clients.id')
@@ -23,6 +23,7 @@ class ClientModel extends BaseModel {
           .leftJoin('jobsheets','jobsheets.project_id','projects.id')
           .select([
             'clients.*',
+            db.raw("count(DISTINCT(projects.id)) projects"),
             db.raw('(CASE WHEN (MIN(CASE WHEN (jobsheets.completed = false) THEN FALSE ELSE TRUE END::int)= 0)THEN FALSE ELSE TRUE END) as completed')
           ])
           .groupBy('clients.id').where('jobsheets.user_email',email)
