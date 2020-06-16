@@ -5,9 +5,7 @@ const config = {
 };
 
 module.exports = (req, res, next) => {
-	//send an email that contains a link to sign-in with the token in the url
-	//CANNOT register at any other endpoint. This is how we make sure people were invited
-	//this method of attaching token to the url should be eventually changed.
+
 	const customUrl = `master.d3bnlq4xzoa0gr.amplifyapp.com/project/${req.params.id}`;
 	const data = {
 		personalizations: [
