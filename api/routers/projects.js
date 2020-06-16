@@ -5,6 +5,7 @@ const checkBodyForAssigned = require("../middleware/projects/checkBodyForAssigne
 const dbToRes = require("../../utils/dbToRes");
 const roleIdAuth = require("../middleware/auth/roleIdAuth");
 const updateActivity = require('../../utils/updateActivity');
+const sendEmailNotification = require('../middleware/projects/sendEmailNotification');
 
 router.get("/:id/jobsheets", checkIfProjectExists, async (req, res) => {
 	const { id } = req.params;
@@ -38,6 +39,7 @@ router.put(
 	checkIfProjectExists,
 	checkBodyForAssigned,
 	roleIdAuth,
+	sendEmailNotification,
 	async (req, res) => {
 		const { id } = req.params;
 
