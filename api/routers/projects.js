@@ -64,18 +64,18 @@ router.put(
 
 	// How to update Projects database to include assigned date???
 
-		// Projects.update({ project_id: id }, { assigned_date: req.body.date })
-		// 	.then((updateDate) => {
-		// 		res.status(201).json(dbToRes(updateDate[0]));
-		// 		updateActivity(req.decodedToken,3,{...req.body, idParam: req.params.id});
-		// 	})
-		// 	.catch((err) => {
-		// 		res.status(500).json({
-		// 			error: err.message,
-		// 			message: "Unable to update assignment date in project database.",
-		// 			step: "/:id/assignuser",
-		// 		})
-		// 	})
+		Projects.update({ project_id: id }, { assigned_date: req.body.date })
+			.then((updated) => {
+				res.status(201).json(dbToRes(updated));
+				updateActivity(req.decodedToken,3,{...req.body, idParam: req.params.id});
+			})
+			.catch((err) => {
+				res.status(500).json({
+					error: err.message,
+					message: "Unable to update assignment date in project database.",
+					step: "/:id/assignuser",
+				})
+			})
 	}
 );
 
