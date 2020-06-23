@@ -43,6 +43,8 @@ router.put(
 	async (req, res) => {
 		const { id } = req.params;
 
+		console.log(req.body, ' is req.body')
+
 		const changes = {
 			status: "assigned",
 			user_email: req.body.email,
@@ -58,9 +60,21 @@ router.put(
 				res.status(500).json({
 					error: err.message,
 					message: "Unable to make the required changes to the database.",
-					step: "/:id/assignuser",
+					step: "/:id/assignuser, jobsheet update",
 				});
 			});
+
+		Projects.update({ id: id }, { assigned_date: req.body.date })
+			.then((updated) => {
+				res.status(201).json(dbToRes(updated));
+			})
+			.catch((err) => {
+				res.status(500).json({
+					error: err.message,
+					message: "Unable to update assignment date in project database.",
+					step: "/:id/assignuser, project update",
+				})
+			})
 	}
 );
 
