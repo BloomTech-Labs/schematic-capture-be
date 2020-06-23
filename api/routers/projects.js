@@ -55,16 +55,8 @@ router.put(
 			.then((updatedJob) => {
 				res.status(201).json(dbToRes(updatedJob[0]));
 				updateActivity(req.decodedToken,3,{...req.body, idParam: req.params.id});
-			})
-			.catch((err) => {
-				res.status(500).json({
-					error: err.message,
-					message: "Unable to make the required changes to the database.",
-					step: "/:id/assignuser, jobsheet update",
-				});
-			});
 
-		Projects.update({ id: id }, { assigned_date: req.body.date })
+				Projects.update({ id: id }, { assigned_date: req.body.date })
 			.then((updated) => {
 				res.status(201).json(dbToRes(updated));
 			})
@@ -75,6 +67,15 @@ router.put(
 					step: "/:id/assignuser, project update",
 				})
 			})
+			})
+			.catch((err) => {
+				res.status(500).json({
+					error: err.message,
+					message: "Unable to make the required changes to the database.",
+					step: "/:id/assignuser, jobsheet update",
+				});
+			});
+
 	}
 );
 
