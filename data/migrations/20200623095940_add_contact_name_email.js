@@ -11,3 +11,4 @@ exports.up = function(knex) {
         tbl.dropColumn('contact_email');
     });
   };
+  
