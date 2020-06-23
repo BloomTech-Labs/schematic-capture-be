@@ -5,13 +5,12 @@ const config = {
 };
 
 module.exports = (req, res, next) => {
-
-	const customUrl = `master.d3bnlq4xzoa0gr.amplifyapp.com/project/${req.params.id}`;
+	const customUrl = `schematiccapture.com/project/${req.params.id}`;
 	const data = {
 		personalizations: [
 			{
-				to: [{ email: req.body.email}],
-				dynamic_template_data: { customUrl},
+				to: [{ email: req.body.email }],
+				dynamic_template_data: { customUrl },
 			},
 		],
 		from: {
@@ -25,6 +24,7 @@ module.exports = (req, res, next) => {
 		.post("https://api.sendgrid.com/v3/mail/send", data, config)
 		.then(() => next())
 		.catch((error) => {
+			console.log(error.message);
 			res.status(500).json({
 				error: error,
 				message: "Failed to send notification email to user.",
